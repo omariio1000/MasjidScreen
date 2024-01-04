@@ -115,7 +115,7 @@ def display_time():
         today_fajr_athan_label['fg'] = next_prayer_color
         today_fajr_iqama_label['fg'] = next_prayer_color
 
-    elif(hour_time >= fajr_time and hour_time <= thuhr_time):
+    elif(hour_time >= fajr_time and hour_time < thuhr_time):
         today_fajr_label['fg']= pre_prayer_color
         today_fajr_athan_label['fg'] = pre_prayer_color
         today_fajr_iqama_label['fg'] = pre_prayer_color
@@ -125,7 +125,7 @@ def display_time():
         today_thuhr_label['fg']= next_prayer_color
         today_thuhr_athan_label['fg'] = next_prayer_color
         today_thuhr_iqama_label['fg'] = next_prayer_color
-    elif(hour_time >= thuhr_time and hour_time <= asr_time):
+    elif(hour_time >= thuhr_time and hour_time < asr_time):
         today_sunrise_label['fg'] = pre_prayer_color
         
         today_thuhr_label['fg']= current_prayer_color
@@ -135,7 +135,7 @@ def display_time():
         today_asr_label['fg']= next_prayer_color
         today_asr_athan_label['fg'] = next_prayer_color
         today_asr_iqama_label['fg'] = next_prayer_color
-    elif(hour_time >=asr_time and hour_time <= maghrib_time):
+    elif(hour_time >=asr_time and hour_time < maghrib_time):
         today_thuhr_label['fg']= pre_prayer_color
         today_thuhr_athan_label['fg'] = pre_prayer_color
         today_thuhr_iqama_label['fg'] = pre_prayer_color
@@ -147,7 +147,7 @@ def display_time():
         today_maghrib_label['fg']= next_prayer_color
         today_maghrib_athan_label['fg'] = next_prayer_color
         today_maghrib_iqama_label['fg'] = next_prayer_color
-    elif(hour_time >= maghrib_time and hour_time <= isha_time):
+    elif(hour_time >= maghrib_time and hour_time < isha_time):
         today_asr_label['fg']= pre_prayer_color
         today_asr_athan_label['fg'] = pre_prayer_color
         today_asr_iqama_label['fg'] = pre_prayer_color
