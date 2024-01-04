@@ -217,7 +217,7 @@ photos = [] # array to store the list of the resized photos
 # main_folder ="C://Users//ICCH_//Desktop//ptd//ads"
 #main_folder ="C://Users//ICCH_//My Drive//Ads transfer"
 main_folder ="C://Users//melghaza//OneDrive - Intel Corporation//Desktop//ICCH//prayer_time_display//My_prayer_time_display//Version8//Ads"
-# main_folder = os.path.dirname(__file__) + "/ads"
+# main_folder = os.path.dirname(__file__) + "/sample ads"
 photo_path =os.listdir(main_folder) # array to store the path of the photos 
 
 background = Image.open("background.png")
