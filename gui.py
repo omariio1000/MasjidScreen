@@ -193,7 +193,7 @@ def display_time():
 
 
 # reading prayer schedule excel file
-data = pd.read_excel('prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
+data = pd.read_excel(os.path.dirname(__file__) + '/prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
 
 #tk window declaration with name of Prayer Time Portland Oregon
 window = tk.Tk(className='Prayer Time Portland Oregon')
@@ -217,10 +217,11 @@ photos = [] # array to store the list of the resized photos
 # main_folder ="C://Users//ICCH_//Desktop//ptd//ads"
 #main_folder ="C://Users//ICCH_//My Drive//Ads transfer"
 main_folder ="C://Users//melghaza//OneDrive - Intel Corporation//Desktop//ICCH//prayer_time_display//My_prayer_time_display//Version8//Ads"
-# main_folder = os.path.dirname(__file__) + "/sample ads"
+if not os.path.exists(main_folder):
+    main_folder = os.path.dirname(__file__) + "/sample ads"
 photo_path =os.listdir(main_folder) # array to store the path of the photos 
 
-background = Image.open("background.png")
+background = Image.open(os.path.dirname(__file__) + "/background.png")
 background = background.resize((width_value, height_value))
 bg = ImageTk.PhotoImage(background)
 
