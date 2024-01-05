@@ -249,9 +249,9 @@ add = tk.Button( command = quit , image = photos[0], borderwidth=0) # defining a
 #add = tk.Button( command=launch , image = photos[0]) # defining add as image and using photo2 for it "add photo", also stops the program when hit
 
 # defining font variables to be used for display
-font_info = 'Helvetica', round(24 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
+font_info = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info1 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
 
 text_color = "black" # define text color
 # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
@@ -309,7 +309,7 @@ tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font
 # bg_label.grid(row=0, column=0)
 bg_label.place(x=0, y=0)
 add.place(x=width_value-height_value)
-times.place(x=208 * (width_value/1920), y=223 * (height_value/1080))
+times.place(x=110 * (width_value/1920), y=260 * (height_value/1080))
 
 # label0.grid(row=0, columnspan=3)
 # add.grid(row= 0, column = 4, rowspan =18)
