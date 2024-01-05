@@ -257,7 +257,8 @@ Time = 10 # 10 seconds per photo
 update_photos()
 
 bg_label = tk.Label(text="",bg='white', image = bg)
-add = tk.Button( command = quit , image = photos[0], borderwidth=0) # defining add as image and using photo2 for it "add photo", also stops the program when hit
+add = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining add as image and using photo2 for it "add photo", also stops the program when hit
+window.bind("<Escape>", lambda e: quit())
 #add = tk.Button( command=launch , image = photos[0]) # defining add as image and using photo2 for it "add photo", also stops the program when hit
 
 # defining font variables to be used for display
