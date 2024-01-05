@@ -29,7 +29,7 @@ def update_photos():
         main_folder = os.path.dirname(__file__) + "\\sample ads"
 
     photo_path = os.listdir(main_folder) # array to store the path of the photos 
-    photo_list =[] # array to store the list of the photos 
+    photo_list = [] # array to store the list of the photos 
     photos.clear()
 
     # assigning the whole path to the photo list
@@ -89,9 +89,8 @@ def display_time(updated):
     Ishaa_Athan2 = tomorrow_schedule.iloc[0]["Ishaa_Athan"].strftime('%#I:%M')
     Ishaa_Iqama2 = tomorrow_schedule.iloc[0]["Ishaa_Iqama"].strftime('%#I:%M')
 
-
-    today_label['text'] = today_schedule.iloc[0]["Day"] # to assign today in excel file to today_label text
-    tomorrow_label['text'] = tomorrow_schedule.iloc[0]["Day"] #to assign today+1 in excel file to tomorrow_label text
+    today_date_label['text'] = today_schedule.iloc[0]["Day"] # to assign today in excel file to today_date_label text
+    tomorrow_date_label['text'] = tomorrow_schedule.iloc[0]["Day"] #to assign today+1 in excel file to tomorrow_date_label text
     today_fajr_athan_label ['text'] = Fajr_Athan #to assign Fajir_Athan to today_fajr_athan_label text
     today_fajr_iqama_label ['text'] = Fajr_Iqama
     today_sunrise_label ['text'] = Sunrise
@@ -119,8 +118,7 @@ def display_time(updated):
     next_prayer_color = _from_rgb((255, 0, 0))# to assign color to next prayer
     pre_prayer_color = _from_rgb((0,0,0))# to assign color to next prayer
     current_prayer_color = _from_rgb((0,180,0)) # to assign color to next prayer
-    #hour_time = Ishaa_Iqama
-    #print(hour_time)
+
 
     # to highlight the next prayer time
 
@@ -132,94 +130,100 @@ def display_time(updated):
         updated = False
 
     if(hour_time <= fajr_time):
-        today_isha_label['fg']= pre_prayer_color
+        today_isha_label['fg'] = pre_prayer_color
         today_isha_athan_label['fg'] = pre_prayer_color
         today_isha_iqama_label['fg'] = pre_prayer_color
 
-        tomorrow_fajr_label['fg']= pre_prayer_color
+        tomorrow_fajr_label['fg'] = pre_prayer_color
         tomorrow_fajr_athan_label['fg'] = pre_prayer_color
         tomorrow_fajr_iqama_label['fg'] = pre_prayer_color
 
-        today_fajr_label['fg']= next_prayer_color
+        today_fajr_label['fg'] = next_prayer_color
         today_fajr_athan_label['fg'] = next_prayer_color
         today_fajr_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= fajr_time and hour_time < sunrise_time):
-        today_fajr_label['fg']= current_prayer_color
+        today_fajr_label['fg'] = current_prayer_color
         today_fajr_athan_label['fg'] = current_prayer_color
         today_fajr_iqama_label['fg'] = current_prayer_color
 
-        today_thuhr_label['fg']= next_prayer_color
+        today_thuhr_label['fg'] = next_prayer_color
         today_thuhr_athan_label['fg'] = next_prayer_color
         today_thuhr_iqama_label['fg'] = next_prayer_color
+
     elif(hour_time >= sunrise_time and hour_time < thuhr_time):
-        today_fajr_label['fg']= pre_prayer_color
+        today_fajr_label['fg'] = pre_prayer_color
         today_fajr_athan_label['fg'] = pre_prayer_color
         today_fajr_iqama_label['fg'] = pre_prayer_color
+
     elif(hour_time >= thuhr_time and hour_time < asr_time):
         today_sunrise_label['fg'] = pre_prayer_color
         
-        today_thuhr_label['fg']= current_prayer_color
+        today_thuhr_label['fg'] = current_prayer_color
         today_thuhr_athan_label['fg'] = current_prayer_color
         today_thuhr_iqama_label['fg'] = current_prayer_color
 
-        today_asr_label['fg']= next_prayer_color
+        today_asr_label['fg'] = next_prayer_color
         today_asr_athan_label['fg'] = next_prayer_color
         today_asr_iqama_label['fg'] = next_prayer_color
+        
     elif(hour_time >= asr_time and hour_time < maghrib_time):
-        today_thuhr_label['fg']= pre_prayer_color
+        today_thuhr_label['fg'] = pre_prayer_color
         today_thuhr_athan_label['fg'] = pre_prayer_color
         today_thuhr_iqama_label['fg'] = pre_prayer_color
         
-        today_asr_label['fg']= current_prayer_color
+        today_asr_label['fg'] = current_prayer_color
         today_asr_athan_label['fg'] = current_prayer_color
         today_asr_iqama_label['fg'] = current_prayer_color
 
-        today_maghrib_label['fg']= next_prayer_color
+        today_maghrib_label['fg'] = next_prayer_color
         today_maghrib_athan_label['fg'] = next_prayer_color
         today_maghrib_iqama_label['fg'] = next_prayer_color
+
     elif(hour_time >= maghrib_time and hour_time < isha_time):
-        today_asr_label['fg']= pre_prayer_color
+        today_asr_label['fg'] = pre_prayer_color
         today_asr_athan_label['fg'] = pre_prayer_color
         today_asr_iqama_label['fg'] = pre_prayer_color
         
-        today_maghrib_label['fg']= current_prayer_color
+        today_maghrib_label['fg'] = current_prayer_color
         today_maghrib_athan_label['fg'] = current_prayer_color
         today_maghrib_iqama_label['fg'] = current_prayer_color
 
-        today_isha_label['fg']= next_prayer_color
+        today_isha_label['fg'] = next_prayer_color
         today_isha_athan_label['fg'] = next_prayer_color
         today_isha_iqama_label['fg'] = next_prayer_color
+        
     elif(hour_time >= isha_time):
-        today_maghrib_label['fg']= pre_prayer_color
+        today_maghrib_label['fg'] = pre_prayer_color
         today_maghrib_athan_label['fg'] = pre_prayer_color
         today_maghrib_iqama_label['fg'] = pre_prayer_color
 
-        today_isha_label['fg']= current_prayer_color
+        today_isha_label['fg'] = current_prayer_color
         today_isha_athan_label['fg'] = current_prayer_color
         today_isha_iqama_label['fg'] = current_prayer_color
 
-        tomorrow_fajr_label['fg']= next_prayer_color
+        tomorrow_fajr_label['fg'] = next_prayer_color
         tomorrow_fajr_athan_label['fg'] = next_prayer_color
         tomorrow_fajr_iqama_label['fg'] = next_prayer_color
 
     clock_label ['text'] = current_time # to assign current time to clock label
-# to flash the different announcements every 30 sec
+
+    # to flash the different announcements every 30 sec
     global counter
     global i    
     
     if(counter <Time and i< len(photos)):
-        add_photo_now = photos[i]
+        flyer_photo_now = photos[i]
         counter += 1
     else:
-        add_photo_now = photos[i]
+        flyer_photo_now = photos[i]
         counter = 0
         i+=1
         
     if (i == len(photos)):
         i = 0
     
-    add['image'] = add_photo_now
+    flyer['image'] = flyer_photo_now
     clock_label.after(1000,display_time, updated) # rerun display_time() after 1sec
 
     return updated
@@ -232,39 +236,34 @@ data = pd.read_excel(os.path.dirname(__file__) + '/prayer_schedule.xlsx',sheet_n
 window = tk.Tk(className='Prayer Time Portland Oregon')
 # set window size
 
-#window.geometry("1600x1200")
 width_value = window.winfo_screenwidth()
 height_value = window.winfo_screenheight()
 window.geometry("%dx%d+0+0" %(width_value, height_value))
 
-stop = 0
 #set window text_color
 window.configure(bg='white')
-#window.rowconfigure(0, minsize=50)
-#window.rowconfigure(1, minsize=50, weight =1)
 
 background = Image.open(os.path.dirname(__file__) + "/background.png")
 background = background.resize((width_value, height_value))
 bg = ImageTk.PhotoImage(background)
 
-# declaring the counter for controlling the add animation
+# declaring the counter for controlling the flyer animation
 counter = 0
 i =0
 j =0
-# declaring the time limit for controlling the add animation
+# declaring the time limit for controlling the flyer animation
 Time = 10 # 10 seconds per photo
 
 update_photos()
 
 bg_label = tk.Label(text="",bg='white', image = bg)
-add = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining add as image and using photo2 for it "add photo", also stops the program when hit
+flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
 window.bind("<Escape>", lambda e: quit())
-#add = tk.Button( command=launch , image = photos[0]) # defining add as image and using photo2 for it "add photo", also stops the program when hit
 
 # defining font variables to be used for display
-font_info = 'Helvetica', round(29 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
+font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
 
 text_color = "black" # define text color
 # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
@@ -273,26 +272,24 @@ times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35, bg='wh
 
 clock_label = tk.Label(times, bg='white', fg=text_color, font = font_info2)
 
-today_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
-label1a = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
-label2a = tk.Label(times, bg='white', text="Athan", fg=text_color,font= font_info2)
-label3a = tk.Label(times, bg='white', text="Iqama", fg=text_color,font= font_info2)
+today_date_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
+today_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
+athan_label = tk.Label(times, bg='white', text="Athan", fg=text_color,font= font_info2)
+iqama_label = tk.Label(times, bg='white', text="Iqama", fg=text_color,font= font_info2)
 today_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
 today_thuhr_label = tk.Label(times, bg='white', text="Thuhr", fg=text_color,font= font_info2)
 today_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
 today_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
 today_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,font= font_info2)
 
-tomorrow_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
-label1b = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
-#label2b = tk.Label(times, bg='white', text="Athan", bg=text_color, fg="white",font= font_info)
-#label3b = tk.Label(times, bg='white', text="Iqama", bg=text_color, fg="white",font= font_info)
+tomorrow_date_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
+tomorrow_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
+
 tomorrow_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
 tomorrow_thuhr_label = tk.Label(times, bg='white', text="Thuhr",fg=text_color,font= font_info2)
 tomorrow_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
 tomorrow_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
 tomorrow_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,font= font_info2)
-label9 = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
 
 # today data
 today_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
@@ -306,6 +303,7 @@ today_maghrib_athan_label = tk.Label(times, bg='white', fg=text_color,font= font
 today_maghrib_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_isha_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+
 # tomorrow data
 tomorrow_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
@@ -318,25 +316,22 @@ tomorrow_maghrib_athan_label = tk.Label(times, bg='white', fg=text_color,font= f
 tomorrow_maghrib_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_isha_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-# define grid and the postion of the different variables in the grid
-# bg_label.grid(row=0, column=0)
-bg_label.place(x=0, y=0)
-add.place(x=width_value-height_value)
-times.place(x=70 * (width_value/1920), y=290 * (height_value/1080))
 
-# label0.grid(row=0, columnspan=3)
-# add.grid(row= 0, column = 4, rowspan =18)
+bg_label.place(x=0, y=0)
+flyer.place(x=width_value-height_value)
+times.place(x=75 * (width_value/1920), y=290 * (height_value/1080))
+
 clock_label.grid(row =0, column=0, columnspan =3)
-today_label.grid(row=1, column=1, columnspan = 2)
-label1a.grid(row=2, column=0)
-label2a.grid(row=2, column=1)
-label3a.grid(row=2, column=2)
+today_date_label.grid(row=1, column=1, columnspan = 2)
+today_space_label.grid(row=2, column=0)
+athan_label.grid(row=2, column=1)
+iqama_label.grid(row=2, column=2)
 today_fajr_label.grid(row=3, column=0)
 today_thuhr_label.grid(row=4, column=0)
 today_asr_label.grid(row=5, column=0)
 today_maghrib_label.grid(row=6, column=0)
 today_isha_label.grid(row=7, column=0)
-tomorrow_label.grid(row=9, column=1, columnspan = 2)
+tomorrow_date_label.grid(row=9, column=1, columnspan = 2)
 
 tomorrow_fajr_label.grid(row=11, column=0)
 tomorrow_thuhr_label.grid(row=12, column=0)
@@ -365,14 +360,12 @@ tomorrow_maghrib_athan_label.grid(row=14, column=1)
 tomorrow_maghrib_iqama_label.grid(row=14, column=2)
 tomorrow_isha_athan_label.grid(row=15, column=1)
 tomorrow_isha_iqama_label.grid(row=15, column=2)
-# label0b.grid(row=17, columnspan=3)
+
 
 display_time(False) # to call display_time() function
 window.resizable(False, True) # to make the window resizable
 window.bind()
-#to get red of the tilte par
-#window.overrideredirect(1)
-# window.wm_attributes('-type','splash')
+
 window.wm_attributes('-fullscreen', 1)
 window.bind()
 window.mainloop()
