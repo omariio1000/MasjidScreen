@@ -261,9 +261,9 @@ flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) #
 window.bind("<Escape>", lambda e: quit())
 
 # defining font variables to be used for display
-font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+font_info = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info1 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
 
 text_color = "black" # define text color
 # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
@@ -319,7 +319,7 @@ tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font
 
 bg_label.place(x=0, y=0)
 flyer.place(x=width_value-height_value)
-times.place(x=75 * (width_value/1920), y=290 * (height_value/1080))
+times.place(x=85 * (width_value/1920), y=280 * (height_value/1080))
 
 clock_label.grid(row =0, column=0, columnspan =3)
 today_date_label.grid(row=1, column=1, columnspan = 2)
