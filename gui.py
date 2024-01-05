@@ -24,9 +24,9 @@ def _from_rgb(rgb):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def update_photos():
-    main_folder ="C:/Users/ICCH_/My Drive/Ads transfer"
+    main_folder ="C:\\Users\\ICCH_\\My Drive\\Ads transfer"
     if not os.path.exists(main_folder):
-        main_folder = os.path.dirname(__file__) + "/sample ads"
+        main_folder = os.path.dirname(__file__) + "\\sample ads"
 
     photo_path = os.listdir(main_folder) # array to store the path of the photos 
     photo_list =[] # array to store the list of the photos 
