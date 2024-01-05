@@ -15,22 +15,42 @@ import pandas as pd
 import numpy as np
 import os
 
+photos = [] # array to store the list of the resized photos 
+
 def _from_rgb(rgb):
     """translates an rgb tuple of int to a tkinter friendly color code
     """
     r, g, b = rgb
     return f'#{r:02x}{g:02x}{b:02x}'
 
+def update_photos():
+    main_folder ="C:/Users/ICCH_/My Drive/Ads transfer"
+    if not os.path.exists(main_folder):
+        main_folder = os.path.dirname(__file__) + "/sample ads"
 
+    photo_path = os.listdir(main_folder) # array to store the path of the photos 
+    photo_list =[] # array to store the list of the photos 
+    photos.clear()
+
+    # assigning the whole path to the photo list
+    for file in photo_path:
+        new_file = os.path.join(main_folder, file)
+        photo_list.append(new_file)
+
+    # reading and loading the photos
+    for file in photo_list:
+        load = Image.open(file)
+        load1 = load.resize((height_value,height_value)) # reszing the ad photo to 1520*1080
+        photos.append(ImageTk.PhotoImage(load1))
+    
+    print()
+    print(photo_path)
+    print("Photos updated at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
     
 def quit():# close Admin window if cancel is clicked
-    window.destroy()
+    window.destroy()  
     
-    
-    
-    
-    
-def display_time():
+def display_time(updated):
     current_time =tm.strftime('%B %#d %Y %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
@@ -51,6 +71,7 @@ def display_time():
     Ishaa_Iqama = today_schedule.iloc[0]["Ishaa_Iqama"].strftime('%#I:%M')
 
     fajr_time = today_schedule.iloc[0]["Fajr_Athan"].strftime('%H:%M')
+    sunrise_time = today_schedule.iloc[0]["Shurooq_Sunrise"].strftime('%H:%M')
     thuhr_time = today_schedule.iloc[0]["Thuhr_Athan"].strftime('%H:%M')
     asr_time = today_schedule.iloc[0]["Asr_Athan"].strftime('%H:%M')
     maghrib_time = today_schedule.iloc[0]["Maghrib_Athan"].strftime('%H:%M')
@@ -102,7 +123,15 @@ def display_time():
     #print(hour_time)
 
     # to highlight the next prayer time
-    if(hour_time<= fajr_time):
+
+    if (hour_time == "12:00"):
+        if (updated is False):
+            update_photos()
+            updated = True
+    else:
+        updated = False
+
+    if(hour_time <= fajr_time):
         today_isha_label['fg']= pre_prayer_color
         today_isha_athan_label['fg'] = pre_prayer_color
         today_isha_iqama_label['fg'] = pre_prayer_color
@@ -115,16 +144,18 @@ def display_time():
         today_fajr_athan_label['fg'] = next_prayer_color
         today_fajr_iqama_label['fg'] = next_prayer_color
 
-    elif(hour_time >= fajr_time and hour_time < thuhr_time):
-        today_fajr_label['fg']= pre_prayer_color
-        today_fajr_athan_label['fg'] = pre_prayer_color
-        today_fajr_iqama_label['fg'] = pre_prayer_color
-
-        today_sunrise_label['fg'] = current_prayer_color
+    elif(hour_time >= fajr_time and hour_time < sunrise_time):
+        today_fajr_label['fg']= current_prayer_color
+        today_fajr_athan_label['fg'] = current_prayer_color
+        today_fajr_iqama_label['fg'] = current_prayer_color
 
         today_thuhr_label['fg']= next_prayer_color
         today_thuhr_athan_label['fg'] = next_prayer_color
         today_thuhr_iqama_label['fg'] = next_prayer_color
+    elif(hour_time >= sunrise_time and hour_time < thuhr_time):
+        today_fajr_label['fg']= pre_prayer_color
+        today_fajr_athan_label['fg'] = pre_prayer_color
+        today_fajr_iqama_label['fg'] = pre_prayer_color
     elif(hour_time >= thuhr_time and hour_time < asr_time):
         today_sunrise_label['fg'] = pre_prayer_color
         
@@ -135,7 +166,7 @@ def display_time():
         today_asr_label['fg']= next_prayer_color
         today_asr_athan_label['fg'] = next_prayer_color
         today_asr_iqama_label['fg'] = next_prayer_color
-    elif(hour_time >=asr_time and hour_time < maghrib_time):
+    elif(hour_time >= asr_time and hour_time < maghrib_time):
         today_thuhr_label['fg']= pre_prayer_color
         today_thuhr_athan_label['fg'] = pre_prayer_color
         today_thuhr_iqama_label['fg'] = pre_prayer_color
@@ -189,7 +220,9 @@ def display_time():
         i = 0
     
     add['image'] = add_photo_now
-    clock_label.after(1000,display_time) # rerun display_time() after 1sec
+    clock_label.after(1000,display_time, updated) # rerun display_time() after 1sec
+
+    return updated
 
 
 # reading prayer schedule excel file
@@ -210,17 +243,6 @@ window.configure(bg='white')
 #window.rowconfigure(0, minsize=50)
 #window.rowconfigure(1, minsize=50, weight =1)
 
-photo_list =[] # array to store the list of the photos 
-photos = [] # array to store the list of the resized photos 
-
-#main_folder ="/home/ubuntu/Desktop/ptd/ads"
-# main_folder ="C://Users//ICCH_//Desktop//ptd//ads"
-#main_folder ="C://Users//ICCH_//My Drive//Ads transfer"
-main_folder ="C://Users//melghaza//OneDrive - Intel Corporation//Desktop//ICCH//prayer_time_display//My_prayer_time_display//Version8//Ads"
-if not os.path.exists(main_folder):
-    main_folder = os.path.dirname(__file__) + "/sample ads"
-photo_path =os.listdir(main_folder) # array to store the path of the photos 
-
 background = Image.open(os.path.dirname(__file__) + "/background.png")
 background = background.resize((width_value, height_value))
 bg = ImageTk.PhotoImage(background)
@@ -232,31 +254,21 @@ j =0
 # declaring the time limit for controlling the add animation
 Time = 10 # 10 seconds per photo
 
-# assigning the whole path to the photo list
-for file in photo_path:
-    new_file = os.path.join(main_folder, file)
-    photo_list.append(new_file)
-
-# reading and loading the photos
-for file in photo_list:
-    load = Image.open(file)
-    load1 = load.resize((height_value,height_value)) # reszing the ad photo to 1520*1080
-    photos.append(ImageTk.PhotoImage(load1))
-   
+update_photos()
 
 bg_label = tk.Label(text="",bg='white', image = bg)
 add = tk.Button( command = quit , image = photos[0], borderwidth=0) # defining add as image and using photo2 for it "add photo", also stops the program when hit
 #add = tk.Button( command=launch , image = photos[0]) # defining add as image and using photo2 for it "add photo", also stops the program when hit
 
 # defining font variables to be used for display
-font_info = 'Helvetica', round(28 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info = 'Helvetica', round(29 * (height_value/1080)), 'bold'
+font_info1 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
+font_info2 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
 
 text_color = "black" # define text color
 # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
 
-times = tk.Frame(window, width=width_value/3.2, height=height_value/1.5, bg='white')
+times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35, bg='white')
 
 clock_label = tk.Label(times, bg='white', fg=text_color, font = font_info2)
 
@@ -309,7 +321,7 @@ tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font
 # bg_label.grid(row=0, column=0)
 bg_label.place(x=0, y=0)
 add.place(x=width_value-height_value)
-times.place(x=110 * (width_value/1920), y=260 * (height_value/1080))
+times.place(x=70 * (width_value/1920), y=290 * (height_value/1080))
 
 # label0.grid(row=0, columnspan=3)
 # add.grid(row= 0, column = 4, rowspan =18)
@@ -354,7 +366,7 @@ tomorrow_isha_athan_label.grid(row=15, column=1)
 tomorrow_isha_iqama_label.grid(row=15, column=2)
 # label0b.grid(row=17, columnspan=3)
 
-display_time() # to call display_time() function
+display_time(False) # to call display_time() function
 window.resizable(False, True) # to make the window resizable
 window.bind()
 #to get red of the tilte par
