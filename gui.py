@@ -45,7 +45,7 @@ def update_photos():
     
     print()
     print(photo_path)
-    print("Photos updated at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
+    print("Photos updated from \"", main_folder, "\" at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
     
 def quit():# close Admin window if cancel is clicked
     window.destroy()  
