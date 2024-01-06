@@ -117,7 +117,7 @@ def display_time(updated):
 
     next_prayer_color = _from_rgb((255, 0, 0))# to assign color to next prayer
     pre_prayer_color = _from_rgb((0,0,0))# to assign color to next prayer
-    current_prayer_color = _from_rgb((0,180,0)) # to assign color to next prayer
+    current_prayer_color = _from_rgb((0,50,0)) # to assign color to next prayer
 
 
     # to highlight the next prayer time
