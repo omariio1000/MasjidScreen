@@ -264,9 +264,9 @@ flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) #
 window.bind("<Escape>", lambda e: quit())
 
 # defining font variables to be used for display
-font_info = 'Helvetica', round(28 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
 
 text_color = "black" # define text color
 # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
