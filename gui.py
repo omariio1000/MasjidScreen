@@ -34,8 +34,11 @@ def update_photos():
 
     # assigning the whole path to the photo list
     for file in photo_path:
-        new_file = os.path.join(main_folder, file)
-        photo_list.append(new_file)
+        if (file.endswith(".png")):
+            new_file = os.path.join(main_folder, file)
+            photo_list.append(new_file)
+        else:
+            photo_path.remove(file)
 
     # reading and loading the photos
     for file in photo_list:
