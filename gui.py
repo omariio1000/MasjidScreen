@@ -9,7 +9,8 @@ import tkinter as tk
 from tkinter import Toplevel
 from PIL import Image,ImageTk
 import time as tm
-from datetime import datetime, timedelta
+import datetime as dt
+from datetime import datetime
 #from datetime import timedelta
 import pandas as pd
 import numpy as np
@@ -64,6 +65,7 @@ def display_time(updated):
     Fajr_Athan = today_schedule.iloc[0]["Fajr_Athan"].strftime('%#I:%M') # assign data with column title Fajr_Athan to Fajr_Athan
     Fajr_Iqama = today_schedule.iloc[0]["Fajr_Iqama"].strftime('%#I:%M')
     Sunrise = today_schedule.iloc[0]["Shurooq_Sunrise"].strftime('%#I:%M')
+    Sunrise_Iqama = (datetime.combine(dt.date.today(), today_schedule.iloc[0]["Shurooq_Sunrise"]) + dt.timedelta(minutes=15)).strftime('%#I:%M')
     Thuhr_Athan = today_schedule.iloc[0]["Thuhr_Athan"].strftime('%#I:%M')
     Thuhr_Iqama = today_schedule.iloc[0]["Thuhr_Iqama"].strftime('%#I:%M')
     Asr_Athan = today_schedule.iloc[0]["Asr_Athan"].strftime('%#I:%M')
@@ -83,6 +85,7 @@ def display_time(updated):
     Fajr_Athan2 = tomorrow_schedule.iloc[0]["Fajr_Athan"].strftime('%#I:%M')
     Fajr_Iqama2 = tomorrow_schedule.iloc[0]["Fajr_Iqama"].strftime('%#I:%M')
     Sunrise2 = tomorrow_schedule.iloc[0]["Shurooq_Sunrise"].strftime('%#I:%M')
+    Sunrise_Iqama2 = (datetime.combine(dt.date.today(), tomorrow_schedule.iloc[0]["Shurooq_Sunrise"]) + dt.timedelta(minutes=15)).strftime('%#I:%M')
     Thuhr_Athan2 = tomorrow_schedule.iloc[0]["Thuhr_Athan"].strftime('%#I:%M')
     Thuhr_Iqama2 = tomorrow_schedule.iloc[0]["Thuhr_Iqama"].strftime('%#I:%M')
     Asr_Athan2 = tomorrow_schedule.iloc[0]["Asr_Athan"].strftime('%#I:%M')
@@ -96,7 +99,8 @@ def display_time(updated):
     tomorrow_date_label['text'] = tomorrow_schedule.iloc[0]["Day"] #to assign today+1 in excel file to tomorrow_date_label text
     today_fajr_athan_label ['text'] = Fajr_Athan #to assign Fajir_Athan to today_fajr_athan_label text
     today_fajr_iqama_label ['text'] = Fajr_Iqama
-    today_sunrise_label ['text'] = Sunrise
+    today_shurooq_athan_label ['text'] = Sunrise
+    today_shurooq_iqama_label ['text'] = Sunrise_Iqama
     today_thuhr_athan_label ['text'] = Thuhr_Athan
     today_thuhr_iqama_label ['text'] = Thuhr_Iqama
     today_asr_athan_label ['text'] = Asr_Athan
@@ -108,7 +112,8 @@ def display_time(updated):
 
     tomorrow_fajr_athan_label ['text'] = Fajr_Athan2
     tomorrow_fajr_iqama_label ['text'] = Fajr_Iqama2
-    tomorrow_sunrise_label ['text'] = Sunrise2
+    tomorrow_shurooq_athan_label ['text'] = Sunrise2
+    tomorrow_shurooq_iqama_label ['text'] = Sunrise_Iqama2
     tomorrow_thuhr_athan_label ['text'] = Thuhr_Athan2
     tomorrow_thuhr_iqama_label ['text'] = Thuhr_Iqama2
     tomorrow_asr_athan_label ['text'] = Asr_Athan2
@@ -159,8 +164,14 @@ def display_time(updated):
         today_fajr_athan_label['fg'] = pre_prayer_color
         today_fajr_iqama_label['fg'] = pre_prayer_color
 
+        today_shurooq_label['fg'] = current_prayer_color
+        today_shurooq_athan_label['fg'] = current_prayer_color
+        today_shurooq_iqama_label['fg'] = current_prayer_color
+
     elif(hour_time >= thuhr_time and hour_time < asr_time):
-        today_sunrise_label['fg'] = pre_prayer_color
+        today_shurooq_label['fg'] = pre_prayer_color
+        today_shurooq_athan_label['fg'] = pre_prayer_color
+        today_shurooq_iqama_label['fg'] = pre_prayer_color
         
         today_thuhr_label['fg'] = current_prayer_color
         today_thuhr_athan_label['fg'] = current_prayer_color
@@ -246,7 +257,7 @@ window.geometry("%dx%d+0+0" %(width_value, height_value))
 #set window text_color
 window.configure(bg='white')
 
-background = Image.open(os.path.dirname(__file__) + "/background.png")
+background = Image.open(os.path.dirname(__file__) + "/RamadanBackground.png")
 background = background.resize((width_value, height_value))
 bg = ImageTk.PhotoImage(background)
 
@@ -280,6 +291,7 @@ today_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= fon
 athan_label = tk.Label(times, bg='white', text="Athan", fg=text_color,font= font_info2)
 iqama_label = tk.Label(times, bg='white', text="Iqama", fg=text_color,font= font_info2)
 today_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
+today_shurooq_label = tk.Label(times, bg='white', text="Shurooq", fg=text_color,font= font_info2)
 today_thuhr_label = tk.Label(times, bg='white', text="Thuhr", fg=text_color,font= font_info2)
 today_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
 today_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
@@ -289,6 +301,7 @@ tomorrow_date_label = tk.Label(times, bg='white', fg=text_color,font= font_info1
 tomorrow_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
 
 tomorrow_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
+tomorrow_shurooq_label = tk.Label(times, bg='white', text="Shurooq", fg=text_color,font= font_info2)
 tomorrow_thuhr_label = tk.Label(times, bg='white', text="Thuhr",fg=text_color,font= font_info2)
 tomorrow_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
 tomorrow_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
@@ -297,7 +310,8 @@ tomorrow_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,fo
 # today data
 today_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_sunrise_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+today_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+today_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
@@ -310,7 +324,8 @@ today_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_in
 # tomorrow data
 tomorrow_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_sunrise_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+tomorrow_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
@@ -322,7 +337,7 @@ tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font
 
 bg_label.place(x=0, y=0)
 flyer.place(x=width_value-height_value)
-times.place(x=85 * (width_value/1920), y=280 * (height_value/1080))
+times.place(x=85 * (width_value/1920), y=125 * (height_value/1080))
 
 clock_label.grid(row =0, column=0, columnspan =3)
 today_date_label.grid(row=1, column=1, columnspan = 2)
@@ -330,39 +345,45 @@ today_space_label.grid(row=2, column=0)
 athan_label.grid(row=2, column=1)
 iqama_label.grid(row=2, column=2)
 today_fajr_label.grid(row=3, column=0)
-today_thuhr_label.grid(row=4, column=0)
-today_asr_label.grid(row=5, column=0)
-today_maghrib_label.grid(row=6, column=0)
-today_isha_label.grid(row=7, column=0)
-tomorrow_date_label.grid(row=9, column=1, columnspan = 2)
+today_shurooq_label.grid(row=4, column=0)
+today_thuhr_label.grid(row=5, column=0)
+today_asr_label.grid(row=6, column=0)
+today_maghrib_label.grid(row=7, column=0)
+today_isha_label.grid(row=8, column=0)
 
-tomorrow_fajr_label.grid(row=11, column=0)
-tomorrow_thuhr_label.grid(row=12, column=0)
-tomorrow_asr_label.grid(row=13, column=0)
-tomorrow_maghrib_label.grid(row=14, column=0)
-tomorrow_isha_label.grid(row=15, column=0)
+tomorrow_date_label.grid(row=11, column=1, columnspan = 2)
+tomorrow_fajr_label.grid(row=12, column=0)
+tomorrow_shurooq_label.grid(row=13, column=0)
+tomorrow_thuhr_label.grid(row=14, column=0)
+tomorrow_asr_label.grid(row=15, column=0)
+tomorrow_maghrib_label.grid(row=16, column=0)
+tomorrow_isha_label.grid(row=17, column=0)
 
 today_fajr_athan_label.grid(row=3, column=1)
 today_fajr_iqama_label.grid(row=3, column=2)
-today_thuhr_athan_label.grid(row=4, column=1)
-today_thuhr_iqama_label.grid(row=4, column=2)
-today_asr_athan_label.grid(row=5, column=1)
-today_asr_iqama_label.grid(row=5, column=2)
-today_maghrib_athan_label.grid(row=6, column=1)
-today_maghrib_iqama_label.grid(row=6, column=2)
-today_isha_athan_label.grid(row=7, column=1)
-today_isha_iqama_label.grid(row=7, column=2)
+today_shurooq_athan_label.grid(row=4, column=1)
+today_shurooq_iqama_label.grid(row=4, column=2)
+today_thuhr_athan_label.grid(row=5, column=1)
+today_thuhr_iqama_label.grid(row=5, column=2)
+today_asr_athan_label.grid(row=6, column=1)
+today_asr_iqama_label.grid(row=6, column=2)
+today_maghrib_athan_label.grid(row=7, column=1)
+today_maghrib_iqama_label.grid(row=7, column=2)
+today_isha_athan_label.grid(row=8, column=1)
+today_isha_iqama_label.grid(row=8, column=2)
 
-tomorrow_fajr_athan_label.grid(row=11, column=1)
-tomorrow_fajr_iqama_label.grid(row=11, column=2)
-tomorrow_thuhr_athan_label.grid(row=12, column=1)
-tomorrow_thuhr_iqama_label.grid(row=12, column=2)
-tomorrow_asr_athan_label.grid(row=13, column=1)
-tomorrow_asr_iqama_label.grid(row=13, column=2)
-tomorrow_maghrib_athan_label.grid(row=14, column=1)
-tomorrow_maghrib_iqama_label.grid(row=14, column=2)
-tomorrow_isha_athan_label.grid(row=15, column=1)
-tomorrow_isha_iqama_label.grid(row=15, column=2)
+tomorrow_fajr_athan_label.grid(row=12, column=1)
+tomorrow_fajr_iqama_label.grid(row=12, column=2)
+tomorrow_shurooq_athan_label.grid(row=13, column=1)
+tomorrow_shurooq_iqama_label.grid(row=13, column=2)
+tomorrow_thuhr_athan_label.grid(row=14, column=1)
+tomorrow_thuhr_iqama_label.grid(row=14, column=2)
+tomorrow_asr_athan_label.grid(row=15, column=1)
+tomorrow_asr_iqama_label.grid(row=15, column=2)
+tomorrow_maghrib_athan_label.grid(row=16, column=1)
+tomorrow_maghrib_iqama_label.grid(row=16, column=2)
+tomorrow_isha_athan_label.grid(row=17, column=1)
+tomorrow_isha_iqama_label.grid(row=17, column=2)
 
 
 display_time(False) # to call display_time() function
