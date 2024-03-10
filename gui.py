@@ -55,7 +55,7 @@ def quit():# close Admin window if cancel is clicked
     window.destroy()  
     
 def display_time(updated):
-    current_time =tm.strftime('%B %#d %Y %#I:%M:%S %p') # calculate current time
+    current_time =tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
 
@@ -337,7 +337,7 @@ tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font
 
 bg_label.place(x=0, y=0)
 flyer.place(x=width_value-height_value)
-times.place(x=85 * (width_value/1920), y=125 * (height_value/1080))
+times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
 
 clock_label.grid(row =0, column=0, columnspan =3)
 today_date_label.grid(row=1, column=1, columnspan = 2)
