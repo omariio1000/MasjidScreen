@@ -155,9 +155,9 @@ def display_time(updated):
         today_fajr_athan_label['fg'] = current_prayer_color
         today_fajr_iqama_label['fg'] = current_prayer_color
 
-        today_thuhr_label['fg'] = next_prayer_color
-        today_thuhr_athan_label['fg'] = next_prayer_color
-        today_thuhr_iqama_label['fg'] = next_prayer_color
+        today_shurooq_label['fg'] = next_prayer_color
+        today_shurooq_athan_label['fg'] = next_prayer_color
+        today_shurooq_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= sunrise_time and hour_time < thuhr_time):
         today_fajr_label['fg'] = pre_prayer_color
@@ -167,6 +167,10 @@ def display_time(updated):
         today_shurooq_label['fg'] = current_prayer_color
         today_shurooq_athan_label['fg'] = current_prayer_color
         today_shurooq_iqama_label['fg'] = current_prayer_color
+
+        today_thuhr_label['fg'] = next_prayer_color
+        today_thuhr_athan_label['fg'] = next_prayer_color
+        today_thuhr_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= thuhr_time and hour_time < asr_time):
         today_shurooq_label['fg'] = pre_prayer_color
@@ -393,4 +397,3 @@ window.bind()
 window.wm_attributes('-fullscreen', 1)
 window.bind()
 window.mainloop()
-
