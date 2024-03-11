@@ -55,7 +55,7 @@ def quit():# close Admin window if cancel is clicked
     window.destroy()  
     
 def display_time(updated):
-    current_time =tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
+    current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
 
@@ -130,7 +130,7 @@ def display_time(updated):
 
     # to highlight the next prayer time
 
-    if (hour_time == "12:00"):
+    if (":00" in hour_time):
         if (updated is False):
             update_photos()
             updated = True
