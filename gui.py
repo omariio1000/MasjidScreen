@@ -261,7 +261,7 @@ window.geometry("%dx%d+0+0" %(width_value, height_value))
 #set window text_color
 window.configure(bg='white')
 
-background = Image.open(os.path.dirname(__file__) + "/RamadanBackground.png")
+background = Image.open(os.path.dirname(__file__) + "/Background.png")
 background = background.resize((width_value, height_value))
 bg = ImageTk.PhotoImage(background)
 
