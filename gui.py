@@ -230,6 +230,9 @@ def display_time(updated):
     global counter
     global i    
     
+    if (i >= len(photos) - 1):
+        i = 0
+
     if(counter <Time and i< len(photos)):
         flyer_photo_now = photos[i]
         counter += 1
@@ -237,9 +240,6 @@ def display_time(updated):
         flyer_photo_now = photos[i]
         counter = 0
         i+=1
-        
-    if (i == len(photos)):
-        i = 0
     
     flyer['image'] = flyer_photo_now
     clock_label.after(1000,display_time, updated) # rerun display_time() after 1sec
