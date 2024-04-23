@@ -100,7 +100,7 @@ def display_time(updated):
     today_fajr_athan_label ['text'] = Fajr_Athan #to assign Fajir_Athan to today_fajr_athan_label text
     today_fajr_iqama_label ['text'] = Fajr_Iqama
     today_shurooq_athan_label ['text'] = Sunrise
-    today_shurooq_iqama_label ['text'] = Sunrise_Iqama
+    # today_shurooq_iqama_label ['text'] = Sunrise_Iqama
     today_thuhr_athan_label ['text'] = Thuhr_Athan
     today_thuhr_iqama_label ['text'] = Thuhr_Iqama
     today_asr_athan_label ['text'] = Asr_Athan
@@ -113,7 +113,7 @@ def display_time(updated):
     tomorrow_fajr_athan_label ['text'] = Fajr_Athan2
     tomorrow_fajr_iqama_label ['text'] = Fajr_Iqama2
     tomorrow_shurooq_athan_label ['text'] = Sunrise2
-    tomorrow_shurooq_iqama_label ['text'] = Sunrise_Iqama2
+    # tomorrow_shurooq_iqama_label ['text'] = Sunrise_Iqama2
     tomorrow_thuhr_athan_label ['text'] = Thuhr_Athan2
     tomorrow_thuhr_iqama_label ['text'] = Thuhr_Iqama2
     tomorrow_asr_athan_label ['text'] = Asr_Athan2
@@ -157,7 +157,7 @@ def display_time(updated):
 
         today_shurooq_label['fg'] = next_prayer_color
         today_shurooq_athan_label['fg'] = next_prayer_color
-        today_shurooq_iqama_label['fg'] = next_prayer_color
+        # today_shurooq_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= sunrise_time and hour_time < thuhr_time):
         today_fajr_label['fg'] = pre_prayer_color
@@ -166,7 +166,7 @@ def display_time(updated):
 
         today_shurooq_label['fg'] = current_prayer_color
         today_shurooq_athan_label['fg'] = current_prayer_color
-        today_shurooq_iqama_label['fg'] = current_prayer_color
+        # today_shurooq_iqama_label['fg'] = current_prayer_color
 
         today_thuhr_label['fg'] = next_prayer_color
         today_thuhr_athan_label['fg'] = next_prayer_color
@@ -315,7 +315,8 @@ tomorrow_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,fo
 today_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+# today_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+today_shurooq_iqama_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
 today_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 today_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
@@ -329,7 +330,8 @@ today_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_in
 tomorrow_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+# tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
 tomorrow_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
 tomorrow_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
