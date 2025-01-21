@@ -13,6 +13,8 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
+from trivia import get_winners
+
 
 photos = [] # array to store the list of the resized photos 
 
@@ -114,7 +116,7 @@ def update_photos(height_value):
 def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
     
-def display_time(labels, data, flyer, updated, ramadan):
+def display_time(labels, data, flyer, updated, ramadan, height_value):
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
@@ -192,7 +194,7 @@ def display_time(labels, data, flyer, updated, ramadan):
 
     if (":00" in hour_time):
         if (updated is False):
-            update_photos()
+            update_photos(height_value)
             updated = True
     else:
         updated = False
@@ -302,7 +304,7 @@ def display_time(labels, data, flyer, updated, ramadan):
         i+=1
     
     flyer['image'] = flyer_photo_now
-    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan) # rerun display_time() after 1sec
+    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value) # rerun display_time() after 1sec
 
     return updated
 
@@ -334,7 +336,7 @@ def main():
     update_photos(height_value)
 
     bg_label = tk.Label(text="",bg='white', image = bg)
-    flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    flyer = tk.Button( command = lambda: update_photos(height_value) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
     window.bind("<Escape>", lambda e: quit(window))
 
     # defining font variables to be used for display
@@ -400,8 +402,7 @@ def main():
     labels.tomorrow_isha_athan_label.grid(row=17, column=1)
     labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
-
-    display_time(labels, data, flyer, False, args.r) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 
