@@ -2,7 +2,7 @@
 """
 Created on Tue Apr  6 15:09:56 2021
 
-@author: Mahdi Elghazali
+@author: Mahdi Elghazali and Omar Nassar
 """
 from functools import partial
 import tkinter as tk
