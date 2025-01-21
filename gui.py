@@ -10,7 +10,6 @@ from PIL import Image,ImageTk
 import time as tm
 import datetime as dt
 from datetime import datetime
-#from datetime import timedelta
 import pandas as pd
 import numpy as np
 import os
