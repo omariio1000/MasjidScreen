@@ -4,9 +4,8 @@ Created on Tue Apr  6 15:09:56 2021
 
 @author: Mahdi Elghazali and Omar Nassar
 """
-from functools import partial
+
 import tkinter as tk
-from tkinter import Toplevel
 from PIL import Image,ImageTk
 import time as tm
 import datetime as dt
