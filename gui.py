@@ -15,8 +15,71 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import os
+import argparse
 
 photos = [] # array to store the list of the resized photos 
+
+# declaring the counter for controlling the flyer animation
+counter = 0
+i =0
+j =0
+# declaring the time limit for controlling the flyer animation
+Time = 10 # 10 seconds per photo
+
+class Labels:
+    def __init__(self, times, bg_color, text_color, font_info, font_info1, font_info2):
+            self.clock_label = tk.Label(times,bg=bg_color, fg=text_color, font = font_info2)
+
+            self.today_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info1)
+            self.today_space_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
+            self.athan_label = tk.Label(times,bg=bg_color, text="Athan", fg=text_color,font= font_info2)
+            self.iqama_label = tk.Label(times,bg=bg_color, text="Iqama", fg=text_color,font= font_info2)
+            self.today_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info2)
+            self.today_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info2)
+            self.today_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr", fg=text_color,font= font_info2)
+            self.today_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info2)
+            self.today_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info2)
+            self.today_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info2)
+
+            self.tomorrow_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info1)
+            self.tomorrow_space_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
+
+            self.tomorrow_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info2)
+            self.tomorrow_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info2)
+            self.tomorrow_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr",fg=text_color,font= font_info2)
+            self.tomorrow_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info2)
+            self.tomorrow_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info2)
+            self.tomorrow_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info2)
+
+            # today data
+            self.today_fajr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_fajr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_shurooq_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            # today_shurooq_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_shurooq_iqama_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
+            self.today_thuhr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_thuhr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_asr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_asr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_maghrib_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_maghrib_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_isha_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.today_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+
+            # tomorrow data
+            self.tomorrow_fajr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_fajr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_shurooq_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            # tomorrow_shurooq_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_shurooq_iqama_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
+            self.tomorrow_thuhr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_thuhr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_asr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_asr_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_maghrib_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_maghrib_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_isha_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+            self.tomorrow_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
 
 def _from_rgb(rgb):
     """translates an rgb tuple of int to a tkinter friendly color code
@@ -24,7 +87,7 @@ def _from_rgb(rgb):
     r, g, b = rgb
     return f'#{r:02x}{g:02x}{b:02x}'
 
-def update_photos():
+def update_photos(height_value):
     main_folder ="C:\\Users\\ICCH_\\My Drive\\Ads transfer"
     if not os.path.exists(main_folder):
         main_folder = os.path.dirname(__file__) + "\\sample ads"
@@ -51,10 +114,10 @@ def update_photos():
     print(photo_path)
     print("Photos updated from \"", main_folder, "\" at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
     
-def quit():# close Admin window if cancel is clicked
+def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
     
-def display_time(updated):
+def display_time(labels, data, flyer, updated, ramadan):
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
@@ -95,37 +158,37 @@ def display_time(updated):
     Ishaa_Athan2 = tomorrow_schedule.iloc[0]["Ishaa_Athan"].strftime('%#I:%M')
     Ishaa_Iqama2 = tomorrow_schedule.iloc[0]["Ishaa_Iqama"].strftime('%#I:%M')
 
-    today_date_label['text'] = today_schedule.iloc[0]["Day"] # to assign today in excel file to today_date_label text
-    tomorrow_date_label['text'] = tomorrow_schedule.iloc[0]["Day"] #to assign today+1 in excel file to tomorrow_date_label text
-    today_fajr_athan_label ['text'] = Fajr_Athan #to assign Fajir_Athan to today_fajr_athan_label text
-    today_fajr_iqama_label ['text'] = Fajr_Iqama
-    today_shurooq_athan_label ['text'] = Sunrise
+    labels.today_date_label['text'] = today_schedule.iloc[0]["Day"] # to assign today in excel file to today_date_label text
+    labels.tomorrow_date_label['text'] = tomorrow_schedule.iloc[0]["Day"] #to assign today+1 in excel file to tomorrow_date_label text
+    labels.today_fajr_athan_label ['text'] = Fajr_Athan #to assign Fajir_Athan to today_fajr_athan_label text
+    labels.today_fajr_iqama_label ['text'] = Fajr_Iqama
+    labels.today_shurooq_athan_label ['text'] = Sunrise
     # today_shurooq_iqama_label ['text'] = Sunrise_Iqama
-    today_thuhr_athan_label ['text'] = Thuhr_Athan
-    today_thuhr_iqama_label ['text'] = Thuhr_Iqama
-    today_asr_athan_label ['text'] = Asr_Athan
-    today_asr_iqama_label ['text'] = Asr_Iqama
-    today_maghrib_athan_label ['text'] = Maghrib_Athan
-    today_maghrib_iqama_label ['text'] = Maghrib_Iqama
-    today_isha_athan_label ['text'] = Ishaa_Athan
-    today_isha_iqama_label ['text'] = Ishaa_Iqama
+    labels.today_thuhr_athan_label ['text'] = Thuhr_Athan
+    labels.today_thuhr_iqama_label ['text'] = Thuhr_Iqama
+    labels.today_asr_athan_label ['text'] = Asr_Athan
+    labels.today_asr_iqama_label ['text'] = Asr_Iqama
+    labels.today_maghrib_athan_label ['text'] = Maghrib_Athan
+    labels.today_maghrib_iqama_label ['text'] = Maghrib_Iqama
+    labels.today_isha_athan_label ['text'] = Ishaa_Athan
+    labels.today_isha_iqama_label ['text'] = Ishaa_Iqama
 
-    tomorrow_fajr_athan_label ['text'] = Fajr_Athan2
-    tomorrow_fajr_iqama_label ['text'] = Fajr_Iqama2
-    tomorrow_shurooq_athan_label ['text'] = Sunrise2
+    labels.tomorrow_fajr_athan_label ['text'] = Fajr_Athan2
+    labels.tomorrow_fajr_iqama_label ['text'] = Fajr_Iqama2
+    labels.tomorrow_shurooq_athan_label ['text'] = Sunrise2
     # tomorrow_shurooq_iqama_label ['text'] = Sunrise_Iqama2
-    tomorrow_thuhr_athan_label ['text'] = Thuhr_Athan2
-    tomorrow_thuhr_iqama_label ['text'] = Thuhr_Iqama2
-    tomorrow_asr_athan_label ['text'] = Asr_Athan2
-    tomorrow_asr_iqama_label ['text'] = Asr_Iqama2
-    tomorrow_maghrib_athan_label ['text'] = Maghrib_Athan2
-    tomorrow_maghrib_iqama_label ['text'] = Maghrib_Iqama2
-    tomorrow_isha_athan_label ['text'] = Ishaa_Athan2
-    tomorrow_isha_iqama_label ['text'] = Ishaa_Iqama2
+    labels.tomorrow_thuhr_athan_label ['text'] = Thuhr_Athan2
+    labels.tomorrow_thuhr_iqama_label ['text'] = Thuhr_Iqama2
+    labels.tomorrow_asr_athan_label ['text'] = Asr_Athan2
+    labels.tomorrow_asr_iqama_label ['text'] = Asr_Iqama2
+    labels.tomorrow_maghrib_athan_label ['text'] = Maghrib_Athan2
+    labels.tomorrow_maghrib_iqama_label ['text'] = Maghrib_Iqama2
+    labels.tomorrow_isha_athan_label ['text'] = Ishaa_Athan2
+    labels.tomorrow_isha_iqama_label ['text'] = Ishaa_Iqama2
 
     next_prayer_color = _from_rgb((255, 0, 0))# to assign color to next prayer
-    pre_prayer_color = _from_rgb((0,0,0))# to assign color to next prayer
-    current_prayer_color = _from_rgb((0,50,0)) # to assign color to next prayer
+    pre_prayer_color = _from_rgb((255,255,255)) if ramadan else _from_rgb((0,0,0))# to assign color to next prayer
+    current_prayer_color = _from_rgb((0,200,0)) if ramadan else _from_rgb((0,50,0)) # to assign color to next prayer
 
 
     # to highlight the next prayer time
@@ -138,93 +201,93 @@ def display_time(updated):
         updated = False
 
     if(hour_time <= fajr_time):
-        today_isha_label['fg'] = pre_prayer_color
-        today_isha_athan_label['fg'] = pre_prayer_color
-        today_isha_iqama_label['fg'] = pre_prayer_color
+        labels.today_isha_label['fg'] = pre_prayer_color
+        labels.today_isha_athan_label['fg'] = pre_prayer_color
+        labels.today_isha_iqama_label['fg'] = pre_prayer_color
 
-        tomorrow_fajr_label['fg'] = pre_prayer_color
-        tomorrow_fajr_athan_label['fg'] = pre_prayer_color
-        tomorrow_fajr_iqama_label['fg'] = pre_prayer_color
+        labels.tomorrow_fajr_label['fg'] = pre_prayer_color
+        labels.tomorrow_fajr_athan_label['fg'] = pre_prayer_color
+        labels.tomorrow_fajr_iqama_label['fg'] = pre_prayer_color
 
-        today_fajr_label['fg'] = next_prayer_color
-        today_fajr_athan_label['fg'] = next_prayer_color
-        today_fajr_iqama_label['fg'] = next_prayer_color
+        labels.today_fajr_label['fg'] = next_prayer_color
+        labels.today_fajr_athan_label['fg'] = next_prayer_color
+        labels.today_fajr_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= fajr_time and hour_time < sunrise_time):
-        today_fajr_label['fg'] = current_prayer_color
-        today_fajr_athan_label['fg'] = current_prayer_color
-        today_fajr_iqama_label['fg'] = current_prayer_color
+        labels.today_fajr_label['fg'] = current_prayer_color
+        labels.today_fajr_athan_label['fg'] = current_prayer_color
+        labels.today_fajr_iqama_label['fg'] = current_prayer_color
 
-        today_shurooq_label['fg'] = next_prayer_color
-        today_shurooq_athan_label['fg'] = next_prayer_color
+        labels.today_shurooq_label['fg'] = next_prayer_color
+        labels.today_shurooq_athan_label['fg'] = next_prayer_color
         # today_shurooq_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= sunrise_time and hour_time < thuhr_time):
-        today_fajr_label['fg'] = pre_prayer_color
-        today_fajr_athan_label['fg'] = pre_prayer_color
-        today_fajr_iqama_label['fg'] = pre_prayer_color
+        labels.today_fajr_label['fg'] = pre_prayer_color
+        labels.today_fajr_athan_label['fg'] = pre_prayer_color
+        labels.today_fajr_iqama_label['fg'] = pre_prayer_color
 
-        today_shurooq_label['fg'] = current_prayer_color
-        today_shurooq_athan_label['fg'] = current_prayer_color
+        labels.today_shurooq_label['fg'] = current_prayer_color
+        labels.today_shurooq_athan_label['fg'] = current_prayer_color
         # today_shurooq_iqama_label['fg'] = current_prayer_color
 
-        today_thuhr_label['fg'] = next_prayer_color
-        today_thuhr_athan_label['fg'] = next_prayer_color
-        today_thuhr_iqama_label['fg'] = next_prayer_color
+        labels.today_thuhr_label['fg'] = next_prayer_color
+        labels.today_thuhr_athan_label['fg'] = next_prayer_color
+        labels.today_thuhr_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= thuhr_time and hour_time < asr_time):
-        today_shurooq_label['fg'] = pre_prayer_color
-        today_shurooq_athan_label['fg'] = pre_prayer_color
-        today_shurooq_iqama_label['fg'] = pre_prayer_color
+        labels.today_shurooq_label['fg'] = pre_prayer_color
+        labels.today_shurooq_athan_label['fg'] = pre_prayer_color
+        labels.today_shurooq_iqama_label['fg'] = pre_prayer_color
         
-        today_thuhr_label['fg'] = current_prayer_color
-        today_thuhr_athan_label['fg'] = current_prayer_color
-        today_thuhr_iqama_label['fg'] = current_prayer_color
+        labels.today_thuhr_label['fg'] = current_prayer_color
+        labels.today_thuhr_athan_label['fg'] = current_prayer_color
+        labels.today_thuhr_iqama_label['fg'] = current_prayer_color
 
-        today_asr_label['fg'] = next_prayer_color
-        today_asr_athan_label['fg'] = next_prayer_color
-        today_asr_iqama_label['fg'] = next_prayer_color
+        labels.today_asr_label['fg'] = next_prayer_color
+        labels.today_asr_athan_label['fg'] = next_prayer_color
+        labels.today_asr_iqama_label['fg'] = next_prayer_color
         
     elif(hour_time >= asr_time and hour_time < maghrib_time):
-        today_thuhr_label['fg'] = pre_prayer_color
-        today_thuhr_athan_label['fg'] = pre_prayer_color
-        today_thuhr_iqama_label['fg'] = pre_prayer_color
+        labels.today_thuhr_label['fg'] = pre_prayer_color
+        labels.today_thuhr_athan_label['fg'] = pre_prayer_color
+        labels.today_thuhr_iqama_label['fg'] = pre_prayer_color
         
-        today_asr_label['fg'] = current_prayer_color
-        today_asr_athan_label['fg'] = current_prayer_color
-        today_asr_iqama_label['fg'] = current_prayer_color
+        labels.today_asr_label['fg'] = current_prayer_color
+        labels.today_asr_athan_label['fg'] = current_prayer_color
+        labels.today_asr_iqama_label['fg'] = current_prayer_color
 
-        today_maghrib_label['fg'] = next_prayer_color
-        today_maghrib_athan_label['fg'] = next_prayer_color
-        today_maghrib_iqama_label['fg'] = next_prayer_color
+        labels.today_maghrib_label['fg'] = next_prayer_color
+        labels.today_maghrib_athan_label['fg'] = next_prayer_color
+        labels.today_maghrib_iqama_label['fg'] = next_prayer_color
 
     elif(hour_time >= maghrib_time and hour_time < isha_time):
-        today_asr_label['fg'] = pre_prayer_color
-        today_asr_athan_label['fg'] = pre_prayer_color
-        today_asr_iqama_label['fg'] = pre_prayer_color
+        labels.today_asr_label['fg'] = pre_prayer_color
+        labels.today_asr_athan_label['fg'] = pre_prayer_color
+        labels.today_asr_iqama_label['fg'] = pre_prayer_color
         
-        today_maghrib_label['fg'] = current_prayer_color
-        today_maghrib_athan_label['fg'] = current_prayer_color
-        today_maghrib_iqama_label['fg'] = current_prayer_color
+        labels.today_maghrib_label['fg'] = current_prayer_color
+        labels.today_maghrib_athan_label['fg'] = current_prayer_color
+        labels.today_maghrib_iqama_label['fg'] = current_prayer_color
 
-        today_isha_label['fg'] = next_prayer_color
-        today_isha_athan_label['fg'] = next_prayer_color
-        today_isha_iqama_label['fg'] = next_prayer_color
+        labels.today_isha_label['fg'] = next_prayer_color
+        labels.today_isha_athan_label['fg'] = next_prayer_color
+        labels.today_isha_iqama_label['fg'] = next_prayer_color
         
     elif(hour_time >= isha_time):
-        today_maghrib_label['fg'] = pre_prayer_color
-        today_maghrib_athan_label['fg'] = pre_prayer_color
-        today_maghrib_iqama_label['fg'] = pre_prayer_color
+        labels.today_maghrib_label['fg'] = pre_prayer_color
+        labels.today_maghrib_athan_label['fg'] = pre_prayer_color
+        labels.today_maghrib_iqama_label['fg'] = pre_prayer_color
 
-        today_isha_label['fg'] = current_prayer_color
-        today_isha_athan_label['fg'] = current_prayer_color
-        today_isha_iqama_label['fg'] = current_prayer_color
+        labels.today_isha_label['fg'] = current_prayer_color
+        labels.today_isha_athan_label['fg'] = current_prayer_color
+        labels.today_isha_iqama_label['fg'] = current_prayer_color
 
-        tomorrow_fajr_label['fg'] = next_prayer_color
-        tomorrow_fajr_athan_label['fg'] = next_prayer_color
-        tomorrow_fajr_iqama_label['fg'] = next_prayer_color
+        labels.tomorrow_fajr_label['fg'] = next_prayer_color
+        labels.tomorrow_fajr_athan_label['fg'] = next_prayer_color
+        labels.tomorrow_fajr_iqama_label['fg'] = next_prayer_color
 
-    clock_label ['text'] = current_time # to assign current time to clock label
+    labels.clock_label ['text'] = current_time # to assign current time to clock label
 
     # to flash the different announcements every 30 sec
     global counter
@@ -242,160 +305,112 @@ def display_time(updated):
         i+=1
     
     flyer['image'] = flyer_photo_now
-    clock_label.after(1000,display_time, updated) # rerun display_time() after 1sec
+    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan) # rerun display_time() after 1sec
 
     return updated
 
+def main():
+    parser = argparse.ArgumentParser(description="ICCH Prayer Time and Flyers Display")
+    parser.add_argument("-r", action="store_true", help="enables ramadan mode")
+    args = parser.parse_args()
 
-# reading prayer schedule excel file
-data = pd.read_excel(os.path.dirname(__file__) + '/prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
+    # reading prayer schedule excel file
+    data = pd.read_excel(os.path.dirname(__file__) + '/prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
 
-#tk window declaration with name of Prayer Time Portland Oregon
-window = tk.Tk(className='Prayer Time Portland Oregon')
-# set window size
+    #tk window declaration with name of Prayer Time Portland Oregon
+    window = tk.Tk(className='Prayer Time Portland Oregon')
+    # set window size
 
-width_value = window.winfo_screenwidth()
-height_value = window.winfo_screenheight()
-window.geometry("%dx%d+0+0" %(width_value, height_value))
+    width_value = window.winfo_screenwidth()
+    height_value = window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" %(width_value, height_value))
 
-#set window text_color
-window.configure(bg='white')
+    #set window text_color
+    window.configure(bg='white')
 
-background = Image.open(os.path.dirname(__file__) + "/Background.png")
-background = background.resize((width_value, height_value))
-bg = ImageTk.PhotoImage(background)
+    background_path = "/Ramadan.png" if args.r else "/Background.png"
 
-# declaring the counter for controlling the flyer animation
-counter = 0
-i =0
-j =0
-# declaring the time limit for controlling the flyer animation
-Time = 10 # 10 seconds per photo
+    background = Image.open(os.path.dirname(__file__) + background_path)
+    background = background.resize((width_value, height_value))
+    bg = ImageTk.PhotoImage(background)
 
-update_photos()
+    update_photos(height_value)
 
-bg_label = tk.Label(text="",bg='white', image = bg)
-flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
-window.bind("<Escape>", lambda e: quit())
+    bg_label = tk.Label(text="",bg='white', image = bg)
+    flyer = tk.Button( command = update_photos , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    window.bind("<Escape>", lambda e: quit(window))
 
-# defining font variables to be used for display
-font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+    # defining font variables to be used for display
+    font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+    font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+    font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
 
-text_color = "black" # define text color
-# defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
+    text_color = "white" if args.r else "black" # define text color
+    bg_color = "black" if args.r else "white"
+    # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
 
-times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35, bg='white')
+    times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35,bg=bg_color)
 
-clock_label = tk.Label(times, bg='white', fg=text_color, font = font_info2)
+    labels = Labels(times, bg_color, text_color, font_info, font_info1, font_info2)
 
-today_date_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
-today_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
-athan_label = tk.Label(times, bg='white', text="Athan", fg=text_color,font= font_info2)
-iqama_label = tk.Label(times, bg='white', text="Iqama", fg=text_color,font= font_info2)
-today_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
-today_shurooq_label = tk.Label(times, bg='white', text="Shurooq", fg=text_color,font= font_info2)
-today_thuhr_label = tk.Label(times, bg='white', text="Thuhr", fg=text_color,font= font_info2)
-today_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
-today_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
-today_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,font= font_info2)
+    bg_label.place(x=0, y=0)
+    flyer.place(x=width_value-height_value)
+    times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
 
-tomorrow_date_label = tk.Label(times, bg='white', fg=text_color,font= font_info1)
-tomorrow_space_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
+    labels.clock_label.grid(row =0, column=0, columnspan =3)
+    labels.today_date_label.grid(row=1, column=1, columnspan = 2)
+    labels.today_space_label.grid(row=2, column=0)
+    labels.athan_label.grid(row=2, column=1)
+    labels.iqama_label.grid(row=2, column=2)
+    labels.today_fajr_label.grid(row=3, column=0)
+    labels.today_shurooq_label.grid(row=4, column=0)
+    labels.today_thuhr_label.grid(row=5, column=0)
+    labels.today_asr_label.grid(row=6, column=0)
+    labels.today_maghrib_label.grid(row=7, column=0)
+    labels.today_isha_label.grid(row=8, column=0)
 
-tomorrow_fajr_label = tk.Label(times, bg='white', text="Fajr", fg=text_color,font= font_info2)
-tomorrow_shurooq_label = tk.Label(times, bg='white', text="Shurooq", fg=text_color,font= font_info2)
-tomorrow_thuhr_label = tk.Label(times, bg='white', text="Thuhr",fg=text_color,font= font_info2)
-tomorrow_asr_label = tk.Label(times, bg='white', text="Asr", fg=text_color,font= font_info2)
-tomorrow_maghrib_label = tk.Label(times, bg='white', text="Maghrib", fg=text_color,font= font_info2)
-tomorrow_isha_label = tk.Label(times, bg='white', text="Ishaa", fg=text_color,font= font_info2)
+    labels.tomorrow_date_label.grid(row=11, column=1, columnspan = 2)
+    labels.tomorrow_fajr_label.grid(row=12, column=0)
+    labels.tomorrow_shurooq_label.grid(row=13, column=0)
+    labels.tomorrow_thuhr_label.grid(row=14, column=0)
+    labels.tomorrow_asr_label.grid(row=15, column=0)
+    labels.tomorrow_maghrib_label.grid(row=16, column=0)
+    labels.tomorrow_isha_label.grid(row=17, column=0)
 
-# today data
-today_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-# today_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_shurooq_iqama_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
-today_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_asr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_maghrib_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_maghrib_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_isha_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-today_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
+    labels.today_fajr_athan_label.grid(row=3, column=1)
+    labels.today_fajr_iqama_label.grid(row=3, column=2)
+    labels.today_shurooq_athan_label.grid(row=4, column=1, columnspan=2)
+    # today_shurooq_iqama_label.grid(row=4, column=2)
+    labels.today_thuhr_athan_label.grid(row=5, column=1)
+    labels.today_thuhr_iqama_label.grid(row=5, column=2)
+    labels.today_asr_athan_label.grid(row=6, column=1)
+    labels.today_asr_iqama_label.grid(row=6, column=2)
+    labels.today_maghrib_athan_label.grid(row=7, column=1)
+    labels.today_maghrib_iqama_label.grid(row=7, column=2)
+    labels.today_isha_athan_label.grid(row=8, column=1)
+    labels.today_isha_iqama_label.grid(row=8, column=2)
 
-# tomorrow data
-tomorrow_fajr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_fajr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_shurooq_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-# tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_shurooq_iqama_label = tk.Label(times, bg='white', text="", fg=text_color,font= font_info)
-tomorrow_thuhr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_thuhr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_asr_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_asr_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_maghrib_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_maghrib_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_isha_athan_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-tomorrow_isha_iqama_label = tk.Label(times, bg='white', fg=text_color,font= font_info)
-
-bg_label.place(x=0, y=0)
-flyer.place(x=width_value-height_value)
-times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
-
-clock_label.grid(row =0, column=0, columnspan =3)
-today_date_label.grid(row=1, column=1, columnspan = 2)
-today_space_label.grid(row=2, column=0)
-athan_label.grid(row=2, column=1)
-iqama_label.grid(row=2, column=2)
-today_fajr_label.grid(row=3, column=0)
-today_shurooq_label.grid(row=4, column=0)
-today_thuhr_label.grid(row=5, column=0)
-today_asr_label.grid(row=6, column=0)
-today_maghrib_label.grid(row=7, column=0)
-today_isha_label.grid(row=8, column=0)
-
-tomorrow_date_label.grid(row=11, column=1, columnspan = 2)
-tomorrow_fajr_label.grid(row=12, column=0)
-tomorrow_shurooq_label.grid(row=13, column=0)
-tomorrow_thuhr_label.grid(row=14, column=0)
-tomorrow_asr_label.grid(row=15, column=0)
-tomorrow_maghrib_label.grid(row=16, column=0)
-tomorrow_isha_label.grid(row=17, column=0)
-
-today_fajr_athan_label.grid(row=3, column=1)
-today_fajr_iqama_label.grid(row=3, column=2)
-today_shurooq_athan_label.grid(row=4, column=1, columnspan=2)
-# today_shurooq_iqama_label.grid(row=4, column=2)
-today_thuhr_athan_label.grid(row=5, column=1)
-today_thuhr_iqama_label.grid(row=5, column=2)
-today_asr_athan_label.grid(row=6, column=1)
-today_asr_iqama_label.grid(row=6, column=2)
-today_maghrib_athan_label.grid(row=7, column=1)
-today_maghrib_iqama_label.grid(row=7, column=2)
-today_isha_athan_label.grid(row=8, column=1)
-today_isha_iqama_label.grid(row=8, column=2)
-
-tomorrow_fajr_athan_label.grid(row=12, column=1)
-tomorrow_fajr_iqama_label.grid(row=12, column=2)
-tomorrow_shurooq_athan_label.grid(row=13, column=1, columnspan=2)
-# tomorrow_shurooq_iqama_label.grid(row=13, column=2)
-tomorrow_thuhr_athan_label.grid(row=14, column=1)
-tomorrow_thuhr_iqama_label.grid(row=14, column=2)
-tomorrow_asr_athan_label.grid(row=15, column=1)
-tomorrow_asr_iqama_label.grid(row=15, column=2)
-tomorrow_maghrib_athan_label.grid(row=16, column=1)
-tomorrow_maghrib_iqama_label.grid(row=16, column=2)
-tomorrow_isha_athan_label.grid(row=17, column=1)
-tomorrow_isha_iqama_label.grid(row=17, column=2)
+    labels.tomorrow_fajr_athan_label.grid(row=12, column=1)
+    labels.tomorrow_fajr_iqama_label.grid(row=12, column=2)
+    labels.tomorrow_shurooq_athan_label.grid(row=13, column=1, columnspan=2)
+    # tomorrow_shurooq_iqama_label.grid(row=13, column=2)
+    labels.tomorrow_thuhr_athan_label.grid(row=14, column=1)
+    labels.tomorrow_thuhr_iqama_label.grid(row=14, column=2)
+    labels.tomorrow_asr_athan_label.grid(row=15, column=1)
+    labels.tomorrow_asr_iqama_label.grid(row=15, column=2)
+    labels.tomorrow_maghrib_athan_label.grid(row=16, column=1)
+    labels.tomorrow_maghrib_iqama_label.grid(row=16, column=2)
+    labels.tomorrow_isha_athan_label.grid(row=17, column=1)
+    labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
 
-display_time(False) # to call display_time() function
-window.resizable(False, True) # to make the window resizable
-window.bind()
+    display_time(labels, data, flyer, False, args.r) # to call display_time() function
+    window.resizable(False, True) # to make the window resizable
+    window.bind()
 
-window.wm_attributes('-fullscreen', 1)
-window.bind()
-window.mainloop()
+    window.wm_attributes('-fullscreen', 1)
+    window.bind()
+    window.mainloop()
+
+if __name__ == '__main__':
+    main()
