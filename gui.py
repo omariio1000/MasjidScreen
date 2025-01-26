@@ -106,7 +106,7 @@ def update_photos(height_value):
     # reading and loading the photos
     for file in photo_list:
         load = Image.open(file)
-        load1 = load.resize((height_value,height_value)) # reszing the ad photo to 1520*1080
+        load1 = load.resize((height_value,height_value)) # reszing the ad photo
         photos.append(ImageTk.PhotoImage(load1))
     
     print()
@@ -333,10 +333,10 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
-    update_photos(height_value)
+    update_photos(height_value if not args.r else int(height_value/2))
 
     bg_label = tk.Label(text="",bg='white', image = bg)
-    flyer = tk.Button( command = lambda: update_photos(height_value) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    flyer = tk.Button( command = lambda: update_photos(height_value if not args.r else int(height_value/2)) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
     window.bind("<Escape>", lambda e: quit(window))
 
     # defining font variables to be used for display
@@ -353,7 +353,7 @@ def main():
     labels = Labels(times, bg_color, text_color, font_info, font_info1, font_info2)
 
     bg_label.place(x=0, y=0)
-    flyer.place(x=width_value-height_value)
+    flyer.place(x=width_value-height_value if not args.r else width_value-height_value + int(height_value/2))
     times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
 
     labels.clock_label.grid(row =0, column=0, columnspan =3)
@@ -402,7 +402,7 @@ def main():
     labels.tomorrow_isha_athan_label.grid(row=17, column=1)
     labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
-    display_time(labels, data, flyer, False, args.r, height_value) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value if not args.r else int(height_value/2)) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 
