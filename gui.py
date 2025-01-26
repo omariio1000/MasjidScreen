@@ -345,7 +345,7 @@ def main():
     font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
 
     text_color = "white" if args.r else "black" # define text color
-    bg_color = "black" if args.r else "white"
+    bg_color = _from_rgb((0, 25, 125)) if args.r else "white"
     # defining the different variables to be shown with background color "bg", text color "fg", and font info "font_info"
 
     times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35,bg=bg_color)
