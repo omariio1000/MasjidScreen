@@ -26,29 +26,29 @@ j =0
 Time = 10 # 10 seconds per photo
 
 class Labels:
-    def __init__(self, times, bg_color, text_color, font_info, font_info1, font_info2):
-            self.clock_label = tk.Label(times,bg=bg_color, fg=text_color, font = font_info2)
+    def __init__(self, times, bg_color, text_color, font_info):
+            self.clock_label = tk.Label(times,bg=bg_color, fg=text_color, font = font_info)
 
-            self.today_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info1)
+            self.today_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
             self.today_space_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
-            self.athan_label = tk.Label(times,bg=bg_color, text="Athan", fg=text_color,font= font_info2)
-            self.iqama_label = tk.Label(times,bg=bg_color, text="Iqama", fg=text_color,font= font_info2)
-            self.today_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info2)
-            self.today_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info2)
-            self.today_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr", fg=text_color,font= font_info2)
-            self.today_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info2)
-            self.today_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info2)
-            self.today_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info2)
+            self.athan_label = tk.Label(times,bg=bg_color, text="Athan", fg=text_color,font= font_info)
+            self.iqama_label = tk.Label(times,bg=bg_color, text="Iqama", fg=text_color,font= font_info)
+            self.today_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info)
+            self.today_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info)
+            self.today_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr", fg=text_color,font= font_info)
+            self.today_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info)
+            self.today_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info)
+            self.today_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info)
 
-            self.tomorrow_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info1)
+            self.tomorrow_date_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
             self.tomorrow_space_label = tk.Label(times,bg=bg_color, text="", fg=text_color,font= font_info)
 
-            self.tomorrow_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info2)
-            self.tomorrow_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info2)
-            self.tomorrow_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr",fg=text_color,font= font_info2)
-            self.tomorrow_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info2)
-            self.tomorrow_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info2)
-            self.tomorrow_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info2)
+            self.tomorrow_fajr_label = tk.Label(times,bg=bg_color, text="Fajr", fg=text_color,font= font_info)
+            self.tomorrow_shurooq_label = tk.Label(times,bg=bg_color, text="Shurooq", fg=text_color,font= font_info)
+            self.tomorrow_thuhr_label = tk.Label(times,bg=bg_color, text="Thuhr",fg=text_color,font= font_info)
+            self.tomorrow_asr_label = tk.Label(times,bg=bg_color, text="Asr", fg=text_color,font= font_info)
+            self.tomorrow_maghrib_label = tk.Label(times,bg=bg_color, text="Maghrib", fg=text_color,font= font_info)
+            self.tomorrow_isha_label = tk.Label(times,bg=bg_color, text="Ishaa", fg=text_color,font= font_info)
 
             # today data
             self.today_fajr_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
@@ -79,6 +79,28 @@ class Labels:
             self.tomorrow_maghrib_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
             self.tomorrow_isha_athan_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
             self.tomorrow_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
+
+class RamdadanLabels:
+    def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info, font_info1, font_info2):
+        # winner frame
+        self.winner_one_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_one_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        
+        self.winner_two_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_two_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+
+        self.winner_three_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_three_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+
+        # question frame
+        self.question_one = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_one_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
+        
+        self.question_two = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_two_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
+
+        self.question_three = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_three_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
 
 def _from_rgb(rgb):
     """translates an rgb tuple of int to a tkinter friendly color code
@@ -333,16 +355,16 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
-    update_photos(height_value if not args.r else int(height_value/2))
+    update_photos(height_value if not args.r else int(height_value/1.5))
 
     bg_label = tk.Label(text="",bg='white', image = bg)
-    flyer = tk.Button( command = lambda: update_photos(height_value if not args.r else int(height_value/2)) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    flyer = tk.Button( command = lambda: update_photos(height_value if not args.r else int(height_value/1.5)) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
     window.bind("<Escape>", lambda e: quit(window))
 
     # defining font variables to be used for display
     font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-    font_info1 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-    font_info2 = 'Helvetica', round(30 * (height_value/1080)), 'bold'
+    font_info1 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
+    font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
 
     text_color = "white" if args.r else "black" # define text color
     bg_color = _from_rgb((0, 25, 125)) if args.r else "white"
@@ -350,10 +372,10 @@ def main():
 
     times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35,bg=bg_color)
 
-    labels = Labels(times, bg_color, text_color, font_info, font_info1, font_info2)
+    labels = Labels(times, bg_color, text_color, font_info)
 
     bg_label.place(x=0, y=0)
-    flyer.place(x=width_value-height_value if not args.r else width_value-height_value + int(height_value/2))
+    flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
     times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
 
     labels.clock_label.grid(row =0, column=0, columnspan =3)
@@ -402,7 +424,7 @@ def main():
     labels.tomorrow_isha_athan_label.grid(row=17, column=1)
     labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
-    display_time(labels, data, flyer, False, args.r, height_value if not args.r else int(height_value/2)) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value if not args.r else int(height_value/1.5)) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 

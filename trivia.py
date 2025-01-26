@@ -46,7 +46,7 @@ class Trivia:
             rows.append(row)
 
         # Convert the list of rows into a Pandas DataFrame
-        self.data = pd.DataFrame(rows).drop_duplicates(subset="Name", keep="first")
+        self.data = pd.DataFrame(rows).drop_duplicates(subset="Name", keep="last")
         self.correct_answers = []
 
     def find_correct(self, answers):
