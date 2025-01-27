@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
-from trivia import get_winners
+from trivia import get_winners, get_questions_and_answers, make_qr
 
 
 photos = [] # array to store the list of the resized photos 
@@ -81,25 +81,25 @@ class Labels:
             self.tomorrow_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
 
 class RamdadanLabels:
-    def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info, font_info1, font_info2):
+    def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info1, font_info2):
         # winner frame
-        self.winner_one_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
-        self.winner_one_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_one_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.winner_one_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
         
-        self.winner_two_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
-        self.winner_two_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_two_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.winner_two_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
 
-        self.winner_three_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
-        self.winner_three_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info)
+        self.winner_three_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.winner_three_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
 
         # question frame
-        self.question_one = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_one = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
         self.question_one_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
         
-        self.question_two = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_two = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
         self.question_two_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
 
-        self.question_three = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info1)
+        self.question_three = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
         self.question_three_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
 
 def _from_rgb(rgb):
@@ -294,6 +294,8 @@ def display_time(labels, data, flyer, updated, ramadan, height_value):
         labels.today_isha_label['fg'] = next_prayer_color
         labels.today_isha_athan_label['fg'] = next_prayer_color
         labels.today_isha_iqama_label['fg'] = next_prayer_color
+
+        # If Ramadan this is where winner update logic will occur
         
     elif(hour_time >= isha_time):
         labels.today_maghrib_label['fg'] = pre_prayer_color
@@ -351,7 +353,7 @@ def main():
 
     background_path = "/Ramadan.png" if args.r else "/Background.png"
 
-    background = Image.open(os.path.dirname(os.path.abspath(__file__))  + background_path)
+    background = Image.open(os.path.dirname(os.path.abspath(__file__)) + background_path)
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
@@ -363,8 +365,7 @@ def main():
 
     # defining font variables to be used for display
     font_info = 'Helvetica', round(30 * (height_value/1080)), 'bold'
-    font_info1 = 'Helvetica', round(29 * (height_value/1080)), 'bold'
-    font_info2 = 'Helvetica', round(28 * (height_value/1080)), 'bold'
+
 
     text_color = "white" if args.r else "black" # define text color
     bg_color = _from_rgb((0, 25, 125)) if args.r else "white"
@@ -373,6 +374,66 @@ def main():
     times = tk.Frame(window, width=width_value/3.4, height=height_value/1.35,bg=bg_color)
 
     labels = Labels(times, bg_color, text_color, font_info)
+
+    if args.r:
+        font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
+        font_info2 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
+
+        make_qr(2)
+
+        trivia_qr_image = Image.open(os.path.dirname(os.path.abspath(__file__)) + "/trivia.png")
+        trivia_qr_image = trivia_qr_image.resize((int(height_value * 0.1851851852), int(height_value * 0.1851851852)))
+        tq_image = ImageTk.PhotoImage(trivia_qr_image)
+        trivia_qr = tk.Label(image=tq_image, text="")
+
+        winners = tk.Frame(window, bg=bg_color)
+        questions = tk.Frame(window, bg=bg_color)
+
+        ramadan_labels = RamdadanLabels(winners, questions, bg_color, text_color, font_info1, font_info2)
+
+        trivia_qr.place(x=int(width_value * 0.4739583333), y=int(height_value * 0.4592013889))
+        winners.place(x=int(width_value * 0.5260416667), y=int(height_value * 0.2893518519), anchor="center")
+        questions.place(x=int(width_value * 0.71875), y=int(height_value * 0.8425925926), anchor="center")
+        space_label_one = tk.Label(winners, height=1, text="", fg=bg_color, bg=bg_color)
+        space_label_two = tk.Label(winners, height=1, text="", fg=bg_color, bg=bg_color)
+        space_label_three = tk.Label(questions, height=1, text="", fg=bg_color, bg=bg_color)
+        space_label_four = tk.Label(questions, height=1, text="", fg=bg_color, bg=bg_color)
+
+        ramadan_labels.winner_one_first.grid(row=0)
+        ramadan_labels.winner_one_last.grid(row=1)
+        space_label_one.grid(row=2)
+        ramadan_labels.winner_two_first.grid(row=3)
+        ramadan_labels.winner_two_last.grid(row=4)
+        space_label_two.grid(row=5)
+        ramadan_labels.winner_three_first.grid(row=6)
+        ramadan_labels.winner_three_last.grid(row=7)
+
+        ramadan_labels.question_one.grid(row=0)
+        ramadan_labels.question_one_options.grid(row=1)
+        space_label_three.grid(row=2)
+        ramadan_labels.question_two.grid(row=3)
+        ramadan_labels.question_two_options.grid(row=4)
+        space_label_four.grid(row=5)
+        ramadan_labels.question_three.grid(row=6)
+        ramadan_labels.question_three_options.grid(row=7)
+
+        winners = get_winners(1)
+        win1 = winners[0].split(" ")
+
+        question, option1, option2, option3 = get_questions_and_answers(2)
+
+        ramadan_labels.winner_one_first['text'] = win1[0]
+        ramadan_labels.winner_one_last['text'] = win1[1]
+        ramadan_labels.winner_two_first['text'] = "test first 2"
+        ramadan_labels.winner_two_last['text'] = "test last 2"
+        ramadan_labels.winner_three_first['text'] = "test first 3"
+        ramadan_labels.winner_three_last['text'] = "test last 3"
+        ramadan_labels.question_one['text'] = question[0]
+        ramadan_labels.question_one_options['text'] = f"a) {option1[0]}\tb) {option2[0]}\tc) {option3[0]}"
+        ramadan_labels.question_two['text'] = question[1]
+        ramadan_labels.question_two_options['text'] = f"a) {option1[1]}\tb) {option2[1]}\tc) {option3[1]}"
+        ramadan_labels.question_three['text'] = question[2]
+        ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
