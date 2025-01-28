@@ -6,10 +6,14 @@ Created on Mon Jan 20 21:52 2025
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import pandas as pd
 import random
 import json
 import qrcode
+import base64
 
 class Trivia:
     def __init__(self, form_id):
@@ -47,7 +51,7 @@ class Trivia:
             rows.append(row)
 
         # Convert the list of rows into a Pandas DataFrame
-        self.data = pd.DataFrame(rows).drop_duplicates(subset="Name", keep="last")
+        self.data = pd.DataFrame(rows).drop_duplicates(subset=["First Name", "Last Name"], keep="last")
         self.correct_answers = []
 
     def find_correct(self, answers):
@@ -57,7 +61,7 @@ class Trivia:
                                 (self.data["Question 2"] == a2) &
                                 (self.data["Question 3"] == a3)]
         
-        self.correct_answers = filtered.apply(lambda row: [row["Name"], row["Email"]], axis=1).tolist()
+        self.correct_answers = filtered.apply(lambda row: [str(row["First Name"] + " " + row["Last Name"]), row["Email"]], axis=1).tolist()
 
     def select_winners(self):
         selected_names = random.sample(self.correct_answers, min(len(self.correct_answers), 3))
@@ -88,7 +92,7 @@ def get_form_question_options(json, form_id):
             return questions, option1, option2, option3
     return None, None, None, None
 
-def get_winners(day) -> list[str]:
+def get_winners(day):
     """Get the winner of the day given the day of the month"""
     with open('triviaDetails.json', 'r') as file:
         trivia_json = json.load(file)
@@ -104,7 +108,7 @@ def get_winners(day) -> list[str]:
     trivia = Trivia(form_link)
 
     # Display the DataFrame
-    # print(trivia.data)
+    print(trivia.data)
 
     trivia.find_correct(answers)
     print(f"Answered correctly: {trivia.correct_answers}")
@@ -160,8 +164,8 @@ def main():
 
     # make_qr("1FAIpQLSeuOSzoL511RD_56Bo6FXJbh2OhmCXXwcLveIn7WUW0A7QLkQ")
 
-    get_winners(1)
-    get_questions_and_answers(1)    
+    get_winners(0)
+    get_questions_and_answers(0)
 
 
 if __name__ == '__main__':

@@ -14,10 +14,11 @@ import numpy as np
 import os
 import argparse
 from trivia import get_winners, get_questions_and_answers, make_qr
+import json
 
 
 photos = [] # array to store the list of the resized photos 
-
+tq_image = []
 # declaring the counter for controlling the flyer animation
 counter = 0
 i =0
@@ -102,6 +103,9 @@ class RamdadanLabels:
         self.question_three = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
         self.question_three_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
 
+        # qr code
+        self.trivia_qr = tk.Label(text="")
+
 def _from_rgb(rgb):
     """translates an rgb tuple of int to a tkinter friendly color code
     """
@@ -137,9 +141,89 @@ def update_photos(height_value):
     
 def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
+
+def get_next_code():
+    try:
+        # Read all lines from the file
+        with open('amazon_codes.txt', 'r') as file:
+            lines = file.readlines()
+        
+        # Check if the file is not empty
+        if not lines:
+            print("Error: The file is empty.")
+            return
+        
+        # Remove the first line
+        first_line = lines[0].strip()
+        lines = lines[1:]
+        
+        # Write the remaining lines back to the file
+        with open('amazon_codes.txt', 'w') as file:
+            file.writelines(lines)
+
+        return first_line
     
-def update_trivia(day, ramadan_labels):
-    winners = get_winners(day - 1)
+    except FileNotFoundError:
+        print(f"Error: File '{'amazon_codes.txt'}' not found.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+def log_winners(day, winners : list):
+    # Get the current date
+    json_file = 'trivia_winners.json'
+    
+    # Load existing data from the JSON file or create a new structure
+    try:
+        with open(json_file, "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+    
+    # Ensure the current date exists as a key
+    if day not in data:
+        data[day] = []
+    
+    # Append the new people to today's log
+    for winner in winners:
+        winner.append(get_next_code())
+    # print(winners)
+    data[day].extend(winners)
+    
+    # Save the updated data back to the JSON file
+    with open(json_file, "w") as file:
+        json.dump(data, file, indent=4)
+    
+    print(f"Logged {len(winners)} winners for day {day}.")
+
+def check_winners_updated(day) -> bool:
+    try:
+        with open('trivia_winners.json', "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        return False
+    
+    if day in data:
+        return True
+    
+    return False
+
+def get_past_winners(day) -> bool:
+    with open('trivia_winners.json', "r") as file:
+        data = json.load(file)
+
+    winners_data = data[day]
+
+    winners = [[winner[0], winner[1]] for winner in winners_data]
+
+    return winners
+
+def update_trivia(day, ramadan_labels, height_value):
+    if not check_winners_updated(str(day)):
+        winners = get_winners(day - 1)
+        if (winners):
+            log_winners(str(day), winners)
+    else:
+        winners = get_past_winners(str(day))
 
     if winners:        
         if len(winners) >= 1:
@@ -175,7 +259,28 @@ def update_trivia(day, ramadan_labels):
     ramadan_labels.question_three['text'] = question[2]
     ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
 
-def display_time(labels, data, flyer, updated, ramadan, height_value):
+    make_qr(day)
+    trivia_qr_image = Image.open('trivia.png')
+    trivia_qr_image = trivia_qr_image.resize((int(height_value * 0.1851851852), int(height_value * 0.1851851852)))
+    tq_image.clear()
+    tq_image.append(ImageTk.PhotoImage(trivia_qr_image))
+    ramadan_labels.trivia_qr['image'] = tq_image[0]
+
+def get_trivia_day():
+    with open('ramadan_first_day.txt', 'r') as file:
+        first_day = file.readline().strip()
+
+    input_date = datetime.strptime(first_day, "%Y-%m-%d")
+    today = datetime.now()
+    delta = today - input_date
+    day = delta.days + 1
+
+    if (day < 0): # test form
+        day = 0
+
+    return day
+
+def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated):
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
@@ -253,7 +358,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value):
 
     if (":00" in hour_time):
         if (updated is False):
-            update_photos(height_value)
+            update_photos(flyer_height)
             updated = True
     else:
         updated = False
@@ -333,8 +438,13 @@ def display_time(labels, data, flyer, updated, ramadan, height_value):
         labels.today_isha_iqama_label['fg'] = next_prayer_color
 
         # If Ramadan this is where winner update logic will occur
+        if not ramadan_updated:
+            update_trivia(get_trivia_day(), ramadan_labels, height_value)
+            ramadan_updated = True
         
     elif(hour_time >= isha_time):
+        ramadan_updated = False
+
         labels.today_maghrib_label['fg'] = pre_prayer_color
         labels.today_maghrib_athan_label['fg'] = pre_prayer_color
         labels.today_maghrib_iqama_label['fg'] = pre_prayer_color
@@ -365,7 +475,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value):
         i+=1
     
     flyer['image'] = flyer_photo_now
-    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value) # rerun display_time() after 1sec
+    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated) # rerun display_time() after 1sec
 
     return updated
 
@@ -416,19 +526,15 @@ def main():
         font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
         font_info2 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
 
-        make_qr(2)
-
-        trivia_qr_image = Image.open(os.path.dirname(os.path.abspath(__file__)) + "/trivia.png")
-        trivia_qr_image = trivia_qr_image.resize((int(height_value * 0.1851851852), int(height_value * 0.1851851852)))
-        tq_image = ImageTk.PhotoImage(trivia_qr_image)
-        trivia_qr = tk.Label(image=tq_image, text="")
+        day = get_trivia_day()
+        print(f"Day {day} of Ramadan")
 
         winners = tk.Frame(window, bg=bg_color)
         questions = tk.Frame(window, bg=bg_color)
 
         ramadan_labels = RamdadanLabels(winners, questions, bg_color, text_color, font_info1, font_info2)
 
-        trivia_qr.place(x=int(width_value * 0.4739583333), y=int(height_value * 0.4592013889))
+        ramadan_labels.trivia_qr.place(x=int(width_value * 0.4739583333), y=int(height_value * 0.4592013889))
         winners.place(x=int(width_value * 0.5260416667), y=int(height_value * 0.2893518519), anchor="center")
         questions.place(x=int(width_value * 0.71875), y=int(height_value * 0.8425925926), anchor="center")
         space_label_one = tk.Label(winners, height=1, text="", fg=bg_color, bg=bg_color)
@@ -454,7 +560,7 @@ def main():
         ramadan_labels.question_three.grid(row=6)
         ramadan_labels.question_three_options.grid(row=7)
 
-        update_trivia(2, ramadan_labels)
+        update_trivia(day, ramadan_labels, height_value)
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
@@ -506,7 +612,7 @@ def main():
     labels.tomorrow_isha_athan_label.grid(row=17, column=1)
     labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
-    display_time(labels, data, flyer, False, args.r, height_value if not args.r else int(height_value/1.5)) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels, False) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 
