@@ -138,6 +138,43 @@ def update_photos(height_value):
 def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
     
+def update_trivia(day, ramadan_labels):
+    winners = get_winners(day - 1)
+
+    if winners:        
+        if len(winners) >= 1:
+            ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0]
+            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[1]
+            ramadan_labels.winner_two_first['text'] = ""
+            ramadan_labels.winner_two_last['text'] = ""
+            ramadan_labels.winner_three_first['text'] = ""
+            ramadan_labels.winner_three_last['text'] = ""
+
+        if len(winners) >= 2:
+            ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0]
+            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[1]
+
+
+        if len(winners) >= 3:
+            ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0]
+            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[1]
+    else:
+        ramadan_labels.winner_one_first['text'] = "No Winners"
+        ramadan_labels.winner_one_last['text'] = "Yesterday"
+        ramadan_labels.winner_two_first['text'] = ""
+        ramadan_labels.winner_two_last['text'] = ""
+        ramadan_labels.winner_three_first['text'] = ""
+        ramadan_labels.winner_three_last['text'] = ""
+
+    question, option1, option2, option3 = get_questions_and_answers(day)
+
+    ramadan_labels.question_one['text'] = question[0]
+    ramadan_labels.question_one_options['text'] = f"a) {option1[0]}\tb) {option2[0]}\tc) {option3[0]}"
+    ramadan_labels.question_two['text'] = question[1]
+    ramadan_labels.question_two_options['text'] = f"a) {option1[1]}\tb) {option2[1]}\tc) {option3[1]}"
+    ramadan_labels.question_three['text'] = question[2]
+    ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
+
 def display_time(labels, data, flyer, updated, ramadan, height_value):
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
@@ -417,23 +454,7 @@ def main():
         ramadan_labels.question_three.grid(row=6)
         ramadan_labels.question_three_options.grid(row=7)
 
-        winners = get_winners(1)
-        win1 = winners[0].split(" ")
-
-        question, option1, option2, option3 = get_questions_and_answers(2)
-
-        ramadan_labels.winner_one_first['text'] = win1[0]
-        ramadan_labels.winner_one_last['text'] = win1[1]
-        ramadan_labels.winner_two_first['text'] = "test first 2"
-        ramadan_labels.winner_two_last['text'] = "test last 2"
-        ramadan_labels.winner_three_first['text'] = "test first 3"
-        ramadan_labels.winner_three_last['text'] = "test last 3"
-        ramadan_labels.question_one['text'] = question[0]
-        ramadan_labels.question_one_options['text'] = f"a) {option1[0]}\tb) {option2[0]}\tc) {option3[0]}"
-        ramadan_labels.question_two['text'] = question[1]
-        ramadan_labels.question_two_options['text'] = f"a) {option1[1]}\tb) {option2[1]}\tc) {option3[1]}"
-        ramadan_labels.question_three['text'] = question[2]
-        ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
+        update_trivia(2, ramadan_labels)
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)

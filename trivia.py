@@ -57,7 +57,7 @@ class Trivia:
                                 (self.data["Question 2"] == a2) &
                                 (self.data["Question 3"] == a3)]
         
-        self.correct_answers = filtered["Name"].tolist()
+        self.correct_answers = filtered.apply(lambda row: [row["Name"], row["Email"]], axis=1).tolist()
 
     def select_winners(self):
         selected_names = random.sample(self.correct_answers, min(len(self.correct_answers), 3))
@@ -94,21 +94,24 @@ def get_winners(day) -> list[str]:
         trivia_json = json.load(file)
 
     form_link, answers = get_form_link_answers(trivia_json, day)
-    print(form_link, answers)
+    # print(form_link, answers)
 
+    if not form_link:
+        return None
+    
     # # Your Google Form ID (from the URL: https://forms.google.com/d/formID/viewform)
     # trivia = Trivia("1C2nSAbcClybroHWtE6IMw6yFPocOQHs0dTyGiLig5Lg")
     trivia = Trivia(form_link)
 
     # Display the DataFrame
-    print(trivia.data)
+    # print(trivia.data)
 
     trivia.find_correct(answers)
-    print(trivia.correct_answers)
+    print(f"Answered correctly: {trivia.correct_answers}")
 
     winners = trivia.select_winners()
 
-    print(winners)
+    print(f"Selected winners: {winners}")
 
     return winners
 
@@ -118,7 +121,7 @@ def get_questions_and_answers(day):
         trivia_json = json.load(file)
 
     questions, option1, option2, option3 = get_form_question_options(trivia_json, day)
-    print(questions, option1, option2, option3)
+    print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}")
 
     return questions, option1, option2, option3
 
