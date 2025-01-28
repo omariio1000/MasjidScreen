@@ -131,7 +131,7 @@ def get_questions_and_answers(day):
 
 def make_qr_with_link(public_link):
     """Make a QR code for a google form given the code from the public link"""
-    img = qrcode.make(f"https://docs.google.com/forms/d/e/{public_link}/viewform")
+    img = qrcode.make(f"https://docs.google.com/forms/d/e/{public_link}/viewform", border=1)
     img.save(f"trivia.png")
 
 def make_qr(day):
