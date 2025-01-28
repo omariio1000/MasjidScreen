@@ -94,7 +94,7 @@ def get_form_question_options(json, form_id):
 
 def get_winners(day):
     """Get the winner of the day given the day of the month"""
-    with open('triviaDetails.json', 'r') as file:
+    with open('trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
 
     form_link, answers = get_form_link_answers(trivia_json, day)
@@ -121,7 +121,7 @@ def get_winners(day):
 
 def get_questions_and_answers(day):
     """Get the winner of the day given the day of the month"""
-    with open('triviaDetails.json', 'r') as file:
+    with open('trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
 
     questions, option1, option2, option3 = get_form_question_options(trivia_json, day)
@@ -135,7 +135,7 @@ def make_qr_with_link(public_link):
     img.save(f"trivia.png")
 
 def make_qr(day):
-    with open('triviaDetails.json', 'r') as file:
+    with open('trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
         for form in trivia_json["forms"]:
             if form["form_id"] == day:  # Convert form_id to string for comparison
@@ -145,7 +145,7 @@ def make_qr(day):
     print(f"Generated qr code for day {day}: \"https://docs.google.com/forms/d/e/{public_link}/viewform\"")
 
 def main():
-    # with open('triviaDetails.json', 'r') as file:
+    # with open('trivia_details.json', 'r') as file:
     #     data = json.load(file)
 
     # form_link, answers = get_form(data, 1)
