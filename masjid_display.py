@@ -616,7 +616,7 @@ def main():
 
     updated = False
     ramadan_updated = False
-    display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels, False) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels if args.r else None, False) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 
