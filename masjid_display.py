@@ -26,6 +26,9 @@ j =0
 # declaring the time limit for controlling the flyer animation
 Time = 10 # 10 seconds per photo
 
+global updated
+global ramadan_updated
+
 class Labels:
     def __init__(self, times, bg_color, text_color, font_info):
             self.clock_label = tk.Label(times,bg=bg_color, fg=text_color, font = font_info)
@@ -438,7 +441,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         labels.today_isha_iqama_label['fg'] = next_prayer_color
 
         # If Ramadan this is where winner update logic will occur
-        if not ramadan_updated:
+        if ramadan and not ramadan_updated:
             update_trivia(get_trivia_day(), ramadan_labels, height_value)
             ramadan_updated = True
         
@@ -475,9 +478,8 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         i+=1
     
     flyer['image'] = flyer_photo_now
+    
     labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated) # rerun display_time() after 1sec
-
-    return updated
 
 def main():
     parser = argparse.ArgumentParser(description="ICCH Prayer Time and Flyers Display")
@@ -612,6 +614,8 @@ def main():
     labels.tomorrow_isha_athan_label.grid(row=17, column=1)
     labels.tomorrow_isha_iqama_label.grid(row=17, column=2)
 
+    updated = False
+    ramadan_updated = False
     display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels, False) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
