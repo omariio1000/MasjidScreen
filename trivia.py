@@ -6,18 +6,14 @@ Created on Mon Jan 20 21:52 2025
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import pandas as pd
 import random
 import json
 import qrcode
-import base64
 
 class Trivia:
     def __init__(self, form_id):
-        key_file = "icch-ramadan-trivia-0be68aa75675.json"
+        key_file = "service_account.json"
 
         SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
         credentials = service_account.Credentials.from_service_account_file(key_file, scopes=SCOPES)
