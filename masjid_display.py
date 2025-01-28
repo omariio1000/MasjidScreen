@@ -488,6 +488,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
 def main():
     parser = argparse.ArgumentParser(description="ICCH Prayer Time and Flyers Display")
     parser.add_argument("-r", action="store_true", help="enables ramadan mode")
+    parser.add_argument("-t", action="store_true", help="enables test mode")
     args = parser.parse_args()
 
     # reading prayer schedule excel file
@@ -514,6 +515,10 @@ def main():
 
     bg_label = tk.Label(text="",bg='white', image = bg)
     flyer = tk.Button( command = lambda: update_photos(height_value if not args.r else int(height_value/1.5)) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    
+    if args.t: 
+        flyer = tk.Button( command = lambda: update_trivia(1, ramadan_labels, height_value), image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+        
     window.bind("<Escape>", lambda e: quit(window))
 
     # defining font variables to be used for display
