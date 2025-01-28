@@ -8,12 +8,13 @@ Created on Tue Apr  6 15:09:56 2021
 import tkinter as tk
 from PIL import Image,ImageTk
 import time as tm
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import os
 import argparse
 from trivia import get_winners, get_questions_and_answers, make_qr
+from emails import send_email
 import json
 
 
@@ -189,6 +190,8 @@ def log_winners(day, winners : list):
     # Append the new people to today's log
     for winner in winners:
         winner.append(get_next_code())
+        send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=2)).strftime("%B %d, %Y"))
+        
     # print(winners)
     data[day].extend(winners)
     
@@ -221,12 +224,12 @@ def get_past_winners(day) -> bool:
     return winners
 
 def update_trivia(day, ramadan_labels, height_value):
-    if not check_winners_updated(str(day)):
+    if not check_winners_updated(str(day - 1)):
         winners = get_winners(day - 1)
         if (winners):
-            log_winners(str(day), winners)
+            log_winners(str(day - 1), winners)
     else:
-        winners = get_past_winners(str(day))
+        winners = get_past_winners(str(day - 1))
 
     if winners:        
         if len(winners) >= 1:
@@ -268,6 +271,7 @@ def update_trivia(day, ramadan_labels, height_value):
     tq_image.clear()
     tq_image.append(ImageTk.PhotoImage(trivia_qr_image))
     ramadan_labels.trivia_qr['image'] = tq_image[0]
+    print()
 
 def get_trivia_day():
     with open('ramadan_first_day.txt', 'r') as file:
