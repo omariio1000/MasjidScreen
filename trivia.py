@@ -10,6 +10,8 @@ import pandas as pd
 import random
 import json
 import qrcode
+from datetime import datetime, timedelta
+from emails import send_email
 
 class Trivia:
     def __init__(self, form_id):
@@ -139,6 +141,97 @@ def make_qr(day):
 
     make_qr_with_link(public_link)
     print(f"Generated qr code for day {day}: \"https://docs.google.com/forms/d/e/{public_link}/viewform\"")
+
+def get_next_code():
+    try:
+        # Read all lines from the file
+        with open('amazon_codes.txt', 'r') as file:
+            lines = file.readlines()
+        
+        # Check if the file is not empty
+        if not lines:
+            print("Error: The file is empty.")
+            return
+        
+        # Remove the first line
+        first_line = lines[0].strip()
+        lines = lines[1:]
+        
+        # Write the remaining lines back to the file
+        with open('amazon_codes.txt', 'w') as file:
+            file.writelines(lines)
+
+        return first_line
+    
+    except FileNotFoundError:
+        print(f"Error: File '{'amazon_codes.txt'}' not found.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+def get_trivia_day():
+    with open('ramadan_first_day.txt', 'r') as file:
+        first_day = file.readline().strip()
+
+    input_date = datetime.strptime(first_day, "%Y-%m-%d")
+    today = datetime.now()
+    delta = today - input_date
+    day = delta.days + 1
+
+    if (day < 0): # test form
+        day = 0
+
+    return day
+
+def check_winners_updated(day) -> bool:
+    try:
+        with open('trivia_winners.json', "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        return False
+    
+    if day in data:
+        return True
+    
+    return False
+
+def get_past_winners(day):
+    with open('trivia_winners.json', "r") as file:
+        data = json.load(file)
+
+    winners_data = data[day]
+
+    winners = [[winner[0], winner[1]] for winner in winners_data]
+
+    return winners
+
+def log_winners(day, winners : list):
+    # Get the current date
+    json_file = 'trivia_winners.json'
+    
+    # Load existing data from the JSON file or create a new structure
+    try:
+        with open(json_file, "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+    
+    # Ensure the current date exists as a key
+    if day not in data:
+        data[day] = []
+    
+    # Append the new people to today's log
+    for winner in winners:
+        winner.append(get_next_code())
+        send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
+        
+    # print(winners)
+    data[day].extend(winners)
+    
+    # Save the updated data back to the JSON file
+    with open(json_file, "w") as file:
+        json.dump(data, file, indent=4)
+    
+    print(f"Logged {len(winners)} winners for day {day}.")
 
 def main():
     # with open('trivia_details.json', 'r') as file:

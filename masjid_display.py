@@ -8,15 +8,11 @@ Created on Tue Apr  6 15:09:56 2021
 import tkinter as tk
 from PIL import Image,ImageTk
 import time as tm
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
-import numpy as np
 import os
 import argparse
-from trivia import get_winners, get_questions_and_answers, make_qr
-from emails import send_email
-import json
-
+import trivia
 
 photos = [] # array to store the list of the resized photos 
 tq_image = []
@@ -146,90 +142,13 @@ def update_photos(height_value):
 def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
 
-def get_next_code():
-    try:
-        # Read all lines from the file
-        with open('amazon_codes.txt', 'r') as file:
-            lines = file.readlines()
-        
-        # Check if the file is not empty
-        if not lines:
-            print("Error: The file is empty.")
-            return
-        
-        # Remove the first line
-        first_line = lines[0].strip()
-        lines = lines[1:]
-        
-        # Write the remaining lines back to the file
-        with open('amazon_codes.txt', 'w') as file:
-            file.writelines(lines)
-
-        return first_line
-    
-    except FileNotFoundError:
-        print(f"Error: File '{'amazon_codes.txt'}' not found.")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-def log_winners(day, winners : list):
-    # Get the current date
-    json_file = 'trivia_winners.json'
-    
-    # Load existing data from the JSON file or create a new structure
-    try:
-        with open(json_file, "r") as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        data = {}
-    
-    # Ensure the current date exists as a key
-    if day not in data:
-        data[day] = []
-    
-    # Append the new people to today's log
-    for winner in winners:
-        winner.append(get_next_code())
-        send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
-        
-    # print(winners)
-    data[day].extend(winners)
-    
-    # Save the updated data back to the JSON file
-    with open(json_file, "w") as file:
-        json.dump(data, file, indent=4)
-    
-    print(f"Logged {len(winners)} winners for day {day}.")
-
-def check_winners_updated(day) -> bool:
-    try:
-        with open('trivia_winners.json', "r") as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        return False
-    
-    if day in data:
-        return True
-    
-    return False
-
-def get_past_winners(day) -> bool:
-    with open('trivia_winners.json', "r") as file:
-        data = json.load(file)
-
-    winners_data = data[day]
-
-    winners = [[winner[0], winner[1]] for winner in winners_data]
-
-    return winners
-
 def update_trivia(day, ramadan_labels, height_value):
-    if not check_winners_updated(str(day - 1)):
-        winners = get_winners(day - 1)
+    if not trivia.check_winners_updated(str(day - 1)):
+        winners = trivia.get_winners(day - 1)
         if (winners):
-            log_winners(str(day - 1), winners)
+            trivia.log_winners(str(day - 1), winners)
     else:
-        winners = get_past_winners(str(day - 1))
+        winners = trivia.get_past_winners(str(day - 1))
 
     if winners:        
         if len(winners) >= 1:
@@ -256,7 +175,7 @@ def update_trivia(day, ramadan_labels, height_value):
         ramadan_labels.winner_three_first['text'] = ""
         ramadan_labels.winner_three_last['text'] = ""
 
-    question, option1, option2, option3 = get_questions_and_answers(day)
+    question, option1, option2, option3 = trivia.get_questions_and_answers(day)
 
     ramadan_labels.question_one['text'] = question[0]
     ramadan_labels.question_one_options['text'] = f"a) {option1[0]}\tb) {option2[0]}\tc) {option3[0]}"
@@ -265,27 +184,13 @@ def update_trivia(day, ramadan_labels, height_value):
     ramadan_labels.question_three['text'] = question[2]
     ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
 
-    make_qr(day)
+    trivia.make_qr(day)
     trivia_qr_image = Image.open('trivia.png')
     trivia_qr_image = trivia_qr_image.resize((int(height_value * 0.1851851852), int(height_value * 0.1851851852)))
     tq_image.clear()
     tq_image.append(ImageTk.PhotoImage(trivia_qr_image))
     ramadan_labels.trivia_qr['image'] = tq_image[0]
     print()
-
-def get_trivia_day():
-    with open('ramadan_first_day.txt', 'r') as file:
-        first_day = file.readline().strip()
-
-    input_date = datetime.strptime(first_day, "%Y-%m-%d")
-    today = datetime.now()
-    delta = today - input_date
-    day = delta.days + 1
-
-    if (day < 0): # test form
-        day = 0
-
-    return day
 
 def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated):
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
@@ -446,7 +351,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
 
         # If Ramadan this is where winner update logic will occur
         if ramadan and not ramadan_updated:
-            update_trivia(get_trivia_day(), ramadan_labels, height_value)
+            update_trivia(trivia.get_trivia_day(), ramadan_labels, height_value)
             ramadan_updated = True
         
     elif(hour_time >= isha_time):
@@ -537,7 +442,7 @@ def main():
         font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
         font_info2 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
 
-        day = get_trivia_day()
+        day = trivia.get_trivia_day()
         print(f"Day {day} of Ramadan")
 
         winners = tk.Frame(window, bg=bg_color)
@@ -575,7 +480,7 @@ def main():
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
-    times.place(x=120 * (width_value/1920), y=125 * (height_value/1080))
+    times.place(x=int(width_value * 0.1822916667), y=int(height_value * 0.5), anchor="center")
 
     labels.clock_label.grid(row =0, column=0, columnspan =3)
     labels.today_date_label.grid(row=1, column=1, columnspan = 2)
