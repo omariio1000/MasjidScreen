@@ -4,7 +4,7 @@
 
 1. Python (3.8+)
 2. The following python libraries:
-   - tkinter
+   - pillow
    - gspread
    - oauth2client
    - pandas 

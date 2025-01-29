@@ -1,5 +1,5 @@
 echo on
-pip install tkinter
+pip install pillow
 pip install gspread
 pip install oauth2client
 pip install pandas
