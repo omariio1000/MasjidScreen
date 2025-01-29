@@ -1,5 +1,6 @@
 echo on
 pip install pillow
+pip install openpyxl
 pip install gspread
 pip install oauth2client
 pip install pandas

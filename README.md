@@ -5,6 +5,7 @@
 1. Python (3.8+)
 2. The following python libraries:
    - pillow
+   - openpyxl
    - gspread
    - oauth2client
    - pandas 
