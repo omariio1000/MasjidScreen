@@ -190,7 +190,7 @@ def log_winners(day, winners : list):
     # Append the new people to today's log
     for winner in winners:
         winner.append(get_next_code())
-        send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=2)).strftime("%B %d, %Y"))
+        send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
         
     # print(winners)
     data[day].extend(winners)
