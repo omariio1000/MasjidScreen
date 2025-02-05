@@ -13,6 +13,7 @@ import pandas as pd
 import os
 import argparse
 import trivia
+import textwrap
 
 photos = [] # array to store the list of the resized photos 
 tq_image = []
@@ -22,6 +23,7 @@ i =0
 j =0
 # declaring the time limit for controlling the flyer animation
 Time = 10 # 10 seconds per photo
+testDay = 0
 
 global updated
 global ramadan_updated
@@ -82,7 +84,7 @@ class Labels:
             self.tomorrow_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
 
 class RamdadanLabels:
-    def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info1, font_info2):
+    def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info1, font_info2, font_info3):
         # winner frame
         self.winner_one_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
         self.winner_one_last = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
@@ -95,13 +97,13 @@ class RamdadanLabels:
 
         # question frame
         self.question_one = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
-        self.question_one_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
+        self.question_one_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info3)
         
         self.question_two = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
-        self.question_two_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
+        self.question_two_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info3)
 
         self.question_three = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
-        self.question_three_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info2)
+        self.question_three_options = tk.Label(questionFrame, bg=bg_color, fg=text_color, font=font_info3)
 
         # qr code
         self.trivia_qr = tk.Label(text="")
@@ -142,11 +144,17 @@ def update_photos(height_value):
 def quit(window):# close Admin window if cancel is clicked
     window.destroy()  
 
-def update_trivia(day, ramadan_labels, height_value):
+def testHandler(ramadan_labels, height_value):
+    global testDay
+    testDay += 1
+    update_trivia(testDay, ramadan_labels, height_value, test=True)
+
+def update_trivia(day, ramadan_labels, height_value, test=False):
+    print(f"Day {day} of Ramadan")
+
     if not trivia.check_winners_updated(str(day - 1)):
         winners = trivia.get_winners(day - 1)
-        if (winners):
-            trivia.log_winners(str(day - 1), winners)
+        trivia.log_winners(str(day - 1), winners, test)
     else:
         winners = trivia.get_past_winners(str(day - 1))
 
@@ -175,14 +183,14 @@ def update_trivia(day, ramadan_labels, height_value):
         ramadan_labels.winner_three_first['text'] = ""
         ramadan_labels.winner_three_last['text'] = ""
 
-    question, option1, option2, option3 = trivia.get_questions_and_answers(day)
+    question, option1, option2, option3 = trivia.get_form_questions_options(day)
 
-    ramadan_labels.question_one['text'] = question[0]
-    ramadan_labels.question_one_options['text'] = f"a) {option1[0]}\tb) {option2[0]}\tc) {option3[0]}"
-    ramadan_labels.question_two['text'] = question[1]
-    ramadan_labels.question_two_options['text'] = f"a) {option1[1]}\tb) {option2[1]}\tc) {option3[1]}"
-    ramadan_labels.question_three['text'] = question[2]
-    ramadan_labels.question_three_options['text'] = f"a) {option1[2]}\tb) {option2[2]}\tc) {option3[2]}"
+    ramadan_labels.question_one['text'] = '\n'.join(textwrap.wrap(question[0], width=95))
+    ramadan_labels.question_one_options['text'] = f"a) {option1[0]}  b) {option2[0]}  c) {option3[0]}"
+    ramadan_labels.question_two['text'] = '\n'.join(textwrap.wrap(question[1], width=95))
+    ramadan_labels.question_two_options['text'] = f"a) {option1[1]}  b) {option2[1]}  c) {option3[1]}"
+    ramadan_labels.question_three['text'] = '\n'.join(textwrap.wrap(question[2], width=95))
+    ramadan_labels.question_three_options['text'] = f"a) {option1[2]}  b) {option2[2]}  c) {option3[2]}"
 
     trivia.make_qr(day)
     trivia_qr_image = Image.open('trivia.png')
@@ -421,8 +429,9 @@ def main():
     bg_label = tk.Label(text="",bg='white', image = bg)
     flyer = tk.Button( command = lambda: update_photos(height_value if not args.r else int(height_value/1.5)) , image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
     
-    if args.t: 
-        flyer = tk.Button( command = lambda: update_trivia(1, ramadan_labels, height_value), image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
+    if args.t:
+        testDay = 0
+        flyer = tk.Button( command = lambda: testHandler(ramadan_labels, height_value), image = photos[0], borderwidth=0) # defining flyer as image and using photo2 for it "flyer photo", also stops the program when hit
         
     window.bind("<Escape>", lambda e: quit(window))
 
@@ -440,15 +449,15 @@ def main():
 
     if args.r:
         font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
-        font_info2 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
+        font_info2 = 'Helvetica', round(16 * (height_value/1080)), 'bold'
+        font_info3 = 'Helvetica', round(14 * (height_value/1080))
 
         day = trivia.get_trivia_day()
-        print(f"Day {day} of Ramadan")
 
         winners = tk.Frame(window, bg=bg_color)
         questions = tk.Frame(window, bg=bg_color)
 
-        ramadan_labels = RamdadanLabels(winners, questions, bg_color, text_color, font_info1, font_info2)
+        ramadan_labels = RamdadanLabels(winners, questions, bg_color, text_color, font_info1, font_info2, font_info3)
 
         ramadan_labels.trivia_qr.place(x=int(width_value * 0.4739583333), y=int(height_value * 0.4592013889))
         winners.place(x=int(width_value * 0.5260416667), y=int(height_value * 0.2893518519), anchor="center")
