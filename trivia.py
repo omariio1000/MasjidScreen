@@ -106,7 +106,7 @@ def get_form_questions_options(day):
     form_link, _ = get_form_link_answers(trivia_json, day)
 
     if not form_link:
-        return None
+        return [], [], [], []
 
     form = service.forms().get(formId=form_link).execute()
 
@@ -144,7 +144,7 @@ def get_winners(day):
     # print(form_link, answers)
 
     if not form_link:
-        return None
+        return []
     
     # # Your Google Form ID (from the URL: https://forms.google.com/d/formID/viewform)
     # trivia = Trivia("1C2nSAbcClybroHWtE6IMw6yFPocOQHs0dTyGiLig5Lg")
@@ -265,17 +265,13 @@ def log_winners(day, winners : list, test):
         data[day] = []
     
     # Append the new people to today's log
-    if winners:
-        for winner in winners:
-            winner.append(get_next_code())
-            if not test:
-                send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
+    for winner in winners:
+        winner.append(get_next_code())
+        if not test:
+            send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
         
     # print(winners)
-    if winners:
-        data[day].extend(winners)
-    else:
-        data[day] = []
+    data[day].extend(winners)
     
     # Save the updated data back to the JSON file
     with open(json_file, "w") as file:
