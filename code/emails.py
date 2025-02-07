@@ -22,8 +22,8 @@ def authenticate_gmail():
     creds = None
     # The token.json stores the user's access and refresh tokens.
     # It is created automatically when the authorization flow completes for the first time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists('../resources/token.json'):
+        creds = Credentials.from_authorized_user_file('../resources/token.json', SCOPES)
     
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -35,11 +35,11 @@ def authenticate_gmail():
                 creds = None  # Force re-authentication
         
         if not creds:
-            flow = InstalledAppFlow.from_client_secrets_file('email_credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('../resources/email_credentials.json', SCOPES)
             creds = flow.run_local_server(port=8080)
 
         # Save the new credentials
-        with open('token.json', 'w') as token:
+        with open('../resources/token.json', 'w') as token:
             token.write(creds.to_json())
     
     # Build the Gmail service

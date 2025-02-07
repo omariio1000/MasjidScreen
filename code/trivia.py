@@ -15,7 +15,7 @@ from emails import send_email
 
 class Trivia:
     def __init__(self, form_id):
-        key_file = "service_account.json"
+        key_file = "../resources/service_account.json"
 
         SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
         credentials = service_account.Credentials.from_service_account_file(key_file, scopes=SCOPES)
@@ -93,14 +93,14 @@ def get_form_link_answers(json, form_id):
 #     return None, None, None, None
 
 def get_form_questions_options(day):
-    key_file = "service_account.json"
+    key_file = "../resources/service_account.json"
 
     SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
     credentials = service_account.Credentials.from_service_account_file(key_file, scopes=SCOPES)
 
     service = build("forms", "v1", credentials=credentials)
 
-    with open('trivia_details.json', 'r') as file:
+    with open('../resources/trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
 
     form_link, _ = get_form_link_answers(trivia_json, day)
@@ -137,7 +137,7 @@ def get_form_questions_options(day):
 
 def get_winners(day):
     """Get the winner of the day given the day of the month"""
-    with open('trivia_details.json', 'r') as file:
+    with open('../resources/trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
 
     form_link, answers = get_form_link_answers(trivia_json, day)
@@ -178,7 +178,7 @@ def make_qr_with_link(public_link):
     img.save(f"trivia.png")
 
 def make_qr(day):
-    with open('trivia_details.json', 'r') as file:
+    with open('../resources/trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
         for form in trivia_json["forms"]:
             if form["form_id"] == day:  # Convert form_id to string for comparison
@@ -190,7 +190,7 @@ def make_qr(day):
 def get_next_code():
     try:
         # Read all lines from the file
-        with open('amazon_codes.txt', 'r') as file:
+        with open('../resources/amazon_codes.txt', 'r') as file:
             lines = file.readlines()
         
         # Check if the file is not empty
@@ -203,7 +203,7 @@ def get_next_code():
         lines = lines[1:]
         
         # Write the remaining lines back to the file
-        with open('amazon_codes.txt', 'w') as file:
+        with open('../resources/amazon_codes.txt', 'w') as file:
             file.writelines(lines)
 
         return first_line
@@ -214,7 +214,7 @@ def get_next_code():
         print(f"An unexpected error occurred: {e}")
 
 def get_trivia_day():
-    with open('ramadan_first_day.txt', 'r') as file:
+    with open('../resources/ramadan_first_day.txt', 'r') as file:
         first_day = file.readline().strip()
 
     input_date = datetime.strptime(first_day, "%Y-%m-%d")
@@ -229,7 +229,7 @@ def get_trivia_day():
 
 def check_winners_updated(day) -> bool:
     try:
-        with open('trivia_winners.json', "r") as file:
+        with open('../resources/trivia_winners.json', "r") as file:
             data = json.load(file)
     except FileNotFoundError:
         return False
@@ -240,7 +240,7 @@ def check_winners_updated(day) -> bool:
     return False
 
 def get_past_winners(day):
-    with open('trivia_winners.json', "r") as file:
+    with open('../resources/trivia_winners.json', "r") as file:
         data = json.load(file)
 
     winners_data = data[day]
@@ -251,7 +251,7 @@ def get_past_winners(day):
 
 def log_winners(day, winners : list, test):
     # Get the current date
-    json_file = 'trivia_winners.json'
+    json_file = '../resources/trivia_winners.json'
     
     # Load existing data from the JSON file or create a new structure
     try:
