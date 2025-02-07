@@ -405,7 +405,7 @@ def main():
     args = parser.parse_args()
 
     # reading prayer schedule excel file
-    data = pd.read_excel(os.path.dirname(os.path.abspath(__file__)) + '/../resources/prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
+    data = pd.read_excel(os.path.dirname(os.path.abspath(__file__)) + '/../prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
 
     #tk window declaration with name of Prayer Time Portland Oregon
     window = tk.Tk(className='Prayer Time Portland Oregon')
