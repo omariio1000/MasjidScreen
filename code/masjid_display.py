@@ -116,7 +116,10 @@ def _from_rgb(rgb):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def update_photos(height_value):
-    main_folder ="C:\\Users\\ICCH_\\My Drive\\Ads transfer"
+    with open('../resources/conf.json', "r") as file:
+        conf = json.load(file)
+
+    main_folder = conf["flyers"]
     if not os.path.exists(main_folder):
         main_folder = os.path.dirname(__file__) + "\\..\\sample ads"
 
@@ -400,7 +403,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
     labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated) # rerun display_time() after 1sec
 
 def main():
-    parser = argparse.ArgumentParser(description="ICCH Prayer Time and Flyers Display")
+    parser = argparse.ArgumentParser(description="Prayer Time and Flyers Display")
     parser.add_argument("-r", action="store_true", help="enables ramadan mode")
     parser.add_argument("-t", action="store_true", help="enables test mode")
     args = parser.parse_args()
@@ -425,12 +428,12 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
-    with open('../resources/qr_links.json', "r") as file:
-        links = json.load(file)
+    with open('../resources/conf.json', "r") as file:
+        conf = json.load(file)
 
-    socials_link = links["socials"]
-    donate_link = links["donate"]
-    website_link = links["website"]
+    socials_link = conf["socials"]
+    donate_link = conf["donate"]
+    website_link = conf["website"]
 
     trivia.make_qr_with_link(socials_link, "socials.png")
     trivia.make_qr_with_link(donate_link, "donate.png")
