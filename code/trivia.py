@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from emails import send_email
 
 class Trivia:
-    def __init__(self, form_id):
+    def __init__(self, form_id, day):
         key_file = "../resources/service_account.json"
 
         SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
@@ -48,6 +48,8 @@ class Trivia:
                 for key, value in answers.items()}
             rows.append(row)
 
+        save_all_responses(rows, day)
+
         # Convert the list of rows into a Pandas DataFrame
         self.data = pd.DataFrame(rows).drop_duplicates(subset=["First Name", "Last Name"], keep="last")
         self.correct_answers = []
@@ -66,7 +68,22 @@ class Trivia:
     def select_winners(self):
         selected_names = random.sample(self.correct_answers, min(len(self.correct_answers), 3))
         return selected_names
+
+def save_all_responses(data, day):
+    filename = '../resources/trivia_all_answers.json'
+    try:
+        with open(filename, "r") as file:
+            all_data = json.load(file)
+    except FileNotFoundError:
+        all_data = {}
+
+    all_data[str(day)] = data
+
+    with open(filename, "w") as file:
+        json.dump(all_data, file, indent=4)
     
+    pass
+
 def get_form_link_answers(json, form_id):
     # Search for the form with the given form_id
     for form in json["forms"]:
@@ -148,7 +165,7 @@ def get_winners(day):
     
     # # Your Google Form ID (from the URL: https://forms.google.com/d/formID/viewform)
     # trivia = Trivia("1C2nSAbcClybroHWtE6IMw6yFPocOQHs0dTyGiLig5Lg")
-    trivia = Trivia(form_link)
+    trivia = Trivia(form_link, day)
 
     # Display the DataFrame
     print(trivia.data)
@@ -305,7 +322,6 @@ def main():
     get_winners(0)
     # get_questions_and_answers(0)
     get_form_questions_options(0)
-
 
 if __name__ == '__main__':
     main()
