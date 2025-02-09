@@ -127,13 +127,17 @@ def update_photos(height_value):
     photo_list = [] # array to store the list of the photos 
     photos.clear()
 
+    print("\n[", end="")
+
     # assigning the whole path to the photo list
     for file in photo_path:
         if (file.endswith(".png")):
             new_file = os.path.join(main_folder, file)
             photo_list.append(new_file)
+            print(f"'{file}'", end=", " if file != photo_path[-1] else "")
         else:
             photo_path.remove(file)
+    print("]")
 
     # reading and loading the photos
     for file in photo_list:
@@ -141,8 +145,6 @@ def update_photos(height_value):
         load1 = load.resize((height_value,height_value)) # reszing the ad photo
         photos.append(ImageTk.PhotoImage(load1))
     
-    print()
-    print(photo_path)
     print("Photos updated from \"", main_folder, "\" at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
     
 def quit(window):# close Admin window if cancel is clicked
