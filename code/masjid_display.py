@@ -116,10 +116,10 @@ def _from_rgb(rgb):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def update_photos(height_value):
-    with open('../resources/conf.json', "r") as file:
-        conf = json.load(file)
+    with open('../resources/config.json', "r") as file:
+        config = json.load(file)
 
-    main_folder = conf["flyers"]
+    main_folder = config["flyers"]
     if not os.path.exists(main_folder):
         main_folder = os.path.dirname(__file__) + "\\..\\sample ads"
 
@@ -428,12 +428,12 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
-    with open('../resources/conf.json', "r") as file:
-        conf = json.load(file)
+    with open('../resources/config.json', "r") as file:
+        config = json.load(file)
 
-    socials_link = conf["socials"]
-    donate_link = conf["donate"]
-    website_link = conf["website"]
+    socials_link = config["socials"]
+    donate_link = config["donate"]
+    website_link = config["website"]
 
     trivia.make_qr_with_link(socials_link, "socials.png")
     trivia.make_qr_with_link(donate_link, "donate.png")
