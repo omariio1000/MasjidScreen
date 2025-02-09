@@ -30,10 +30,10 @@ To customize for any masjid links, open the `config.json` file. Modify the follo
 
 ## Required for Trivia:
 
- - service_account.json
- - trivia_details.json
- - email_credentials.json
- - amazon_codes.txt
+ - `service_account.json`
+ - `trivia_details.json`
+ - `email_credentials.json`
+ - `amazon_codes.txt`
 
 ## Help Scripts
 
