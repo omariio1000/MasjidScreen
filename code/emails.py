@@ -1,3 +1,9 @@
+"""
+Created on Thu Feb 6 23:16 2025
+
+@author: Omar Nassar
+"""
+
 import os
 import base64
 from google.auth.transport.requests import Request
@@ -10,15 +16,17 @@ from datetime import datetime
 
 
 def create_email_template(name, date, code):
-    """Create an email body with a dynamic name and code."""
+    """Create an email body with a dynamic name, date, and code."""
+
     email_body = f"Assalamu Alaikum {name},\n\nCongratulations on winning trivia on {date}!\nHere is your amazon gift card code: {code}.\n\nJazakum Allahu Khairan,\nICCH Trivia Team\n\nThis is an automated email, please don't reply."
     return email_body
 
 def authenticate_gmail():
+    """Authenticate using OAuth 2.0 and return a Gmail API service instance."""
+
     # If modifying the scope, delete the file token.json.
     SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-    
-    """Authenticate using OAuth 2.0 and return a Gmail API service instance."""
+
     creds = None
     # The token.json stores the user's access and refresh tokens.
     # It is created automatically when the authorization flow completes for the first time.
@@ -48,6 +56,7 @@ def authenticate_gmail():
 
 def send_email(name, receiving_address, code, date):
     """Send an email using the Gmail API."""
+
     try:
         # Create the email message
         message = MIMEMultipart()
@@ -66,7 +75,8 @@ def send_email(name, receiving_address, code, date):
         print(f"An error occurred: {error}")
 
 def test_email(name, receiving_address):
-    """Send a test email using the Gmail API create token."""
+    """Send a test email using the Gmail API."""
+
     try:
         # Create the email message
         message = MIMEMultipart()
@@ -87,6 +97,8 @@ def test_email(name, receiving_address):
         return False
 
 def main():
+    """Test send email"""
+
     if test_email("Omar Nassar", "omariio1000@gmail.com"):
         print("Account verified and test email sent.")
 

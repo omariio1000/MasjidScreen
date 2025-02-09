@@ -14,7 +14,11 @@ from datetime import datetime, timedelta
 from emails import send_email
 
 class Trivia:
+    """Trivia class for finding correct answers and selecting"""
+
     def __init__(self, form_id, day):
+        """Initialize by getting day's form, logging answers, and selecting winners"""
+
         key_file = "../resources/service_account.json"
 
         SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
@@ -55,6 +59,8 @@ class Trivia:
         self.correct_answers = []
 
     def find_correct(self, answers):
+        """Find the people who answered correctly and filter them"""
+
         a1, a2, a3 = answers
 
         if not self.data.empty:
@@ -66,10 +72,14 @@ class Trivia:
                 self.correct_answers = filtered.apply(lambda row: [str(row["First Name"] + " " + row["Last Name"]), row["Email"]], axis=1).tolist()
 
     def select_winners(self):
+        """Select three winners at most from filtered answers"""
+
         selected_names = random.sample(self.correct_answers, min(len(self.correct_answers), 3))
         return selected_names
 
 def save_all_responses(data, day):
+    """Log all responses in form at time of winner selection"""
+
     filename = '../resources/trivia_all_answers.json'
     try:
         with open(filename, "r") as file:
@@ -85,6 +95,8 @@ def save_all_responses(data, day):
     pass
 
 def get_form_link_answers(json, form_id):
+    """Get the form link and correct answers from trivia_details.json"""
+
     # Search for the form with the given form_id
     for form in json["forms"]:
         if form["form_id"] == form_id:  # Convert form_id to string for comparison
@@ -98,18 +110,9 @@ def get_form_link_answers(json, form_id):
             return form_link, answers
     return None, None    
 
-# def get_form_question_options(json, form_id):
-#     for form in json["forms"]:
-#         if form["form_id"] == form_id:  # Convert form_id to string for comparison
-#             questions = [question["question_details"] for question in form["questions"]]
-#             option1 = [question["option_1"] for question in form["questions"]]
-#             option2 = [question["option_2"] for question in form["questions"]]
-#             option3 = [question["option_3"] for question in form["questions"]]
-            
-#             return questions, option1, option2, option3
-#     return None, None, None, None
-
 def get_form_questions_options(day):
+    """Get questions and options from the form given day of trivia"""
+
     key_file = "../resources/service_account.json"
 
     SCOPES = ["https://www.googleapis.com/auth/forms.responses.readonly", "https://www.googleapis.com/auth/forms.body.readonly"]
@@ -153,7 +156,8 @@ def get_form_questions_options(day):
 
 
 def get_winners(day):
-    """Get the winner of the day given the day of the month"""
+    """Get the winners of the day given the day of the month"""
+
     with open('../resources/trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
 
@@ -163,8 +167,6 @@ def get_winners(day):
     if not form_link:
         return []
     
-    # # Your Google Form ID (from the URL: https://forms.google.com/d/formID/viewform)
-    # trivia = Trivia("1C2nSAbcClybroHWtE6IMw6yFPocOQHs0dTyGiLig5Lg")
     trivia = Trivia(form_link, day)
 
     # Display the DataFrame
@@ -179,22 +181,15 @@ def get_winners(day):
 
     return winners
 
-# def get_questions_and_answers(day):
-#     """Get the winner of the day given the day of the month"""
-#     with open('trivia_details.json', 'r') as file:
-#         trivia_json = json.load(file)
-
-#     questions, option1, option2, option3 = get_form_question_options(trivia_json, day)
-#     print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}")
-
-#     return questions, option1, option2, option3
-
 def make_qr_with_link(public_link, filename):
     """Make a QR code for a google form given the code from the public link"""
+
     img = qrcode.make(public_link, border=1)
     img.save(f"{filename}")
 
 def make_qr(day):
+    """Make a QR code given the day of ramadan"""
+
     with open('../resources/trivia_details.json', 'r') as file:
         trivia_json = json.load(file)
         for form in trivia_json["forms"]:
@@ -205,6 +200,8 @@ def make_qr(day):
     print(f"Generated qr code for day {day}: \"{public_link}\"")
 
 def get_next_code():
+    """Get next amazon code from text file"""
+
     try:
         # Read all lines from the file
         with open('../resources/amazon_codes.txt', 'r') as file:
@@ -231,6 +228,8 @@ def get_next_code():
         print(f"An unexpected error occurred: {e}")
 
 def get_trivia_day():
+    """Get what day of ramadan it is"""
+
     with open('../resources/ramadan_first_day.txt', 'r') as file:
         first_day = file.readline().strip()
 
@@ -245,6 +244,8 @@ def get_trivia_day():
     return day
 
 def check_winners_updated(day) -> bool:
+    """Check if winners have been updated already for this day"""
+
     try:
         with open('../resources/trivia_winners.json', "r") as file:
             data = json.load(file)
@@ -257,6 +258,8 @@ def check_winners_updated(day) -> bool:
     return False
 
 def get_past_winners(day):
+    """Get the past winners that have already been logged for this day"""
+
     with open('../resources/trivia_winners.json', "r") as file:
         data = json.load(file)
 
@@ -267,6 +270,8 @@ def get_past_winners(day):
     return winners
 
 def log_winners(day, winners : list, test):
+    """Log winners for the day and send them an email with their code"""
+
     # Get the current date
     json_file = '../resources/trivia_winners.json'
     
@@ -300,27 +305,9 @@ def log_winners(day, winners : list, test):
         print(f"Logged 0 winners for day {day}.")
 
 def main():
-    # with open('trivia_details.json', 'r') as file:
-    #     data = json.load(file)
-
-    # form_link, answers = get_form(data, 1)
-    # print(form_link, answers)
-
-    # # # Your Google Form ID (from the URL: https://forms.google.com/d/formID/viewform)
-    # # trivia = Trivia("1C2nSAbcClybroHWtE6IMw6yFPocOQHs0dTyGiLig5Lg")
-    # trivia = Trivia(form_link)
-
-    # # Display the DataFrame
-    # print(trivia.data)
-
-    # trivia.find_correct(answers)
-    # print(trivia.correct_answers)
-    # print(trivia.select_winners())
-
-    # make_qr("1FAIpQLSeuOSzoL511RD_56Bo6FXJbh2OhmCXXwcLveIn7WUW0A7QLkQ")
+    """Test trivia functionality"""
 
     get_winners(0)
-    # get_questions_and_answers(0)
     get_form_questions_options(0)
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Apr  6 15:09:56 2021
 
@@ -17,19 +16,21 @@ import textwrap
 import json
 
 photos = [] # array to store the list of the resized photos 
-tq_image = []
-# declaring the counter for controlling the flyer animation
+tq_image = [] # workaround to store trivia qr code and update during run time
+
+# counters for controlling the flyer animation
 counter = 0
 i =0
 j =0
-# declaring the time limit for controlling the flyer animation
-Time = 10 # 10 seconds per photo
-testDay = 0
+
+Time = 10 # time limit (seconds) for controlling the flyer animation
+testDay = 0 #iterate through ramdadan days in test mode
 
 global updated
 global ramadan_updated
 
 class Labels:
+    """Class to store prayer time labels for cleaner code"""
     def __init__(self, times, bg_color, text_color, font_info):
             self.clock_label = tk.Label(times,bg=bg_color, fg=text_color, font = font_info)
 
@@ -85,6 +86,7 @@ class Labels:
             self.tomorrow_isha_iqama_label = tk.Label(times,bg=bg_color, fg=text_color,font= font_info)
 
 class RamdadanLabels:
+    """Class to store ramadan trivia labels for cleaner code"""
     def __init__(self, winnerFrame, questionFrame, bg_color, text_color, font_info1, font_info2, font_info3):
         # winner frame
         self.winner_one_first = tk.Label(winnerFrame, bg=bg_color, fg=text_color, font=font_info1)
@@ -110,12 +112,12 @@ class RamdadanLabels:
         self.trivia_qr = tk.Label(text="")
 
 def _from_rgb(rgb):
-    """translates an rgb tuple of int to a tkinter friendly color code
-    """
+    """translates an rgb tuple of int to a tkinter friendly color code"""
     r, g, b = rgb
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def update_photos(height_value):
+    """Update flyer photos label"""
     with open('../config.json', "r") as file:
         config = json.load(file)
 
@@ -147,15 +149,18 @@ def update_photos(height_value):
     
     print("Photos updated from \"", main_folder, "\" at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
     
-def quit(window):# close Admin window if cancel is clicked
+def quit(window):
+    """close Admin window if cancel is clicked"""
     window.destroy()  
 
 def testHandler(ramadan_labels, height_value):
+    """Helper function for testing ramadan trivia"""
     global testDay
     testDay += 1
     update_trivia(testDay, ramadan_labels, height_value, test=True)
 
 def update_trivia(day, ramadan_labels, height_value, test=False):
+    """Updating trivia questions and winners as well as logging, sending emails, and generating QR code"""
     print(f"Day {day} of Ramadan")
 
     if not trivia.check_winners_updated(str(day - 1)):
@@ -207,6 +212,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     print()
 
 def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated):
+    """Main program loop that updates times"""
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
@@ -405,6 +411,8 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
     labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated) # rerun display_time() after 1sec
 
 def main():
+    """Initialize labels and call main loop"""
+
     parser = argparse.ArgumentParser(description="Prayer Time and Flyers Display")
     parser.add_argument("-r", action="store_true", help="enables ramadan mode")
     parser.add_argument("-t", action="store_true", help="enables test mode")
@@ -481,6 +489,8 @@ def main():
     labels = Labels(times, bg_color, text_color, font_info)
 
     if args.r:
+        """Ramadan mode initialization"""
+        
         font_info1 = 'Helvetica', round(24 * (height_value/1080)), 'bold'
         font_info2 = 'Helvetica', round(16 * (height_value/1080)), 'bold'
         font_info3 = 'Helvetica', round(14 * (height_value/1080))
