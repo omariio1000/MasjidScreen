@@ -1,5 +1,10 @@
 # Masjid Display - Developed for ICCH
 
+## How to Run:
+
+- `GUI.bat` - Runs the main program
+- `GUI_Ramadan.bat` - Runs Ramadan mode with trivia
+
 ## Required:
 
 1. Python (Developed and tested on 3.12.8)
@@ -29,3 +34,9 @@ To customize for any masjid links, open the `config.json` file. Modify the follo
  - trivia_details.json
  - email_credentials.json
  - amazon_codes.txt
+
+## Help Scripts
+
+- `authenticate_email.bat` - Tests sending emails from a local gmail account
+- `install_libs.bat` - Installs needed libraries
+- `update_files` - Updates to latest repository changes and displays git status
