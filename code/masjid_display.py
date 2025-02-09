@@ -116,7 +116,7 @@ def _from_rgb(rgb):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def update_photos(height_value):
-    with open('../resources/config.json', "r") as file:
+    with open('../config.json', "r") as file:
         config = json.load(file)
 
     main_folder = config["flyers"]
@@ -428,7 +428,7 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
-    with open('../resources/config.json', "r") as file:
+    with open('../config.json', "r") as file:
         config = json.load(file)
 
     socials_link = config["socials"]
