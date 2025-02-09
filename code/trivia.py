@@ -172,10 +172,10 @@ def get_winners(day):
 
 #     return questions, option1, option2, option3
 
-def make_qr_with_link(public_link):
+def make_qr_with_link(public_link, filename):
     """Make a QR code for a google form given the code from the public link"""
     img = qrcode.make(public_link, border=1)
-    img.save(f"trivia.png")
+    img.save(f"{filename}")
 
 def make_qr(day):
     with open('../resources/trivia_details.json', 'r') as file:
@@ -184,7 +184,7 @@ def make_qr(day):
             if form["form_id"] == day:  # Convert form_id to string for comparison
                 public_link = form["public_link"]
 
-    make_qr_with_link(public_link)
+    make_qr_with_link(public_link, "trivia.png")
     print(f"Generated qr code for day {day}: \"{public_link}\"")
 
 def get_next_code():

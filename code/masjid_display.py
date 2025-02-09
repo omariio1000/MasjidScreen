@@ -14,6 +14,7 @@ import os
 import argparse
 import trivia
 import textwrap
+import json
 
 photos = [] # array to store the list of the resized photos 
 tq_image = []
@@ -117,7 +118,7 @@ def _from_rgb(rgb):
 def update_photos(height_value):
     main_folder ="C:\\Users\\ICCH_\\My Drive\\Ads transfer"
     if not os.path.exists(main_folder):
-        main_folder = os.path.dirname(__file__) + "\\sample ads"
+        main_folder = os.path.dirname(__file__) + "\\..\\sample ads"
 
     photo_path = os.listdir(main_folder) # array to store the path of the photos 
     photo_list = [] # array to store the list of the photos 
@@ -424,6 +425,33 @@ def main():
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
 
+    with open('../resources/qr_links.json', "r") as file:
+        links = json.load(file)
+
+    socials_link = links["socials"]
+    donate_link = links["donate"]
+    website_link = links["website"]
+
+    trivia.make_qr_with_link(socials_link, "socials.png")
+    trivia.make_qr_with_link(donate_link, "donate.png")
+    trivia.make_qr_with_link(website_link, "website.png")
+
+    socials_qr_image = Image.open('socials.png')
+    socials_qr_image = socials_qr_image.resize((int(0.1157407407 * height_value), int(0.1157407407 * height_value)))
+    socials = ImageTk.PhotoImage(socials_qr_image)
+
+    donate_qr_image = Image.open('donate.png')
+    donate_qr_image = donate_qr_image.resize((int(0.1157407407 * height_value), int(0.1157407407 * height_value)))
+    donate = ImageTk.PhotoImage(donate_qr_image)
+
+    website_qr_image = Image.open('website.png')
+    website_qr_image = website_qr_image.resize((int(0.1157407407 * height_value), int(0.1157407407 * height_value)))
+    website = ImageTk.PhotoImage(website_qr_image)
+
+    socials_label = tk.Label(text="",bg='white', image = socials)
+    donate_label = tk.Label(text="", bg='white', image=donate)
+    website_label = tk.Label(text="", bg='white', image=website)
+
     update_photos(height_value if not args.r else int(height_value/1.5))
 
     bg_label = tk.Label(text="",bg='white', image = bg)
@@ -490,6 +518,12 @@ def main():
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
     times.place(x=int(width_value * 0.1822916667), y=int(height_value * 0.5), anchor="center")
+
+    socials_label.place(x=int(width_value * 0.3828125), y=int(height_value * 0.2844907407), anchor="center")
+    donate_label.place(x=int(width_value * 0.3828125), y=int(height_value * 0.6273148148), anchor="center")
+    website_label.place(x=int(width_value * 0.3828125), y=int(height_value * 0.8356481481), anchor="center")
+
+    bg_label.lower()
 
     labels.clock_label.grid(row =0, column=0, columnspan =3)
     labels.today_date_label.grid(row=1, column=1, columnspan = 2)
