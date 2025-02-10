@@ -4,6 +4,10 @@
 
 - `GUI.bat` - Runs the main program
 - `GUI_Ramadan.bat` - Runs Ramadan mode with trivia
+- Can also be run by changing directory to the `code` folder and running: `python masjid_display.py`. There are the following options:
+  - `-h` - Display help dialog
+  - `-r` - Ramadan mode
+  - `-t` - Test mode  (must be combined with `-r`)
 
 ## Required:
 
