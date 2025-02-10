@@ -43,4 +43,4 @@ To customize for any masjid links, open the `config.json` file. Modify the follo
 
 - `authenticate_email.bat` - Tests sending emails from a local gmail account
 - `install_libs.bat` - Installs needed libraries
-- `update_files` - Updates to latest repository changes and displays git status
+- `update_code.bat` - Updates to latest repository changes and displays git status
