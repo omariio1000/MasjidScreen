@@ -16,13 +16,13 @@
 2. The following python libraries:
    - pillow
    - openpyxl
-   - gspread
-   - oauth2client
    - pandas 
+   - qrcode
+3. These libraries are needed for the Ramadan mode (`'r`):
+   - oauth2client
    - google-api-python-client
    - google-auth-httplib2
    - google-auth-oauthlib
-   - qrcode
    - Or run the `install_libs.bat` script
 
 ## Customizing:
