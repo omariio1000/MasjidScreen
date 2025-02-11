@@ -3,7 +3,8 @@
 ## How to Run:
 
 - `GUI.bat` - Runs the main program
-- `GUI_Ramadan.bat` - Runs Ramadan mode with trivia
+- `Ramadan_GUI.bat` - Runs Ramadan mode with trivia
+  - This mode requires extra files that are mentioned below
 - Can also be run by changing directory to the `code` folder and running: `python masjid_display.py`. There are the following options:
   - `-h` - Display help dialog
   - `-r` - Ramadan mode
@@ -34,9 +35,11 @@ To customize for any masjid links, open the `config.json` file. Modify the follo
 
 ## Required for Trivia:
 
+Trivia required Google Cloud integration and a service account. It also needs a file for trivia details and codes to send to winners by email.
+
  - `service_account.json`
- - `trivia_details.json`
  - `email_credentials.json`
+ - `trivia_details.json`
  - `amazon_codes.txt`
 
 ## Help Scripts
