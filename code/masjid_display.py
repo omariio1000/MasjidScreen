@@ -211,7 +211,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     ramadan_labels.trivia_qr['image'] = tq_image[0]
     print()
 
-def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated):
+def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test = False):
     """Main program loop that updates times"""
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
@@ -370,7 +370,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         labels.today_isha_iqama_label['fg'] = next_prayer_color
 
         # If Ramadan this is where winner update logic will occur
-        if ramadan and not ramadan_updated:
+        if ramadan and not ramadan_updated and test:
             update_trivia(trivia.get_trivia_day(), ramadan_labels, height_value)
             ramadan_updated = True
         
@@ -408,7 +408,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
     
     flyer['image'] = flyer_photo_now
     
-    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated) # rerun display_time() after 1sec
+    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test=test) # rerun display_time() after 1sec
 
 def main():
     """Initialize labels and call main loop"""
@@ -588,7 +588,7 @@ def main():
 
     updated = False
     ramadan_updated = False
-    display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels if args.r else None, False) # to call display_time() function
+    display_time(labels, data, flyer, False, args.r, height_value, height_value if not args.r else int(height_value/1.5), ramadan_labels if args.r else None, False, test=args.t) # to call display_time() function
     window.resizable(False, True) # to make the window resizable
     window.bind()
 
