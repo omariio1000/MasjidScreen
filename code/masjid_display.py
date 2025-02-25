@@ -211,7 +211,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     ramadan_labels.trivia_qr['image'] = tq_image[0]
     print()
 
-def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test = False):
+def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test):
     """Main program loop that updates times"""
     current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
@@ -408,7 +408,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
     
     flyer['image'] = flyer_photo_now
     
-    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test=test) # rerun display_time() after 1sec
+    labels.clock_label.after(1000,display_time, labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test) # rerun display_time() after 1sec
 
 def main():
     """Initialize labels and call main loop"""
