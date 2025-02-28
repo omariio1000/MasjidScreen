@@ -528,7 +528,7 @@ def main():
         ramadan_labels.question_three.grid(row=6)
         ramadan_labels.question_three_options.grid(row=7)
 
-        update_trivia(day, ramadan_labels, height_value)
+        update_trivia(day - 1, ramadan_labels, height_value)
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
