@@ -296,6 +296,8 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         updated = False
 
     if(hour_time <= fajr_time):
+        ramadan_updated = False
+
         labels.today_isha_label['fg'] = pre_prayer_color
         labels.today_isha_athan_label['fg'] = pre_prayer_color
         labels.today_isha_iqama_label['fg'] = pre_prayer_color
@@ -368,15 +370,8 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         labels.today_isha_label['fg'] = next_prayer_color
         labels.today_isha_athan_label['fg'] = next_prayer_color
         labels.today_isha_iqama_label['fg'] = next_prayer_color
-
-        # If Ramadan this is where winner update logic will occur
-        if ramadan and not ramadan_updated and test:
-            update_trivia(trivia.get_trivia_day(), ramadan_labels, height_value)
-            ramadan_updated = True
         
     elif(hour_time >= isha_time):
-        ramadan_updated = False
-
         labels.today_maghrib_label['fg'] = pre_prayer_color
         labels.today_maghrib_athan_label['fg'] = pre_prayer_color
         labels.today_maghrib_iqama_label['fg'] = pre_prayer_color
@@ -388,6 +383,11 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         labels.tomorrow_fajr_label['fg'] = next_prayer_color
         labels.tomorrow_fajr_athan_label['fg'] = next_prayer_color
         labels.tomorrow_fajr_iqama_label['fg'] = next_prayer_color
+
+        # If Ramadan this is where winner update logic will occur
+        if ramadan and not ramadan_updated and test:
+            update_trivia(trivia.get_trivia_day(), ramadan_labels, height_value)
+            ramadan_updated = True
 
     labels.clock_label ['text'] = current_time # to assign current time to clock label
 

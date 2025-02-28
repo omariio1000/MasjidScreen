@@ -227,7 +227,7 @@ def get_next_code():
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-def get_trivia_day():
+def get_trivia_day(test=False):
     """Get what day of ramadan it is"""
 
     with open('../resources/ramadan_first_day.txt', 'r') as file:
@@ -238,7 +238,7 @@ def get_trivia_day():
     delta = today - input_date
     day = delta.days + 1
 
-    if (day < 0): # test form
+    if (not test) and (day < 0): # test form
         day = 0
 
     return day
@@ -307,8 +307,10 @@ def log_winners(day, winners : list, test):
 def main():
     """Test trivia functionality"""
 
-    get_winners(0)
-    get_form_questions_options(0)
+    day = get_trivia_day(test=True)
+    print(day)
+    # get_winners(0)
+    # get_form_questions_options(0)
 
 if __name__ == '__main__':
     main()
