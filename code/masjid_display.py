@@ -385,7 +385,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
         labels.tomorrow_fajr_iqama_label['fg'] = next_prayer_color
 
         # If Ramadan this is where winner update logic will occur
-        if ramadan and not ramadan_updated and test:
+        if ramadan and not ramadan_updated and not test:
             update_trivia(trivia.get_trivia_day(), ramadan_labels, height_value)
             ramadan_updated = True
 
