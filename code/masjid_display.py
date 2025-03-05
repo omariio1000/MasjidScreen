@@ -295,7 +295,7 @@ def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_heig
     else:
         updated = False
 
-    if(hour_time <= fajr_time):
+    if(hour_time < fajr_time):
         ramadan_updated = False
 
         labels.today_isha_label['fg'] = pre_prayer_color
