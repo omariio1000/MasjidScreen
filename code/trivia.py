@@ -74,7 +74,26 @@ class Trivia:
     def select_winners(self):
         """Select three winners at most from filtered answers"""
 
-        selected_names = random.sample(self.correct_answers, min(len(self.correct_answers), 3))
+        try:
+            with open("../resources/trivia_winners.json", "r") as file:
+                past_winners_data = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            past_winners_data = {}
+
+        past_winners = set()
+        for winners_list in past_winners_data.values():
+            for winner in winners_list:
+                past_winners.add(winner[0])
+        
+        new_winners = [entry for entry in self.correct_answers if entry[0] not in past_winners]
+
+        if (len(new_winners) < 3):
+            past_winners_pool = [entry for entry in self.correct_answers if entry[0] in past_winners]
+            random.shuffle(past_winners_pool)
+            remaining_needed = 3 - len(new_winners)
+            new_winners.extend(past_winners_pool[:min(remaining_needed, len(past_winners_pool))])
+
+        selected_names = random.sample(new_winners, min(len(new_winners), 3))
         return selected_names
 
 def save_all_responses(data, day):
@@ -168,6 +187,9 @@ def get_winners(day):
         return []
     
     trivia = Trivia(form_link, day)
+    trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip())
+    trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip())
+    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip())
 
     # Display the DataFrame
     print(trivia.data)

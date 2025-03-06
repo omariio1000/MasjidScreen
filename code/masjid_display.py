@@ -169,10 +169,11 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     else:
         winners = trivia.get_past_winners(str(day - 1))
 
+    print(winners)
     if winners:        
         if len(winners) >= 1:
             ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip()
-            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[1].strip()
+            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[-1].strip()
             ramadan_labels.winner_two_first['text'] = ""
             ramadan_labels.winner_two_last['text'] = ""
             ramadan_labels.winner_three_first['text'] = ""
@@ -180,11 +181,11 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
 
         if len(winners) >= 2:
             ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0].strip()
-            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[1].strip()
+            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[-1].strip()
 
         if len(winners) >= 3:
             ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0].strip()
-            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[1].strip()
+            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[-1].strip()
     else:
         ramadan_labels.winner_one_first['text'] = "No Winners"
         ramadan_labels.winner_one_last['text'] = "Yesterday"
@@ -527,7 +528,7 @@ def main():
         ramadan_labels.question_three.grid(row=6)
         ramadan_labels.question_three_options.grid(row=7)
 
-        update_trivia(day - 1, ramadan_labels, height_value)
+        update_trivia(day - 1, ramadan_labels, height_value, test=args.t)
 
     bg_label.place(x=0, y=0)
     flyer.place(x=width_value-height_value if not args.r else width_value-height_value + (height_value - int(height_value/1.5) - int(height_value * 0.0138888889)), y = int(height_value * 0.0138888889) if args.r else None)
