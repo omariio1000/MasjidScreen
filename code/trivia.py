@@ -169,7 +169,7 @@ def get_form_questions_options(day):
         option2.append(options[1])
         option3.append(options[2])
     
-    print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}")
+    print(f"\nQuestions: {questions}\nOptions: {option1}, {option2}, {option3}")
 
     return questions, option1, option2, option3
 
@@ -192,14 +192,14 @@ def get_winners(day):
     trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip())
 
     # Display the DataFrame
-    print(trivia.data)
+    print(f"\n{trivia.data}")
 
     trivia.find_correct(answers)
-    print(f"Answered correctly: {trivia.correct_answers}")
+    print(f"\nAnswered correctly: {trivia.correct_answers}")
 
     winners = trivia.select_winners()
 
-    print(f"Selected winners: {winners}")
+    print(f"\nSelected winners: {winners}")
 
     return winners
 
@@ -219,7 +219,7 @@ def make_qr(day):
                 public_link = form["public_link"]
 
     make_qr_with_link(public_link, "trivia.png")
-    print(f"Generated qr code for day {day}: \"{public_link}\"")
+    print(f"\nGenerated qr code for day {day}: \"{public_link}\"")
 
 def get_next_code():
     """Get next amazon code from text file"""
@@ -322,9 +322,9 @@ def log_winners(day, winners : list, test):
         json.dump(data, file, indent=4)
     
     if winners:
-        print(f"Logged {len(winners)} winners for day {day}.")
+        print(f"\nLogged {len(winners)} winners for day {day}.")
     else:
-        print(f"Logged 0 winners for day {day}.")
+        print(f"\nLogged 0 winners for day {day}.")
 
 def main():
     """Test trivia functionality"""
