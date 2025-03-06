@@ -169,7 +169,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     else:
         winners = trivia.get_past_winners(str(day - 1))
 
-    print(f"\n{winners}")
+    print(f"\nWinners: {winners}")
     if winners:        
         if len(winners) >= 1:
             ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip().capitalize()
