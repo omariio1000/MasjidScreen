@@ -189,7 +189,7 @@ def get_winners(day):
     trivia = Trivia(form_link, day)
     trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip().lower())
     trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip().lower())
-    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip().lower())
+    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip())
 
     # Display the DataFrame
     print(trivia.data)
