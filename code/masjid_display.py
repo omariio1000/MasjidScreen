@@ -172,20 +172,20 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     print(winners)
     if winners:        
         if len(winners) >= 1:
-            ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip()
-            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[-1].strip()
+            ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip().capitalize()
+            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[-1].strip().capitalize()
             ramadan_labels.winner_two_first['text'] = ""
             ramadan_labels.winner_two_last['text'] = ""
             ramadan_labels.winner_three_first['text'] = ""
             ramadan_labels.winner_three_last['text'] = ""
 
         if len(winners) >= 2:
-            ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0].strip()
-            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[-1].strip()
+            ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0].strip().capitalize()
+            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[-1].strip().capitalize()
 
         if len(winners) >= 3:
-            ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0].strip()
-            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[-1].strip()
+            ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0].strip().capitalize()
+            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[-1].strip().capitalize()
     else:
         ramadan_labels.winner_one_first['text'] = "No Winners"
         ramadan_labels.winner_one_last['text'] = "Yesterday"
