@@ -8,7 +8,7 @@
 - Can also be run by changing directory to the `code` folder and running: `python masjid_display.py`. There are the following options:
   - `-h` - Display help dialog
   - `-r` - Ramadan mode
-  - `-t` - Test mode  (must be combined with `-r`)
+  - `-t` - Trivia test mode  (must be combined with `-r`)
 
 ## Required:
 
@@ -18,7 +18,7 @@
    - openpyxl
    - pandas 
    - qrcode
-3. These libraries are needed for the Ramadan mode (`'r`):
+3. These libraries are needed for the Ramadan mode (`-r`):
    - oauth2client
    - google-api-python-client
    - google-auth-httplib2
@@ -35,7 +35,7 @@ To customize for any masjid links, open the `config.json` file. Modify the follo
 
 ## Required for Trivia:
 
-Trivia required Google Cloud integration and a service account. It also needs a file for trivia details and codes to send to winners by email.
+Trivia requires Google Cloud integration and a service account. It also needs a file for trivia details and codes to send to winners by email.
 
  - `service_account.json`
  - `email_credentials.json`
