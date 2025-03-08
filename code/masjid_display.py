@@ -503,7 +503,7 @@ def main():
         ramadan_labels = RamdadanLabels(winners, questions, bg_color, text_color, font_info1, font_info2, font_info3)
 
         ramadan_labels.trivia_qr.place(x=int(width_value * 0.4739583333), y=int(height_value * 0.4592013889))
-        winners.place(x=int(width_value * 0.5260416667), y=int(height_value * 0.2893518519), anchor="center")
+        winners.place(x=int(width_value * 0.5260416667), y=int(height_value * 0.279), anchor="center")
         questions.place(x=int(width_value * 0.71875), y=int(height_value * 0.8425925926), anchor="center")
         space_label_one = tk.Label(winners, height=1, text="", fg=bg_color, bg=bg_color)
         space_label_two = tk.Label(winners, height=1, text="", fg=bg_color, bg=bg_color)
