@@ -166,6 +166,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     if not trivia.check_winners_updated(str(day - 1)):
         winners = trivia.get_winners(day - 1)
         trivia.log_winners(str(day - 1), winners, test)
+        winners = [sublist[:2] for sublist in winners]
     else:
         winners = trivia.get_past_winners(str(day - 1))
 
