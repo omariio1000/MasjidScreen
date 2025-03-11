@@ -192,14 +192,14 @@ def get_winners(day):
     trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip())
 
     # Display the DataFrame
-    print(f"\n{trivia.data}")
+    # print(f"\n{trivia.data}")
 
     trivia.find_correct(answers)
-    print(f"\nAnswered correctly: {trivia.correct_answers}")
+    # print(f"\nAnswered correctly: {trivia.correct_answers}")
 
     winners = trivia.select_winners()
 
-    print(f"\nSelected winners: {winners}")
+    # print(f"\nSelected winners: {winners}")
 
     return winners
 

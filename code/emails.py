@@ -90,7 +90,7 @@ def test_email(name, receiving_address):
 
         # Send the email using the Gmail API
         message = authenticate_gmail().users().messages().send(userId="me", body={'raw': raw_message}).execute()
-        print(f"Message sent to {name} ({receiving_address}) with Message ID: {message['id']}")
+        print(f"Message sent to {name}")
         return True
     except Exception as error:
         print(f"An error occurred: {error}")
