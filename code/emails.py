@@ -54,6 +54,16 @@ def authenticate_gmail():
     service = build('gmail', 'v1', credentials=creds)
     return service
 
+def hide_email(email):
+    # Split the email at the '@' symbol
+    local, domain = email.split('@', 1)
+    
+    # Mask everything after the first three characters of the local part
+    masked_local = local[:3] + '*' * (len(local) - 3)
+    
+    # Return the masked email with the domain intact
+    return masked_local + '@' + domain
+
 def send_email(name, receiving_address, code, date):
     """Send an email using the Gmail API."""
 
@@ -70,7 +80,7 @@ def send_email(name, receiving_address, code, date):
 
         # Send the email using the Gmail API
         message = authenticate_gmail().users().messages().send(userId="me", body={'raw': raw_message}).execute()
-        print(f"Message sent to {name} ({receiving_address}) with Message ID: {message['id']}")
+        print(f"Message sent to {name} ({hide_email(receiving_address)}) with Message ID: {message['id']}")
     except Exception as error:
         print(f"An error occurred: {error}")
 
