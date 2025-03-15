@@ -83,12 +83,12 @@ class Trivia:
         past_winners = set()
         for winners_list in past_winners_data.values():
             for winner in winners_list:
-                past_winners.add(winner[1])
+                past_winners.add(winner[0])
         
-        new_winners = [entry for entry in self.correct_answers if entry[1] not in past_winners]
+        new_winners = [entry for entry in self.correct_answers if entry[0] not in past_winners]
 
         if (len(new_winners) < 3):
-            past_winners_pool = [entry for entry in self.correct_answers if entry[1] in past_winners]
+            past_winners_pool = [entry for entry in self.correct_answers if entry[0] in past_winners]
             random.shuffle(past_winners_pool)
             remaining_needed = 3 - len(new_winners)
             new_winners.extend(past_winners_pool[:min(remaining_needed, len(past_winners_pool))])
