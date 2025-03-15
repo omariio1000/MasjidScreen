@@ -6,4 +6,5 @@ pip install pandas
 pip install google-api-python-client
 pip install google-auth-httplib2
 pip install google-auth-oauthlib
-cmd /k pip install qrcode
+pip install qrcode
+pause

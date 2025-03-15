@@ -5,4 +5,5 @@ git fetch
 git status
 cd /d "%~dp0"\code
 echo Starting Python script...
-cmd /k python masjid_display.py
+python masjid_display.py
+pause
