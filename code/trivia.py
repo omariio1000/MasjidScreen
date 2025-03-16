@@ -96,6 +96,13 @@ class Trivia:
         selected_names = random.sample(new_winners, min(len(new_winners), 3))
         return selected_names
 
+def rmDoubleSpace(text: str) -> str:
+    """Removes extra spaces between words and trims leading/trailing spaces."""
+    return " ".join(text.split())
+
+def cleanup(text: str) -> str:
+    return rmDoubleSpace(text.strip().lower())
+
 def save_all_responses(data, day):
     """Log all responses in form at time of winner selection"""
 
@@ -106,12 +113,15 @@ def save_all_responses(data, day):
     except FileNotFoundError:
         all_data = {}
 
+        for entry in data:
+            entry["First Name"] = cleanup(entry["First Name"])
+            entry["Last Name"] = cleanup(entry["Last Name"])
+            entry["Email"] = cleanup(entry["Email"])
+
     all_data[str(day)] = data
 
     with open(filename, "w") as file:
         json.dump(all_data, file, indent=4)
-    
-    pass
 
 def get_form_link_answers(json, form_id):
     """Get the form link and correct answers from trivia_details.json"""
@@ -188,9 +198,9 @@ def get_winners(day):
     
     trivia = Trivia(form_link, day)
     if not trivia.data.empty:
-        trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip().lower())
-        trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip().lower())
-        trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip().lower())
+        trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: cleanup(x))
+        trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: cleanup(x))
+        trivia.data['Email'] = trivia.data['Email'].apply(lambda x: cleanup(x))
 
     # Display the DataFrame
     # print(f"\n{trivia.data}")
@@ -324,30 +334,49 @@ def log_winners(day, winners : list, test):
     else:
         print(f"\nLogged 0 winners for day {day}.")
 
+def cleanupFiles():
+    """Cleans up winner and all answer files"""
+    # Clean up winners file
+    try:
+        with open('../resources/trivia_winners.json', "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+
+    for day in data:
+        for winner in data[day]:
+            winner[0] = cleanup(winner[0])
+            winner[1] = cleanup(winner[1])
+
+    with open('../resources/trivia_winners.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+
+    # Clean up all answers file
+    try:
+        with open('../resources/trivia_all_answers.json', "r") as file:
+            all_data = json.load(file)
+    except FileNotFoundError:
+        all_data = {}
+
+    for day in all_data:
+        for data in all_data[day]:
+            data["First Name"] = cleanup(data["First Name"])
+            data["Last Name"] = cleanup(data["Last Name"])
+            data["Email"] = cleanup(data["Email"])
+
+    with open('../resources/trivia_all_answers.json', "w") as file:
+        json.dump(all_data, file, indent=4)
+
 def main():
     """Test trivia functionality"""
 
-    day = get_trivia_day(test=True)
-    print(day)
+    # day = get_trivia_day(test=True)
+    # print(day)
     # get_winners(0)
     # get_form_questions_options(0)
 
-    # json_file = '../resources/trivia_winners.json'
-    
-    # # Load existing data from the JSON file or create a new structure
-    # try:
-    #     with open(json_file, "r") as file:
-    #         data = json.load(file)
-    # except FileNotFoundError:
-    #     data = {}
-
-    # for day in data:
-    #     for winner in data[day]:
-    #         winner[1] = winner[1].lower()
-    #         print(winner)
-
-    # with open('../resources/trivia_winners.json', 'w') as file:
-    #     json.dump(data, file, indent=4)
+    cleanupFiles()
 
 if __name__ == '__main__':
     main()
