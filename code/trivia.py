@@ -189,7 +189,7 @@ def get_winners(day):
     trivia = Trivia(form_link, day)
     trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip().lower())
     trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip().lower())
-    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip())
+    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip().lower())
 
     # Display the DataFrame
     # print(f"\n{trivia.data}")
@@ -333,6 +333,23 @@ def main():
     print(day)
     # get_winners(0)
     # get_form_questions_options(0)
+
+    # json_file = '../resources/trivia_winners.json'
+    
+    # # Load existing data from the JSON file or create a new structure
+    # try:
+    #     with open(json_file, "r") as file:
+    #         data = json.load(file)
+    # except FileNotFoundError:
+    #     data = {}
+
+    # for day in data:
+    #     for winner in data[day]:
+    #         winner[1] = winner[1].lower()
+    #         print(winner)
+
+    # with open('../resources/trivia_winners.json', 'w') as file:
+    #     json.dump(data, file, indent=4)
 
 if __name__ == '__main__':
     main()
