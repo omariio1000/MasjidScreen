@@ -163,48 +163,71 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     """Updating trivia questions and winners as well as logging, sending emails, and generating QR code"""
     print(f"Day {day} of Ramadan")
 
-    if not trivia.check_winners_updated(str(day - 1)):
-        winners = trivia.get_winners(day - 1)
-        trivia.log_winners(str(day - 1), winners, test)
-    else:
-        winners = trivia.get_past_winners(str(day - 1))
+    if (day < 0 or day > 30):
+        winners = None
+        trivia.make_qr_with_link("icc-hillsboro.org", 'trivia.png')
+        ramadan_labels.question_one['text'] = ''
+        ramadan_labels.question_one_options['text'] = ''
 
-    winners = [sublist[:1] for sublist in winners]
-    print(f"\nWinners: {winners}")
-    if winners:        
-        if len(winners) >= 1:
-            ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip().capitalize()
-            ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[-1].strip().capitalize()
+        if day > 0:
+            ramadan_labels.question_two['text'] = "Thank you for participating!"
+            ramadan_labels.question_two_options['text'] = f"We hope you join us again next year inshaAllah!"
+        else:
+            ramadan_labels.question_two['text'] = "Ramadan is starting soon!"
+            ramadan_labels.question_two_options['text'] = f"We hope you join us for trivia this year inshaAllah!"
+
+        ramadan_labels.question_three['text'] = ''
+        ramadan_labels.question_three_options['text'] = ''
+
+        ramadan_labels.winner_one_first['text'] = ""
+        ramadan_labels.winner_one_last['text'] = ""
+        ramadan_labels.winner_two_first['text'] = ""
+        ramadan_labels.winner_two_last['text'] = ""
+        ramadan_labels.winner_three_first['text'] = ""
+        ramadan_labels.winner_three_last['text'] = ""
+    else:
+        trivia.make_qr(day)
+        question, option1, option2, option3 = trivia.get_form_questions_options(day)
+        ramadan_labels.question_one['text'] = '\n'.join(textwrap.wrap(question[0], width=95))
+        ramadan_labels.question_one_options['text'] = f"a) {option1[0]}  b) {option2[0]}  c) {option3[0]}"
+        ramadan_labels.question_two['text'] = '\n'.join(textwrap.wrap(question[1], width=95))
+        ramadan_labels.question_two_options['text'] = f"a) {option1[1]}  b) {option2[1]}  c) {option3[1]}"
+        ramadan_labels.question_three['text'] = '\n'.join(textwrap.wrap(question[2], width=95))
+        ramadan_labels.question_three_options['text'] = f"a) {option1[2]}  b) {option2[2]}  c) {option3[2]}"
+
+    if day <= 31:
+        if not trivia.check_winners_updated(str(day - 1)):
+            winners = trivia.get_winners(day - 1)
+            trivia.log_winners(str(day - 1), winners, test)
+        else:
+            winners = trivia.get_past_winners(str(day - 1))
+        winners = [sublist[:1] for sublist in winners]
+        print(f"\nWinners: {winners}")
+
+        if winners:        
+            if len(winners) >= 1:
+                ramadan_labels.winner_one_first['text'] = winners[0][0].split(" ")[0].strip().capitalize()
+                ramadan_labels.winner_one_last['text'] = winners[0][0].split(" ")[-1].strip().capitalize()
+                ramadan_labels.winner_two_first['text'] = ""
+                ramadan_labels.winner_two_last['text'] = ""
+                ramadan_labels.winner_three_first['text'] = ""
+                ramadan_labels.winner_three_last['text'] = ""
+
+            if len(winners) >= 2:
+                ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0].strip().capitalize()
+                ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[-1].strip().capitalize()
+
+            if len(winners) >= 3:
+                ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0].strip().capitalize()
+                ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[-1].strip().capitalize()
+        else:
+            ramadan_labels.winner_one_first['text'] = "No Winners"
+            ramadan_labels.winner_one_last['text'] = "Yesterday"
             ramadan_labels.winner_two_first['text'] = ""
             ramadan_labels.winner_two_last['text'] = ""
             ramadan_labels.winner_three_first['text'] = ""
             ramadan_labels.winner_three_last['text'] = ""
 
-        if len(winners) >= 2:
-            ramadan_labels.winner_two_first['text'] = winners[1][0].split(" ")[0].strip().capitalize()
-            ramadan_labels.winner_two_last['text'] = winners[1][0].split(" ")[-1].strip().capitalize()
-
-        if len(winners) >= 3:
-            ramadan_labels.winner_three_first['text'] = winners[2][0].split(" ")[0].strip().capitalize()
-            ramadan_labels.winner_three_last['text'] = winners[2][0].split(" ")[-1].strip().capitalize()
-    else:
-        ramadan_labels.winner_one_first['text'] = "No Winners"
-        ramadan_labels.winner_one_last['text'] = "Yesterday"
-        ramadan_labels.winner_two_first['text'] = ""
-        ramadan_labels.winner_two_last['text'] = ""
-        ramadan_labels.winner_three_first['text'] = ""
-        ramadan_labels.winner_three_last['text'] = ""
-
-    question, option1, option2, option3 = trivia.get_form_questions_options(day)
-
-    ramadan_labels.question_one['text'] = '\n'.join(textwrap.wrap(question[0], width=95))
-    ramadan_labels.question_one_options['text'] = f"a) {option1[0]}  b) {option2[0]}  c) {option3[0]}"
-    ramadan_labels.question_two['text'] = '\n'.join(textwrap.wrap(question[1], width=95))
-    ramadan_labels.question_two_options['text'] = f"a) {option1[1]}  b) {option2[1]}  c) {option3[1]}"
-    ramadan_labels.question_three['text'] = '\n'.join(textwrap.wrap(question[2], width=95))
-    ramadan_labels.question_three_options['text'] = f"a) {option1[2]}  b) {option2[2]}  c) {option3[2]}"
-
-    trivia.make_qr(day)
     trivia_qr_image = Image.open('trivia.png')
     trivia_qr_image = trivia_qr_image.resize((int(height_value * 0.1851851852), int(height_value * 0.1851851852)))
     tq_image.clear()

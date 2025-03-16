@@ -187,9 +187,10 @@ def get_winners(day):
         return []
     
     trivia = Trivia(form_link, day)
-    trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip().lower())
-    trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip().lower())
-    trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip().lower())
+    if not trivia.data.empty:
+        trivia.data['First Name'] = trivia.data['First Name'].apply(lambda x: x.strip().lower())
+        trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: x.strip().lower())
+        trivia.data['Email'] = trivia.data['Email'].apply(lambda x: x.strip().lower())
 
     # Display the DataFrame
     # print(f"\n{trivia.data}")
@@ -259,9 +260,6 @@ def get_trivia_day(test=False):
     today = datetime.now()
     delta = today - input_date
     day = delta.days + 1
-
-    if (not test) and (day < 0): # test form
-        day = 0
 
     return day
 
