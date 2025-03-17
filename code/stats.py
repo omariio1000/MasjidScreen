@@ -75,11 +75,14 @@ def getData(file: str):
         print("Files not found. Exiting...")
         exit(1)
 
-def main():
+def printAllStats():
     print(f"Total Entries: {totalEntries()} ({uniqueEntries()} Unique)")
     print(f"Total Winners: {totalWinners()} ({uniqueWinners()} Unique)")
     print(f"Average Entries Per Day: {averageDailyEntries()}")
     print(f"Total Amount Gifted: ${totalMoney()}")
+
+def main():
+    printAllStats()
 
 if __name__ == '__main__':
     main()

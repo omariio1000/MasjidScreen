@@ -179,7 +179,7 @@ def get_form_questions_options(day):
         option2.append(options[1])
         option3.append(options[2])
     
-    print(f"\nQuestions: {questions}\nOptions: {option1}, {option2}, {option3}")
+    print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}")
 
     return questions, option1, option2, option3
 

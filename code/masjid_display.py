@@ -14,6 +14,7 @@ import argparse
 import trivia
 import textwrap
 import json
+from stats import printAllStats
 
 photos = [] # array to store the list of the resized photos 
 tq_image = [] # workaround to store trivia qr code and update during run time
@@ -202,7 +203,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
         else:
             winners = trivia.get_past_winners(str(day - 1))
         winners = [sublist[:1] for sublist in winners]
-        print(f"\nWinners: {winners}")
+        print(f"Winners: {winners}")
 
         if winners:        
             if len(winners) >= 1:
@@ -233,6 +234,8 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     tq_image.clear()
     tq_image.append(ImageTk.PhotoImage(trivia_qr_image))
     ramadan_labels.trivia_qr['image'] = tq_image[0]
+    print("\nStats so far:")
+    printAllStats()
     print()
 
 def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test):
