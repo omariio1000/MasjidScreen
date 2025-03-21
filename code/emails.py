@@ -66,7 +66,7 @@ def hide_email(email):
 
 def send_email(name, receiving_address, code, date):
     """Send an email using the Gmail API."""
-
+    name = ' '.join([part.capitalize() for part in name.split()])
     try:
         # Create the email message
         message = MIMEMultipart()
