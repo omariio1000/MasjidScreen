@@ -211,7 +211,7 @@ def get_winners(day):
     winners = trivia.select_winners()
 
     # print(f"\nSelected winners: {winners}")
-
+    cleanupFiles()
     return winners
 
 def make_qr_with_link(public_link, filename):
@@ -361,9 +361,9 @@ def cleanupFiles():
 
     for day in all_data:
         for data in all_data[day]:
-            data["First Name"] =data["First Name"].apply(lambda x: cleanup(x))
-            data["Last Name"] = data["Last Name"].apply(lambda x: cleanup(x))
-            data["Email"] = data["Email"].apply(lambda x: cleanup(x))
+            data["First Name"] = cleanup(data["First Name"])
+            data["Last Name"] = cleanup(data["Last Name"])
+            data["Email"] = cleanup(data["Email"])
 
     with open('../resources/trivia_all_answers.json', "w") as file:
         json.dump(all_data, file, indent=4)

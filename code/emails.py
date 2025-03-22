@@ -16,6 +16,7 @@ from datetime import datetime
 
 
 def create_email_template(name, date, code):
+    name = ' '.join([part.capitalize() for part in name.split()])
     """Create an email body with a dynamic name, date, and code."""
 
     email_body = f"Assalamu Alaikum {name},\n\nCongratulations on winning trivia on {date}!\nHere is your amazon gift card code: {code}.\n\nJazakum Allahu Khairan,\nICCH Trivia Team\n\nThis is an automated email, please don't reply."
