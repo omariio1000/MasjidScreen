@@ -445,8 +445,14 @@ def main():
     parser.add_argument("-t", action="store_true", help="enables test mode")
     args = parser.parse_args()
 
+    with open('../config.json', "r") as file:
+        config = json.load(file)
+
     # reading prayer schedule excel file
-    data = pd.read_excel(os.path.dirname(os.path.abspath(__file__)) + '/../prayer_schedule.xlsx',sheet_name=0,header=0) # read prayer time excelsheet
+    prayer_schedule_path = config["prayer_schedule"]
+    if not os.path.exists(prayer_schedule_path):
+        prayer_schedule_path = os.path.dirname(os.path.abspath(__file__)) + '/../prayer_schedule.xlsx'
+    data = pd.read_excel(prayer_schedule_path,sheet_name=0,header=0) # read prayer time excelsheet
 
     #tk window declaration with name of Prayer Time Portland Oregon
     window = tk.Tk(className='Prayer Time Portland Oregon')
@@ -464,9 +470,6 @@ def main():
     background = Image.open(os.path.dirname(os.path.abspath(__file__)) + background_path)
     background = background.resize((width_value, height_value))
     bg = ImageTk.PhotoImage(background)
-
-    with open('../config.json', "r") as file:
-        config = json.load(file)
 
     socials_link = config["socials"]
     donate_link = config["donate"]
