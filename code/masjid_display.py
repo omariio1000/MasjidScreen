@@ -148,7 +148,7 @@ def update_photos(height_value):
         load1 = load.resize((height_value,height_value)) # reszing the ad photo
         photos.append(ImageTk.PhotoImage(load1))
     
-    print("Photos updated from \"", main_folder, "\" at", tm.strftime('%#m/%#d/%Y %#I:%M:%S %p') + "\n")
+    print(f"Photos updated from \"{os.path.abspath(main_folder)}\" at {tm.strftime('%#m/%#d/%Y %#I:%M:%S %p')} \n")
     
 def quit(window):
     """close Admin window if cancel is clicked"""
@@ -453,6 +453,8 @@ def main():
     if not os.path.exists(prayer_schedule_path):
         prayer_schedule_path = os.path.dirname(os.path.abspath(__file__)) + '/../prayer_schedule.xlsx'
     data = pd.read_excel(prayer_schedule_path,sheet_name=0,header=0) # read prayer time excelsheet
+
+    print(f"\nGetting prayer times from \"{os.path.abspath(prayer_schedule_path)}\"\n")
 
     #tk window declaration with name of Prayer Time Portland Oregon
     window = tk.Tk(className='Prayer Time Portland Oregon')
