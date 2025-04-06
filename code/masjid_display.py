@@ -134,7 +134,7 @@ def update_photos(height_value):
 
     # assigning the whole path to the photo list
     for file in photo_path:
-        if (file.endswith(".png")):
+        if file.endswith(".png") or file.endswith(".jpg") or file.endswith(".jpeg"):
             new_file = os.path.join(main_folder, file)
             photo_list.append(new_file)
             print(f"'{file}'", end=", " if file != photo_path[-1] else "")
