@@ -18,6 +18,7 @@
    - openpyxl
    - pandas 
    - qrcode
+   - PyQt5
 3. These libraries are needed for the Ramadan mode (`-r`):
    - oauth2client
    - google-api-python-client
