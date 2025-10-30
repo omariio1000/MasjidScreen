@@ -235,19 +235,38 @@ class PrayerTimesWindow(QMainWindow):
         bg_label.setStyleSheet("background-color: black;")
         bg_label.setAlignment(Qt.AlignCenter)
 
-        #colors, fonts
-        text_color = "white" if self.args.r else "black"
-        bg_color = rgb_to_hex((0, 25, 125)) if self.args.r else "white"
-        font_size = round(30 * (height_value/1080))
+        #colors, fonts - ICCH Theme
+        if self.args.r:
+            # Ramadan mode - Blue theme
+            self.dark_green = rgb_to_hex((0, 25, 125))  # Dark blue for Ramadan
+            self.tan = rgb_to_hex((100, 149, 237))  # Cornflower blue for Ramadan headers
+            self.gold = rgb_to_hex((255, 255, 255))  # White for clock outline in Ramadan
+            self.dark_gray = rgb_to_hex((25, 25, 112))  # Midnight blue for clock background in Ramadan
+        else:
+            # Normal mode - Green/Tan theme
+            self.dark_green = rgb_to_hex((21, 71, 52))  # ICCH dark green
+            self.tan = rgb_to_hex((210, 180, 140))  # ICCH tan
+            self.gold = rgb_to_hex((255, 215, 0))  # Shiny gold for clock outline
+            self.dark_gray = rgb_to_hex((45, 45, 45))  # Dark gray for clock background
+        
+        self.light_green = rgb_to_hex((144, 238, 144))  # Light green for current prayer
+        self.light_red = rgb_to_hex((255, 100, 100))  # Light red for next prayer
+        
+        text_color = "white"  # White text for better contrast
+        bg_color = self.dark_green  # Use dark green/blue theme
+        section_bg = self.tan  # Tan/blue for section headers
+        font_size = round(20 * (height_value/1080))  # Scaled down from 30
         font = QFont('Helvetica', font_size, QFont.Bold)
+        header_font = QFont('Helvetica', round(font_size * 1.1), QFont.Bold)  # Slightly larger for headers
+        clock_font = QFont('Helvetica', round(font_size * 1.3), QFont.Bold)  # Larger for clock
 
         #prayer times frame
         
         times_frame = QFrame(central_widget)
-        times_frame.setStyleSheet(f"background-color: {bg_color}; border: none;")
+        times_frame.setStyleSheet(f"background-color: {bg_color}; border: 3px solid {self.tan};")
         times_frame.setAutoFillBackground(True)
 
-        x_ratio = 0.0400
+        x_ratio = 0.0325
         y_ratio = 0.05
         w_ratio = 0.294
         h_ratio = 0.741
@@ -301,13 +320,13 @@ class PrayerTimesWindow(QMainWindow):
         ayah_layout.setSpacing(10)
         
         #ayah (arabic)
-        arabic_font_size = round(25 * (height_value / 1080))
+        arabic_font_size = round(25.5 * (height_value / 1080))
 
         arabic_font = QFont(font_family, arabic_font_size)
-        arabic_font.setBold(True)
+        #arabic_font.setBold(True)
 
         self.ayah_arabic = QLabel(daily_ayah['arabic'], ayah_frame)
-        self.ayah_arabic.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_arabic.setStyleSheet(f"background-color: transparent; color: white; border: none;")
         self.ayah_arabic.setFont(arabic_font)
         self.ayah_arabic.setAlignment(Qt.AlignCenter)
         self.ayah_arabic.setWordWrap(True)
@@ -316,7 +335,7 @@ class PrayerTimesWindow(QMainWindow):
         #translation
         translation_font = QFont('Helvetica', round(13 * (height_value/1080)))
         self.ayah_translation = QLabel(daily_ayah['translation'], ayah_frame)
-        self.ayah_translation.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_translation.setStyleSheet(f"background-color: transparent; color: white; border: none;")
         self.ayah_translation.setFont(translation_font)
         self.ayah_translation.setAlignment(Qt.AlignCenter)
         self.ayah_translation.setWordWrap(True)
@@ -324,7 +343,7 @@ class PrayerTimesWindow(QMainWindow):
         #reference
         reference_font = QFont('Helvetica', round(12 * (height_value/1080)), QFont.StyleItalic)
         self.ayah_reference = QLabel(daily_ayah['reference'], ayah_frame)
-        self.ayah_reference.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_reference.setStyleSheet(f"background-color: transparent; color: white; border: none;")
         self.ayah_reference.setFont(reference_font)
         self.ayah_reference.setAlignment(Qt.AlignCenter)
         
@@ -338,53 +357,178 @@ class PrayerTimesWindow(QMainWindow):
 
         #create labels
         self.labels = Labels(times_frame, bg_color, text_color, font, is_ramadan=self.args.r)
+        
+        # Set clock font to stand out with gold outline and dark gray background
+        self.labels.clock_label.setFont(clock_font)
+        self.labels.clock_label.setStyleSheet(f"background-color: {self.dark_gray}; color: white; border: 3px solid {self.gold}; padding: 10px; border-radius: 5px;")
 
         grid = QGridLayout(times_frame)
-        grid.setContentsMargins(10, 10, 10, 10)
-        grid.setSpacing(5)
-        grid.addWidget(self.labels.clock_label, 0, 0, 1, 3)
-        grid.addWidget(self.labels.today_date_label, 1, 1, 1, 2)
-        grid.addWidget(self.labels.today_space_label, 2, 0)
-        grid.addWidget(self.labels.athan_label, 2, 1)
-        grid.addWidget(self.labels.iqama_label, 2, 2)
-        grid.addWidget(self.labels.today_fajr_label, 3, 0)
-        grid.addWidget(self.labels.today_shurooq_label, 4, 0)
-        grid.addWidget(self.labels.today_thuhr_label, 5, 0)
-        grid.addWidget(self.labels.today_asr_label, 6, 0)
-        grid.addWidget(self.labels.today_maghrib_label, 7, 0)
-        grid.addWidget(self.labels.today_isha_label, 8, 0)
+        grid.setContentsMargins(15, 15, 15, 15)
+        grid.setSpacing(5)  # Increased spacing for visible separation
+        grid.setVerticalSpacing(3)  # Vertical spacing between rows
         
-        grid.addWidget(self.labels.tomorrow_date_label, 11, 1, 1, 2)
-        grid.addWidget(self.labels.tomorrow_fajr_label, 12, 0)
-        grid.addWidget(self.labels.tomorrow_shurooq_label, 13, 0)
-        grid.addWidget(self.labels.tomorrow_thuhr_label, 14, 0)
-        grid.addWidget(self.labels.tomorrow_asr_label, 15, 0)
-        grid.addWidget(self.labels.tomorrow_maghrib_label, 16, 0)
-        grid.addWidget(self.labels.tomorrow_isha_label, 17, 0)
+        # Create section headers with tan background
+        today_header = QLabel("TODAY", times_frame)
+        today_header.setStyleSheet(f"background-color: {section_bg}; color: {self.dark_green}; border: none; padding: 5px; border-radius: 3px;")
+        today_header.setFont(header_font)
+        today_header.setAlignment(Qt.AlignCenter)
         
-        grid.addWidget(self.labels.today_fajr_athan_label, 3, 1)
-        grid.addWidget(self.labels.today_fajr_iqama_label, 3, 2)
-        grid.addWidget(self.labels.today_shurooq_athan_label, 4, 1, 1, 2)
-        grid.addWidget(self.labels.today_thuhr_athan_label, 5, 1)
-        grid.addWidget(self.labels.today_thuhr_iqama_label, 5, 2)
-        grid.addWidget(self.labels.today_asr_athan_label, 6, 1)
-        grid.addWidget(self.labels.today_asr_iqama_label, 6, 2)
-        grid.addWidget(self.labels.today_maghrib_athan_label, 7, 1)
-        grid.addWidget(self.labels.today_maghrib_iqama_label, 7, 2)
-        grid.addWidget(self.labels.today_isha_athan_label, 8, 1)
-        grid.addWidget(self.labels.today_isha_iqama_label, 8, 2)
+        tomorrow_header = QLabel("TOMORROW", times_frame)
+        tomorrow_header.setStyleSheet(f"background-color: {section_bg}; color: {self.dark_green}; border: none; padding: 5px; border-radius: 3px;")
+        tomorrow_header.setFont(header_font)
+        tomorrow_header.setAlignment(Qt.AlignCenter)
         
-        grid.addWidget(self.labels.tomorrow_fajr_athan_label, 12, 1)
-        grid.addWidget(self.labels.tomorrow_fajr_iqama_label, 12, 2)
-        grid.addWidget(self.labels.tomorrow_shurooq_athan_label, 13, 1, 1, 2)
-        grid.addWidget(self.labels.tomorrow_thuhr_athan_label, 14, 1)
-        grid.addWidget(self.labels.tomorrow_thuhr_iqama_label, 14, 2)
-        grid.addWidget(self.labels.tomorrow_asr_athan_label, 15, 1)
-        grid.addWidget(self.labels.tomorrow_asr_iqama_label, 15, 2)
-        grid.addWidget(self.labels.tomorrow_maghrib_athan_label, 16, 1)
-        grid.addWidget(self.labels.tomorrow_maghrib_iqama_label, 16, 2)
-        grid.addWidget(self.labels.tomorrow_isha_athan_label, 17, 1)
-        grid.addWidget(self.labels.tomorrow_isha_iqama_label, 17, 2)
+        # Create frames for each prayer row to give them visible borders
+        self.today_fajr_frame = QFrame(times_frame)
+        self.today_shurooq_frame = QFrame(times_frame)
+        self.today_thuhr_frame = QFrame(times_frame)
+        self.today_asr_frame = QFrame(times_frame)
+        self.today_maghrib_frame = QFrame(times_frame)
+        self.today_isha_frame = QFrame(times_frame)
+        self.tomorrow_fajr_frame = QFrame(times_frame)
+        
+        # Style all frames with borders
+        frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {self.tan}; border-radius: 3px;"
+        for frame in [self.today_fajr_frame, self.today_shurooq_frame, self.today_thuhr_frame, 
+                      self.today_asr_frame, self.today_maghrib_frame, self.today_isha_frame, 
+                      self.tomorrow_fajr_frame]:
+            frame.setStyleSheet(frame_style)
+            frame_layout = QHBoxLayout(frame)
+            frame_layout.setContentsMargins(5, 3, 5, 3)
+            frame_layout.setSpacing(10)
+        
+        # Add widgets to frames
+        self.today_fajr_frame.layout().addWidget(self.labels.today_fajr_label)
+        self.today_fajr_frame.layout().addWidget(self.labels.today_fajr_athan_label)
+        self.today_fajr_frame.layout().addWidget(self.labels.today_fajr_iqama_label)
+        
+        self.today_shurooq_frame.layout().addWidget(self.labels.today_shurooq_label)
+        self.today_shurooq_frame.layout().addStretch()  # Push time to center/right
+        self.today_shurooq_frame.layout().addWidget(self.labels.today_shurooq_athan_label)
+        self.today_shurooq_frame.layout().addStretch()  # Balance the spacing
+        
+        self.today_thuhr_frame.layout().addWidget(self.labels.today_thuhr_label)
+        self.today_thuhr_frame.layout().addWidget(self.labels.today_thuhr_athan_label)
+        self.today_thuhr_frame.layout().addWidget(self.labels.today_thuhr_iqama_label)
+        
+        self.today_asr_frame.layout().addWidget(self.labels.today_asr_label)
+        self.today_asr_frame.layout().addWidget(self.labels.today_asr_athan_label)
+        self.today_asr_frame.layout().addWidget(self.labels.today_asr_iqama_label)
+        
+        self.today_maghrib_frame.layout().addWidget(self.labels.today_maghrib_label)
+        self.today_maghrib_frame.layout().addWidget(self.labels.today_maghrib_athan_label)
+        self.today_maghrib_frame.layout().addWidget(self.labels.today_maghrib_iqama_label)
+        
+        self.today_isha_frame.layout().addWidget(self.labels.today_isha_label)
+        self.today_isha_frame.layout().addWidget(self.labels.today_isha_athan_label)
+        self.today_isha_frame.layout().addWidget(self.labels.today_isha_iqama_label)
+        
+        self.tomorrow_fajr_frame.layout().addWidget(self.labels.tomorrow_fajr_label)
+        self.tomorrow_fajr_frame.layout().addWidget(self.labels.tomorrow_fajr_athan_label)
+        self.tomorrow_fajr_frame.layout().addWidget(self.labels.tomorrow_fajr_iqama_label)
+        
+        # Create header row frame
+        header_frame = QFrame(times_frame)
+        header_frame.setStyleSheet(f"background-color: {self.tan}; border-radius: 3px;")
+        header_layout = QHBoxLayout(header_frame)
+        header_layout.setContentsMargins(5, 3, 5, 3)
+        header_layout.setSpacing(10)
+        header_layout.addWidget(self.labels.today_space_label)
+        header_layout.addWidget(self.labels.athan_label)
+        header_layout.addWidget(self.labels.iqama_label)
+        
+        # Style header labels
+        header_label_color = "white" if self.args.r else self.dark_green
+        self.labels.today_space_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
+        self.labels.athan_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
+        self.labels.iqama_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
+        
+        # Clock at top
+        grid.addWidget(self.labels.clock_label, 0, 0, 1, 1)
+        
+        # TODAY SECTION
+        grid.addWidget(today_header, 1, 0, 1, 1)
+        grid.addWidget(self.labels.today_date_label, 2, 0, 1, 1)
+        
+        # Column headers for today
+        grid.addWidget(header_frame, 3, 0, 1, 1)
+        
+        # Today's prayers - each in its own framed row
+        grid.addWidget(self.today_fajr_frame, 4, 0)
+        grid.addWidget(self.today_shurooq_frame, 5, 0)
+        grid.addWidget(self.today_thuhr_frame, 6, 0)
+        grid.addWidget(self.today_asr_frame, 7, 0)
+        grid.addWidget(self.today_maghrib_frame, 8, 0)
+        grid.addWidget(self.today_isha_frame, 9, 0)
+        
+        # TOMORROW SECTION
+        grid.addWidget(tomorrow_header, 11, 0, 1, 1)
+        grid.addWidget(self.labels.tomorrow_date_label, 12, 0, 1, 1)
+        
+        # Tomorrow's prayers
+        grid.addWidget(self.tomorrow_fajr_frame, 13, 0)
+        
+        # Add tomorrow's other prayers to grid without frames (for simplicity)
+        tomorrow_shurooq_frame = QFrame(times_frame)
+        tomorrow_shurooq_frame.setStyleSheet(frame_style)
+        layout_sh = QHBoxLayout(tomorrow_shurooq_frame)
+        layout_sh.setContentsMargins(5, 3, 5, 3)
+        layout_sh.setSpacing(10)
+        layout_sh.addWidget(self.labels.tomorrow_shurooq_label)
+        layout_sh.addStretch()  # Push time to center/right
+        layout_sh.addWidget(self.labels.tomorrow_shurooq_athan_label)
+        layout_sh.addStretch()  # Balance the spacing
+        grid.addWidget(tomorrow_shurooq_frame, 14, 0)
+        
+        tomorrow_thuhr_frame = QFrame(times_frame)
+        tomorrow_thuhr_frame.setStyleSheet(frame_style)
+        layout_th = QHBoxLayout(tomorrow_thuhr_frame)
+        layout_th.setContentsMargins(5, 3, 5, 3)
+        layout_th.setSpacing(10)
+        layout_th.addWidget(self.labels.tomorrow_thuhr_label)
+        layout_th.addWidget(self.labels.tomorrow_thuhr_athan_label)
+        layout_th.addWidget(self.labels.tomorrow_thuhr_iqama_label)
+        grid.addWidget(tomorrow_thuhr_frame, 15, 0)
+        
+        tomorrow_asr_frame = QFrame(times_frame)
+        tomorrow_asr_frame.setStyleSheet(frame_style)
+        layout_as = QHBoxLayout(tomorrow_asr_frame)
+        layout_as.setContentsMargins(5, 3, 5, 3)
+        layout_as.setSpacing(10)
+        layout_as.addWidget(self.labels.tomorrow_asr_label)
+        layout_as.addWidget(self.labels.tomorrow_asr_athan_label)
+        layout_as.addWidget(self.labels.tomorrow_asr_iqama_label)
+        grid.addWidget(tomorrow_asr_frame, 16, 0)
+        
+        tomorrow_maghrib_frame = QFrame(times_frame)
+        tomorrow_maghrib_frame.setStyleSheet(frame_style)
+        layout_ma = QHBoxLayout(tomorrow_maghrib_frame)
+        layout_ma.setContentsMargins(5, 3, 5, 3)
+        layout_ma.setSpacing(10)
+        layout_ma.addWidget(self.labels.tomorrow_maghrib_label)
+        layout_ma.addWidget(self.labels.tomorrow_maghrib_athan_label)
+        layout_ma.addWidget(self.labels.tomorrow_maghrib_iqama_label)
+        grid.addWidget(tomorrow_maghrib_frame, 17, 0)
+        
+        tomorrow_isha_frame = QFrame(times_frame)
+        tomorrow_isha_frame.setStyleSheet(frame_style)
+        layout_is = QHBoxLayout(tomorrow_isha_frame)
+        layout_is.setContentsMargins(5, 3, 5, 3)
+        layout_is.setSpacing(10)
+        layout_is.addWidget(self.labels.tomorrow_isha_label)
+        layout_is.addWidget(self.labels.tomorrow_isha_athan_label)
+        layout_is.addWidget(self.labels.tomorrow_isha_iqama_label)
+        grid.addWidget(tomorrow_isha_frame, 18, 0)
+        
+        # Store frames for color updates
+        self.tomorrow_shurooq_frame = tomorrow_shurooq_frame
+        self.tomorrow_thuhr_frame = tomorrow_thuhr_frame
+        self.tomorrow_asr_frame = tomorrow_asr_frame
+        self.tomorrow_maghrib_frame = tomorrow_maghrib_frame
+        self.tomorrow_isha_frame = tomorrow_isha_frame
+        
+        # Store grid for column highlighting
+        self.prayer_grid = grid
 
         #qr codes
 
@@ -397,28 +541,57 @@ class PrayerTimesWindow(QMainWindow):
         trivia.make_qr_with_link(donate_link, "donate.png")
         trivia.make_qr_with_link(website_link, "website.png")
 
-        qr_size = int(0.1157407407 * height_value)
+        # --- Social QR ---
+        social_x_ratio = 0.3550
+        social_y_ratio = 0.3150
+        social_w_ratio = 0.1157
+        social_h_ratio = 0.1157
 
         social_label = QLabel(central_widget)
-        socials_image = QPixmap('socials.png').scaled(qr_size, qr_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        social_label.setPixmap(socials_image)
-        social_label.setGeometry(int(width_value * 0.3828125) - qr_size//2, 
-                                  int(height_value * 0.2844907407) - qr_size//2, 
-                                  qr_size, qr_size)
-        
+        social_pixmap = QPixmap('socials.png').scaled(int(width_value * social_w_ratio),
+                                                    int(height_value * social_h_ratio),
+                                                    Qt.KeepAspectRatio,
+                                                    Qt.SmoothTransformation)
+        social_label.setPixmap(social_pixmap)
+        social_label.setGeometry(int(width_value * social_x_ratio),
+                                int(height_value * social_y_ratio),
+                                social_pixmap.width(),
+                                social_pixmap.height())
+
+        # --- Donate QR ---
+        donate_x_ratio = 0.3550
+        donate_y_ratio = 0.6450
+        donate_w_ratio = 0.1157
+        donate_h_ratio = 0.1157
+
         donate_label = QLabel(central_widget)
-        donate_pixmap = QPixmap('donate.png').scaled(qr_size, qr_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        donate_pixmap = QPixmap('donate.png').scaled(int(width_value * donate_w_ratio),
+                                                    int(height_value * donate_h_ratio),
+                                                    Qt.KeepAspectRatio,
+                                                    Qt.SmoothTransformation)
         donate_label.setPixmap(donate_pixmap)
-        donate_label.setGeometry(int(width_value * 0.3828125) - qr_size//2, 
-                                 int(height_value * 0.6273148148) - qr_size//2, 
-                                 qr_size, qr_size)
-        
+        donate_label.setGeometry(int(width_value * donate_x_ratio),
+                                int(height_value * donate_y_ratio),
+                                donate_pixmap.width(),
+                                donate_pixmap.height())
+
+        # --- Website QR ---
+        website_x_ratio = 0.3525
+        website_y_ratio = 0.8170
+        website_w_ratio = 0.1157
+        website_h_ratio = 0.1157
+
         website_label = QLabel(central_widget)
-        website_pixmap = QPixmap('website.png').scaled(qr_size, qr_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        website_pixmap = QPixmap('website.png').scaled(int(width_value * website_w_ratio),
+                                                    int(height_value * website_h_ratio),
+                                                    Qt.KeepAspectRatio,
+                                                    Qt.SmoothTransformation)
         website_label.setPixmap(website_pixmap)
-        website_label.setGeometry(int(width_value * 0.3828125) - qr_size//2, 
-                                  int(height_value * 0.8356481481) - qr_size//2, 
-                                  qr_size, qr_size)
+        website_label.setGeometry(int(width_value * website_x_ratio),
+                                int(height_value * website_y_ratio),
+                                website_pixmap.width(),
+                                website_pixmap.height())
+
 
         #flyer
 
@@ -516,7 +689,7 @@ class PrayerTimesWindow(QMainWindow):
             questions_w_ratio = 0.28
             questions_h_ratio = 0.20
             questions_x_ratio = 0.555
-            questions_y_ratio = 0.75
+            questions_y_ratio = 0.79
             
             questions_frame.setGeometry(
                 int(width_value * questions_x_ratio),
@@ -647,24 +820,27 @@ class PrayerTimesWindow(QMainWindow):
         self.labels.tomorrow_isha_athan_label.setText(Ishaa_Athan2)
         self.labels.tomorrow_isha_iqama_label.setText(Ishaa_Iqama2)
         
-        # Color highlighting
-        next_prayer_color = rgb_to_hex((255, 0, 0))
-        pre_prayer_color = rgb_to_hex((255, 255, 255)) if self.args.r else rgb_to_hex((0, 0, 0))
-        current_prayer_color = rgb_to_hex((0, 200, 0)) if self.args.r else rgb_to_hex((0, 50, 0))
+        # Color highlighting - now highlights entire row with background color
+        pre_prayer_color = "white"  # White text for non-active prayers
+        current_prayer_text = "black"  # Black text on light green background for better visibility
+        next_prayer_text = "black"  # Black text on light red background for better visibility
         
-        # Reset all colors to default first
-        all_prayer_labels = [
-            (self.labels.today_fajr_label, self.labels.today_fajr_athan_label, self.labels.today_fajr_iqama_label),
-            (self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, self.labels.today_shurooq_iqama_label),
-            (self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, self.labels.today_thuhr_iqama_label),
-            (self.labels.today_asr_label, self.labels.today_asr_athan_label, self.labels.today_asr_iqama_label),
-            (self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, self.labels.today_maghrib_iqama_label),
-            (self.labels.today_isha_label, self.labels.today_isha_athan_label, self.labels.today_isha_iqama_label),
-            (self.labels.tomorrow_fajr_label, self.labels.tomorrow_fajr_athan_label, self.labels.tomorrow_fajr_iqama_label),
+        # Reset all row frame backgrounds to default first
+        default_frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {self.tan}; border-radius: 3px;"
+        
+        all_prayer_frames = [
+            (self.today_fajr_frame, self.labels.today_fajr_label, self.labels.today_fajr_athan_label, self.labels.today_fajr_iqama_label),
+            (self.today_shurooq_frame, self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, self.labels.today_shurooq_iqama_label),
+            (self.today_thuhr_frame, self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, self.labels.today_thuhr_iqama_label),
+            (self.today_asr_frame, self.labels.today_asr_label, self.labels.today_asr_athan_label, self.labels.today_asr_iqama_label),
+            (self.today_maghrib_frame, self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, self.labels.today_maghrib_iqama_label),
+            (self.today_isha_frame, self.labels.today_isha_label, self.labels.today_isha_athan_label, self.labels.today_isha_iqama_label),
+            (self.tomorrow_fajr_frame, self.labels.tomorrow_fajr_label, self.labels.tomorrow_fajr_athan_label, self.labels.tomorrow_fajr_iqama_label),
         ]
         
-        for prayer_name, athan, iqama in all_prayer_labels:
-            self.set_prayer_colors(prayer_name, athan, iqama, pre_prayer_color)
+        for frame, prayer_name, athan, iqama in all_prayer_frames:
+            frame.setStyleSheet(default_frame_style)
+            self.set_prayer_label_colors(prayer_name, athan, iqama, pre_prayer_color)
         
         # Update photo hourly
         if ":00" in hour_time:
@@ -676,47 +852,47 @@ class PrayerTimesWindow(QMainWindow):
         else:
             self.updated = False
         
-        # Prayer time highlighting logic - now colors entire row
+        # Prayer time highlighting logic - now colors entire row frame background
         if hour_time < fajr_time:
             self.ramadan_updated = False
-            self.set_prayer_colors(self.labels.today_fajr_label, self.labels.today_fajr_athan_label, 
-                                  self.labels.today_fajr_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_fajr_frame, self.labels.today_fajr_label, self.labels.today_fajr_athan_label, 
+                                  self.labels.today_fajr_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= fajr_time and hour_time < sunrise_time:
-            self.set_prayer_colors(self.labels.today_fajr_label, self.labels.today_fajr_athan_label, 
-                                  self.labels.today_fajr_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, 
-                                  self.labels.today_shurooq_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_fajr_frame, self.labels.today_fajr_label, self.labels.today_fajr_athan_label, 
+                                  self.labels.today_fajr_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.today_shurooq_frame, self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, 
+                                  self.labels.today_shurooq_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= sunrise_time and hour_time < thuhr_time:
-            self.set_prayer_colors(self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, 
-                                  self.labels.today_shurooq_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, 
-                                  self.labels.today_thuhr_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_shurooq_frame, self.labels.today_shurooq_label, self.labels.today_shurooq_athan_label, 
+                                  self.labels.today_shurooq_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.today_thuhr_frame, self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, 
+                                  self.labels.today_thuhr_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= thuhr_time and hour_time < asr_time:
-            self.set_prayer_colors(self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, 
-                                  self.labels.today_thuhr_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.today_asr_label, self.labels.today_asr_athan_label, 
-                                  self.labels.today_asr_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_thuhr_frame, self.labels.today_thuhr_label, self.labels.today_thuhr_athan_label, 
+                                  self.labels.today_thuhr_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.today_asr_frame, self.labels.today_asr_label, self.labels.today_asr_athan_label, 
+                                  self.labels.today_asr_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= asr_time and hour_time < maghrib_time:
-            self.set_prayer_colors(self.labels.today_asr_label, self.labels.today_asr_athan_label, 
-                                  self.labels.today_asr_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, 
-                                  self.labels.today_maghrib_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_asr_frame, self.labels.today_asr_label, self.labels.today_asr_athan_label, 
+                                  self.labels.today_asr_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.today_maghrib_frame, self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, 
+                                  self.labels.today_maghrib_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= maghrib_time and hour_time < isha_time:
-            self.set_prayer_colors(self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, 
-                                  self.labels.today_maghrib_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.today_isha_label, self.labels.today_isha_athan_label, 
-                                  self.labels.today_isha_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_maghrib_frame, self.labels.today_maghrib_label, self.labels.today_maghrib_athan_label, 
+                                  self.labels.today_maghrib_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.today_isha_frame, self.labels.today_isha_label, self.labels.today_isha_athan_label, 
+                                  self.labels.today_isha_iqama_label, self.light_red, next_prayer_text)
         
         elif hour_time >= isha_time:
-            self.set_prayer_colors(self.labels.today_isha_label, self.labels.today_isha_athan_label, 
-                                  self.labels.today_isha_iqama_label, current_prayer_color)
-            self.set_prayer_colors(self.labels.tomorrow_fajr_label, self.labels.tomorrow_fajr_athan_label, 
-                                  self.labels.tomorrow_fajr_iqama_label, next_prayer_color)
+            self.set_prayer_frame_colors(self.today_isha_frame, self.labels.today_isha_label, self.labels.today_isha_athan_label, 
+                                  self.labels.today_isha_iqama_label, self.light_green, current_prayer_text)
+            self.set_prayer_frame_colors(self.tomorrow_fajr_frame, self.labels.tomorrow_fajr_label, self.labels.tomorrow_fajr_athan_label, 
+                                  self.labels.tomorrow_fajr_iqama_label, self.light_red, next_prayer_text)
             
             if self.args.r and not self.ramadan_updated and not self.args.t:
                 screen = QApplication.primaryScreen().geometry()
@@ -739,16 +915,21 @@ class PrayerTimesWindow(QMainWindow):
             icon = QIcon(photos[i if i < len(photos) else 0])
             self.flyer.setIcon(icon)
     
-    def set_prayer_colors(self, label, athan_label, iqama_label, color):
-        """set prayer label colors for entire row"""
-        label.setStyleSheet(f"background-color: transparent; color: {color}; border: none;")
-        athan_label.setStyleSheet(f"background-color: transparent; color: {color}; border: none;")
-        if iqama_label:
-            iqama_label.setStyleSheet(f"background-color: transparent; color: {color}; border: none;")
+    def set_prayer_frame_colors(self, frame, label, athan_label, iqama_label, bg_color, text_color):
+        """Set prayer frame and label colors for entire row with background"""
+        frame.setStyleSheet(f"background-color: {bg_color}; border: 2px solid {self.tan}; border-radius: 3px;")
+        self.set_prayer_label_colors(label, athan_label, iqama_label, text_color)
+    
+    def set_prayer_label_colors(self, label, athan_label, iqama_label, text_color):
+        """Set text color for prayer labels"""
+        label.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        athan_label.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        if iqama_label and iqama_label.text():  # Only style iqama if it has text (Shurooq doesn't)
+            iqama_label.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
 
     def get_daily_ayah(self):
         """Get daily ayah"""
-        ayahs_path = os.path.join(BASE_DIR, '..', 'resources', 'ayahs.json')
+        ayahs_path = os.path.join(BASE_DIR, '..', 'ayahs.json')
 
         try:
             with open(ayahs_path, 'r', encoding='utf-8') as f:
@@ -763,7 +944,7 @@ class PrayerTimesWindow(QMainWindow):
             return ayahs[ayah_index]
         except FileNotFoundError:
             return {
-                "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+                "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
                 "translation": "In the name of Allah, the Most Gracious, the Most Merciful.",
                 "reference": "Al-Fatihah 1:1"
             }
@@ -774,8 +955,7 @@ class PrayerTimesWindow(QMainWindow):
                 "translation": "In the name of Allah, the Most Gracious, the Most Merciful.",
                 "reference": "Al-Fatihah 1:1"
             }
-
-
+        
 def rgb_to_hex(rgb):
       """convert rgb to hex"""
       r, g, b = rgb
