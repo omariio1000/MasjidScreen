@@ -788,7 +788,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
 
 def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test):
     """Main program loop that updates times"""
-    current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
+    current_time = tm.strftime('%B %#d %#I:%M %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
 
