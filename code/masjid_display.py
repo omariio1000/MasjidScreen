@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget,
                               QPushButton, QFrame, QVBoxLayout, QHBoxLayout, 
                               QGridLayout)
 from PyQt5.QtCore import QTimer, Qt, QSize
-from PyQt5.QtGui import QPixmap, QFont, QColor, QIcon
+from PyQt5.QtGui import QPixmap, QFont, QColor, QIcon, QFontDatabase
 
 # declare and set the main directory for use in file
 
@@ -247,8 +247,8 @@ class PrayerTimesWindow(QMainWindow):
         times_frame.setStyleSheet(f"background-color: {bg_color}; border: none;")
         times_frame.setAutoFillBackground(True)
 
-        x_ratio = 0.0456
-        y_ratio = 0.125
+        x_ratio = 0.0400
+        y_ratio = 0.05
         w_ratio = 0.294
         h_ratio = 0.741
 
@@ -265,7 +265,76 @@ class PrayerTimesWindow(QMainWindow):
 
         print("")
 
+        font_file = "quran_font.ttf"
+        font_path = os.path.join(BASE_DIR, "..", "resources", font_file)
+
+        # Load the font
+        font_id = QFontDatabase.addApplicationFont(font_path)
+
+        if font_id == -1:
+            print(f"❌ Failed to load font at {font_path}")
+        else:
+            loaded_fonts = QFontDatabase.applicationFontFamilies(font_id)
+            if loaded_fonts:
+                font_family = loaded_fonts[0]
+                print(f"✅ Loaded font family: {font_family}")
+
+        ayah_frame = QFrame(central_widget)
+        ayah_frame.setStyleSheet(f"background-color: transparent; border: none;")
+        ayah_frame.setAutoFillBackground(True)
+        ayah_frame.setAttribute(Qt.WA_TranslucentBackground, True)
         
+        ayah_x = int(width_value * x_ratio) - left_shift
+        ayah_y = int(height_value * y_ratio) + int(height_value * h_ratio) + 47
+        ayah_w = int(width_value * w_ratio)
+        ayah_h = int(height_value * 0.17)  
+        
+        ayah_frame.setGeometry(ayah_x, ayah_y, ayah_w, ayah_h)
+        ayah_frame.show()
+        
+        #get todays ayah
+        daily_ayah = self.get_daily_ayah()
+        
+        #create ayah labels
+        ayah_layout = QVBoxLayout(ayah_frame)
+        ayah_layout.setContentsMargins(15, 15, 15, 15)
+        ayah_layout.setSpacing(10)
+        
+        #ayah (arabic)
+        arabic_font_size = round(25 * (height_value / 1080))
+
+        arabic_font = QFont(font_family, arabic_font_size)
+        arabic_font.setBold(True)
+
+        self.ayah_arabic = QLabel(daily_ayah['arabic'], ayah_frame)
+        self.ayah_arabic.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_arabic.setFont(arabic_font)
+        self.ayah_arabic.setAlignment(Qt.AlignCenter)
+        self.ayah_arabic.setWordWrap(True)
+
+        
+        #translation
+        translation_font = QFont('Helvetica', round(13 * (height_value/1080)))
+        self.ayah_translation = QLabel(daily_ayah['translation'], ayah_frame)
+        self.ayah_translation.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_translation.setFont(translation_font)
+        self.ayah_translation.setAlignment(Qt.AlignCenter)
+        self.ayah_translation.setWordWrap(True)
+        
+        #reference
+        reference_font = QFont('Helvetica', round(12 * (height_value/1080)), QFont.StyleItalic)
+        self.ayah_reference = QLabel(daily_ayah['reference'], ayah_frame)
+        self.ayah_reference.setStyleSheet(f"background-color: transparent; color: {text_color}; border: none;")
+        self.ayah_reference.setFont(reference_font)
+        self.ayah_reference.setAlignment(Qt.AlignCenter)
+        
+        ayah_layout.addWidget(self.ayah_arabic)
+        ayah_layout.addWidget(self.ayah_translation)
+        ayah_layout.addWidget(self.ayah_reference)
+        ayah_layout.addStretch()
+        
+        #store ayah 
+        self.current_ayah_day = datetime.now().timetuple().tm_yday
 
         #create labels
         self.labels = Labels(times_frame, bg_color, text_color, font, is_ramadan=self.args.r)
@@ -507,6 +576,16 @@ class PrayerTimesWindow(QMainWindow):
         tomorrow = today + 1
         today_schedule = self.data.loc[self.data["Day_of_year"] == today]
         tomorrow_schedule = self.data.loc[self.data["Day_of_year"] == tomorrow]
+
+         # Update ayah daily
+        current_day = datetime.now().timetuple().tm_yday
+        if current_day != self.current_ayah_day:
+            daily_ayah = self.get_daily_ayah()
+            self.ayah_arabic.setText(daily_ayah['arabic'])
+            self.ayah_translation.setText(daily_ayah['translation'])
+            self.ayah_reference.setText(daily_ayah['reference'])
+            self.current_ayah_day = current_day
+            print(f"Ayah updated for day {current_day}")
         
         # Extract today's times
         Fajr_Athan = today_schedule.iloc[0]["Fajr_Athan"].strftime('%#I:%M')
@@ -667,6 +746,35 @@ class PrayerTimesWindow(QMainWindow):
         if iqama_label:
             iqama_label.setStyleSheet(f"background-color: transparent; color: {color}; border: none;")
 
+    def get_daily_ayah(self):
+        """Get daily ayah"""
+        ayahs_path = os.path.join(BASE_DIR, '..', 'resources', 'ayahs.json')
+
+        try:
+            with open(ayahs_path, 'r', encoding='utf-8') as f:
+                ayahs_data = json.load(f)
+                ayahs = ayahs_data['ayahs']
+
+            # Use day of year to get days
+
+            day_of_year = datetime.now().timetuple().tm_yday
+            ayah_index = day_of_year % len(ayahs)
+
+            return ayahs[ayah_index]
+        except FileNotFoundError:
+            return {
+                "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+                "translation": "In the name of Allah, the Most Gracious, the Most Merciful.",
+                "reference": "Al-Fatihah 1:1"
+            }
+        except Exception as e:
+            print(f"Error loading ayahs: {e}")
+            return {
+                "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                "translation": "In the name of Allah, the Most Gracious, the Most Merciful.",
+                "reference": "Al-Fatihah 1:1"
+            }
+
 
 def rgb_to_hex(rgb):
       """convert rgb to hex"""
@@ -788,7 +896,7 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
 
 def display_time(labels, data, flyer, updated, ramadan, height_value, flyer_height, ramadan_labels, ramadan_updated, test):
     """Main program loop that updates times"""
-    current_time = tm.strftime('%B %#d %#I:%M %p') # calculate current time
+    current_time = tm.strftime('%B %#d %#I:%M:%S %p') # calculate current time
     today = datetime.now().timetuple().tm_yday # calculate current day of the year
     hour_time = tm.strftime('%H:%M') # calculate current hour
 
