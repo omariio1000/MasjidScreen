@@ -16,9 +16,9 @@ from stats import printAllStats
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, 
                               QPushButton, QFrame, QVBoxLayout, QHBoxLayout, 
-                              QGridLayout)
+                              QGridLayout, QSizePolicy)
 from PyQt5.QtCore import QTimer, Qt, QSize
-from PyQt5.QtGui import QPixmap, QFont, QColor, QIcon, QFontDatabase
+from PyQt5.QtGui import QPixmap, QFont, QColor, QIcon, QFontDatabase, QFontMetrics
 
 # declare and set the main directory for use in file
 
@@ -237,33 +237,37 @@ class PrayerTimesWindow(QMainWindow):
 
         #colors, fonts - ICCH Theme
         if self.args.r:
-            # Ramadan mode - Blue theme
-            self.dark_green = rgb_to_hex((0, 25, 125))  # Dark blue for Ramadan
+            # Ramadan mode - C theme
+            self.dark_green = rgb_to_hex((22, 0, 150))  # Dark blue for Ramadan
             self.tan = rgb_to_hex((100, 149, 237))  # Cornflower blue for Ramadan headers
             self.gold = rgb_to_hex((255, 255, 255))  # White for clock outline in Ramadan
             self.dark_gray = rgb_to_hex((25, 25, 112))  # Midnight blue for clock background in Ramadan
         else:
-            # Normal mode - Green/Tan theme
-            self.dark_green = rgb_to_hex((21, 71, 52))  # ICCH dark green
-            self.tan = rgb_to_hex((210, 180, 140))  # ICCH tan
-            self.gold = rgb_to_hex((255, 215, 0))  # Shiny gold for clock outline
-            self.dark_gray = rgb_to_hex((45, 45, 45))  # Dark gray for clock background
+            # Normal mode - Clean white/light gray theme
+            self.dark_green = rgb_to_hex((245, 245, 245))  # Very light gray background
+            self.tan = rgb_to_hex((220, 220, 220))  # Light gray for section headers
+            self.gold = rgb_to_hex((180, 180, 180))  # Medium gray for clock outline
+            self.dark_gray = rgb_to_hex((255, 255, 255))  # White for clock background
         
         self.light_green = rgb_to_hex((144, 238, 144))  # Light green for current prayer
         self.light_red = rgb_to_hex((255, 100, 100))  # Light red for next prayer
         
-        text_color = "white"  # White text for better contrast
-        bg_color = self.dark_green  # Use dark green/blue theme
-        section_bg = self.tan  # Tan/blue for section headers
+        text_color = "white" if self.args.r else "black"  # White text for Ramadan, black for normal
+        bg_color = self.dark_green  # Use theme-appropriate background
+        section_bg = self.tan  # Theme-appropriate section headers
         font_size = round(20 * (height_value/1080))  # Scaled down from 30
         font = QFont('Helvetica', font_size, QFont.Bold)
         header_font = QFont('Helvetica', round(font_size * 1.1), QFont.Bold)  # Slightly larger for headers
         clock_font = QFont('Helvetica', round(font_size * 1.3), QFont.Bold)  # Larger for clock
 
         #prayer times frame
+
+        print("")
+        print("")
         
         times_frame = QFrame(central_widget)
-        times_frame.setStyleSheet(f"background-color: {bg_color}; border: 3px solid {self.tan};")
+        border_color = self.tan if self.args.r else rgb_to_hex((200, 200, 200))  # Light gray border for normal mode
+        times_frame.setStyleSheet(f"background-color: {bg_color}; border: 3px solid {border_color};")
         times_frame.setAutoFillBackground(True)
 
         x_ratio = 0.0325
@@ -358,25 +362,47 @@ class PrayerTimesWindow(QMainWindow):
         #create labels
         self.labels = Labels(times_frame, bg_color, text_color, font, is_ramadan=self.args.r)
         
-        # Set clock font to stand out with gold outline and dark gray background
+        # Set clock font to stand out with gold/gray outline and background
         self.labels.clock_label.setFont(clock_font)
-        self.labels.clock_label.setStyleSheet(f"background-color: {self.dark_gray}; color: white; border: 3px solid {self.gold}; padding: 10px; border-radius: 5px;")
+        clock_text_color = "white" if self.args.r else "black"
+        # Padding to prevent text clipping at borders (more bottom padding for descenders)
+        padding_px = 3
+        border_px = 1
+        self.labels.clock_label.setStyleSheet(f"background-color: {self.dark_gray}; color: {clock_text_color}; border: {border_px}px solid {self.gold}; padding: {padding_px}px {padding_px}px {padding_px + 3}px {padding_px}px; border-radius: 5px; line-height: 1.3;")
+
+        # Center alignment to make best use of available space
+        self.labels.clock_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.labels.clock_label.setWordWrap(False)
+        
+        # Allow natural sizing without forced heights
+        self.labels.clock_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         grid = QGridLayout(times_frame)
         grid.setContentsMargins(15, 15, 15, 15)
-        grid.setSpacing(5)  # Increased spacing for visible separation
-        grid.setVerticalSpacing(3)  # Vertical spacing between rows
+        grid.setSpacing(3)  # Minimal spacing between rows
+        grid.setVerticalSpacing(5)
         
-        # Create section headers with tan background
+        # Create section headers with theme-appropriate colors
         today_header = QLabel("TODAY", times_frame)
-        today_header.setStyleSheet(f"background-color: {section_bg}; color: {self.dark_green}; border: none; padding: 5px; border-radius: 3px;")
+        header_text_color = "white" if self.args.r else "black"
+        today_header.setStyleSheet(f"background-color: {section_bg}; color: {header_text_color}; border: none; padding: 5px; border-radius: 3px;")
         today_header.setFont(header_font)
         today_header.setAlignment(Qt.AlignCenter)
         
         tomorrow_header = QLabel("TOMORROW", times_frame)
-        tomorrow_header.setStyleSheet(f"background-color: {section_bg}; color: {self.dark_green}; border: none; padding: 5px; border-radius: 3px;")
+        tomorrow_header.setStyleSheet(f"background-color: {section_bg}; color: {header_text_color}; border: none; padding: 5px; border-radius: 3px;")
         tomorrow_header.setFont(header_font)
         tomorrow_header.setAlignment(Qt.AlignCenter)
+        
+        # Set date labels to use theme-appropriate colors
+        date_text_color = "white" if self.args.r else "black"
+        self.labels.today_date_label.setStyleSheet(f"background-color: transparent; color: {date_text_color}; border: none;")
+        self.labels.today_date_label.setFont(font)
+        self.labels.today_date_label.setAlignment(Qt.AlignCenter)
+        
+        self.labels.tomorrow_date_label.setStyleSheet(f"background-color: transparent; color: {date_text_color}; border: none;")
+        self.labels.tomorrow_date_label.setFont(font)
+        self.labels.tomorrow_date_label.setAlignment(Qt.AlignCenter)
         
         # Create frames for each prayer row to give them visible borders
         self.today_fajr_frame = QFrame(times_frame)
@@ -388,7 +414,8 @@ class PrayerTimesWindow(QMainWindow):
         self.tomorrow_fajr_frame = QFrame(times_frame)
         
         # Style all frames with borders
-        frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {self.tan}; border-radius: 3px;"
+        frame_border_color = self.tan if self.args.r else rgb_to_hex((200, 200, 200))
+        frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {frame_border_color}; border-radius: 3px;"
         for frame in [self.today_fajr_frame, self.today_shurooq_frame, self.today_thuhr_frame, 
                       self.today_asr_frame, self.today_maghrib_frame, self.today_isha_frame, 
                       self.tomorrow_fajr_frame]:
@@ -402,10 +429,14 @@ class PrayerTimesWindow(QMainWindow):
         self.today_fajr_frame.layout().addWidget(self.labels.today_fajr_athan_label)
         self.today_fajr_frame.layout().addWidget(self.labels.today_fajr_iqama_label)
         
-        self.today_shurooq_frame.layout().addWidget(self.labels.today_shurooq_label)
-        self.today_shurooq_frame.layout().addStretch()  # Push time to center/right
-        self.today_shurooq_frame.layout().addWidget(self.labels.today_shurooq_athan_label)
-        self.today_shurooq_frame.layout().addStretch()  # Balance the spacing
+        # For Shurooq, set fixed widths to match other rows
+        shurooq_layout = self.today_shurooq_frame.layout()
+        shurooq_layout.addWidget(self.labels.today_shurooq_label)
+        shurooq_layout.addWidget(self.labels.today_shurooq_athan_label)
+        # Add empty space placeholder for iqama column to maintain alignment
+        empty_iqama = QLabel("", self.today_shurooq_frame)
+        empty_iqama.setStyleSheet("background-color: transparent; border: none;")
+        shurooq_layout.addWidget(empty_iqama)
         
         self.today_thuhr_frame.layout().addWidget(self.labels.today_thuhr_label)
         self.today_thuhr_frame.layout().addWidget(self.labels.today_thuhr_athan_label)
@@ -437,8 +468,8 @@ class PrayerTimesWindow(QMainWindow):
         header_layout.addWidget(self.labels.athan_label)
         header_layout.addWidget(self.labels.iqama_label)
         
-        # Style header labels
-        header_label_color = "white" if self.args.r else self.dark_green
+        # Style header labels with theme-appropriate colors
+        header_label_color = "white" if self.args.r else "black"
         self.labels.today_space_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
         self.labels.athan_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
         self.labels.iqama_label.setStyleSheet(f"background-color: transparent; color: {header_label_color}; border: none;")
@@ -468,16 +499,18 @@ class PrayerTimesWindow(QMainWindow):
         # Tomorrow's prayers
         grid.addWidget(self.tomorrow_fajr_frame, 13, 0)
         
-        # Add tomorrow's other prayers to grid without frames (for simplicity)
+        # Add tomorrow's other prayers to grid with proper alignment
         tomorrow_shurooq_frame = QFrame(times_frame)
         tomorrow_shurooq_frame.setStyleSheet(frame_style)
         layout_sh = QHBoxLayout(tomorrow_shurooq_frame)
         layout_sh.setContentsMargins(5, 3, 5, 3)
         layout_sh.setSpacing(10)
         layout_sh.addWidget(self.labels.tomorrow_shurooq_label)
-        layout_sh.addStretch()  # Push time to center/right
         layout_sh.addWidget(self.labels.tomorrow_shurooq_athan_label)
-        layout_sh.addStretch()  # Balance the spacing
+        # Add empty space placeholder for iqama column to maintain alignment
+        empty_iqama_tom = QLabel("", tomorrow_shurooq_frame)
+        empty_iqama_tom.setStyleSheet("background-color: transparent; border: none;")
+        layout_sh.addWidget(empty_iqama_tom)
         grid.addWidget(tomorrow_shurooq_frame, 14, 0)
         
         tomorrow_thuhr_frame = QFrame(times_frame)
@@ -542,8 +575,8 @@ class PrayerTimesWindow(QMainWindow):
         trivia.make_qr_with_link(website_link, "website.png")
 
         # --- Social QR ---
-        social_x_ratio = 0.3550
-        social_y_ratio = 0.3150
+        social_x_ratio = 0.3475
+        social_y_ratio = 0.200
         social_w_ratio = 0.1157
         social_h_ratio = 0.1157
 
@@ -559,8 +592,8 @@ class PrayerTimesWindow(QMainWindow):
                                 social_pixmap.height())
 
         # --- Donate QR ---
-        donate_x_ratio = 0.3550
-        donate_y_ratio = 0.6450
+        donate_x_ratio = 0.3480
+        donate_y_ratio = 0.525
         donate_w_ratio = 0.1157
         donate_h_ratio = 0.1157
 
@@ -576,8 +609,8 @@ class PrayerTimesWindow(QMainWindow):
                                 donate_pixmap.height())
 
         # --- Website QR ---
-        website_x_ratio = 0.3525
-        website_y_ratio = 0.8170
+        website_x_ratio = 0.3470
+        website_y_ratio = 0.725
         website_w_ratio = 0.1157
         website_h_ratio = 0.1157
 
@@ -676,7 +709,7 @@ class PrayerTimesWindow(QMainWindow):
             
             winners_w_ratio = 0.15
             winners_h_ratio = 0.25
-            winners_x_ratio = 0.446
+            winners_x_ratio = 0.451
             winners_y_ratio = 0.134
             
             winners_frame.setGeometry(
@@ -689,7 +722,7 @@ class PrayerTimesWindow(QMainWindow):
             questions_w_ratio = 0.28
             questions_h_ratio = 0.20
             questions_x_ratio = 0.555
-            questions_y_ratio = 0.79
+            questions_y_ratio = 0.75
             
             questions_frame.setGeometry(
                 int(width_value * questions_x_ratio),
@@ -714,7 +747,7 @@ class PrayerTimesWindow(QMainWindow):
             self.ramadan_labels.trivia_qr.setStyleSheet("background: transparent; border: none;")
             self.ramadan_labels.trivia_qr.setGeometry(
                 int(width_value / 2 - qr_size / 2)+50,  # Center horizontally
-                int(height_value / 2 - qr_size / 2)+54,  # Center vertically
+                int(height_value / 2 - qr_size / 2)+42,  # Center vertically
                 qr_size,
                 qr_size
             )
@@ -821,12 +854,13 @@ class PrayerTimesWindow(QMainWindow):
         self.labels.tomorrow_isha_iqama_label.setText(Ishaa_Iqama2)
         
         # Color highlighting - now highlights entire row with background color
-        pre_prayer_color = "white"  # White text for non-active prayers
+        pre_prayer_color = "white" if self.args.r else "black"  # Theme-appropriate text for non-active prayers
         current_prayer_text = "black"  # Black text on light green background for better visibility
         next_prayer_text = "black"  # Black text on light red background for better visibility
         
         # Reset all row frame backgrounds to default first
-        default_frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {self.tan}; border-radius: 3px;"
+        frame_border_color = self.tan if self.args.r else rgb_to_hex((200, 200, 200))
+        default_frame_style = f"background-color: rgba(255, 255, 255, 0.05); border: 1px solid {frame_border_color}; border-radius: 3px;"
         
         all_prayer_frames = [
             (self.today_fajr_frame, self.labels.today_fajr_label, self.labels.today_fajr_athan_label, self.labels.today_fajr_iqama_label),
@@ -917,7 +951,8 @@ class PrayerTimesWindow(QMainWindow):
     
     def set_prayer_frame_colors(self, frame, label, athan_label, iqama_label, bg_color, text_color):
         """Set prayer frame and label colors for entire row with background"""
-        frame.setStyleSheet(f"background-color: {bg_color}; border: 2px solid {self.tan}; border-radius: 3px;")
+        frame_border_color = self.tan if self.args.r else rgb_to_hex((200, 200, 200))
+        frame.setStyleSheet(f"background-color: {bg_color}; border: 2px solid {frame_border_color}; border-radius: 3px;")
         self.set_prayer_label_colors(label, athan_label, iqama_label, text_color)
     
     def set_prayer_label_colors(self, label, athan_label, iqama_label, text_color):
