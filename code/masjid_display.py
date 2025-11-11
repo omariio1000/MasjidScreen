@@ -41,7 +41,7 @@ global ramadan_updated
 
 class Labels:
     """Class to store prayer time labels for cleaner code"""
-    def __init__(self, parent, bg_color, text_color, font, is_ramadan=False):
+    def __init__(self, parent, bg_color, text_color, font, font2, is_ramadan=False):
 
         def make_label(parent, text="", bg_color=bg_color, text_color=text_color, font=font):
             label = QLabel(text, parent)
@@ -87,32 +87,32 @@ class Labels:
         self.tomorrow_isha_label = make_label(parent, "Isha")
 
         # Today's Athan/Iqama times
-        self.today_fajr_athan_label = make_label(parent)
-        self.today_fajr_iqama_label = make_label(parent)
-        self.today_shurooq_athan_label = make_label(parent)
-        self.today_shurooq_iqama_label = make_label(parent, "")
-        self.today_thuhr_athan_label = make_label(parent)
-        self.today_thuhr_iqama_label = make_label(parent)
-        self.today_asr_athan_label = make_label(parent)
-        self.today_asr_iqama_label = make_label(parent)
-        self.today_maghrib_athan_label = make_label(parent)
-        self.today_maghrib_iqama_label = make_label(parent)
-        self.today_isha_athan_label = make_label(parent)
-        self.today_isha_iqama_label = make_label(parent)
+        self.today_fajr_athan_label = make_label(parent,font=font2)
+        self.today_fajr_iqama_label = make_label(parent,font=font2)
+        self.today_shurooq_athan_label = make_label(parent,font=font2)
+        self.today_shurooq_iqama_label = make_label(parent, "",font=font2)
+        self.today_thuhr_athan_label = make_label(parent,font=font2)
+        self.today_thuhr_iqama_label = make_label(parent,font=font2)
+        self.today_asr_athan_label = make_label(parent,font=font2)
+        self.today_asr_iqama_label = make_label(parent,font=font2)
+        self.today_maghrib_athan_label = make_label(parent,font=font2)
+        self.today_maghrib_iqama_label = make_label(parent,font=font2)
+        self.today_isha_athan_label = make_label(parent,font=font2)
+        self.today_isha_iqama_label = make_label(parent,font=font2)
 
         # Tomorrow's Athan/Iqama times
-        self.tomorrow_fajr_athan_label = make_label(parent)
-        self.tomorrow_fajr_iqama_label = make_label(parent)
-        self.tomorrow_shurooq_athan_label = make_label(parent)
-        # self.tomorrow_shurooq_iqama_label = make_label(parent, "")
-        self.tomorrow_thuhr_athan_label = make_label(parent)
-        self.tomorrow_thuhr_iqama_label = make_label(parent)
-        self.tomorrow_asr_athan_label = make_label(parent)
-        self.tomorrow_asr_iqama_label = make_label(parent)
-        self.tomorrow_maghrib_athan_label = make_label(parent)
-        self.tomorrow_maghrib_iqama_label = make_label(parent)
-        self.tomorrow_isha_athan_label = make_label(parent)
-        self.tomorrow_isha_iqama_label = make_label(parent)
+        self.tomorrow_fajr_athan_label = make_label(parent,font=font2)
+        self.tomorrow_fajr_iqama_label = make_label(parent,font=font2)
+        self.tomorrow_shurooq_athan_label = make_label(parent,font=font2)
+        # self.tomorrow_shurooq_iqama_label = make_label(parent, "",font=font2)
+        self.tomorrow_thuhr_athan_label = make_label(parent,font=font2)
+        self.tomorrow_thuhr_iqama_label = make_label(parent,font=font2)
+        self.tomorrow_asr_athan_label = make_label(parent,font=font2)
+        self.tomorrow_asr_iqama_label = make_label(parent,font=font2)
+        self.tomorrow_maghrib_athan_label = make_label(parent,font=font2)
+        self.tomorrow_maghrib_iqama_label = make_label(parent,font=font2)
+        self.tomorrow_isha_athan_label = make_label(parent,font=font2)
+        self.tomorrow_isha_iqama_label = make_label(parent,font=font2)
 
 
 class RamadanLabels:
@@ -234,6 +234,22 @@ class PrayerTimesWindow(QMainWindow):
         bg_label.setGeometry(0, 0, width_value, height_value)
         bg_label.setStyleSheet("background-color: black;")
         bg_label.setAlignment(Qt.AlignCenter)
+
+        font0=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica.ttf")
+        font1=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-Bold.ttf")
+        font2=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-BoldOblique.ttf")
+        font3=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-Compressed.otf")
+        font4=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-Light.ttf")
+        font5=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-Oblique.ttf")
+        font6=QFontDatabase.addApplicationFont("../resources/fonts/Helvetica-Rounded-Bold.otf")
+
+        HELVETICA = QFontDatabase.applicationFontFamilies(font0)[0]
+        HELVETICA_BOLD = QFontDatabase.applicationFontFamilies(font1)[0]
+        HELVETICA_BOLD_OBLIQUE = QFontDatabase.applicationFontFamilies(font2)[0]
+        HELVETICA_COMPRESSED = QFontDatabase.applicationFontFamilies(font3)[0]
+        HELVETICA_LIGHT = QFontDatabase.applicationFontFamilies(font4)[0]
+        HELVETICA_OBLIQUE = QFontDatabase.applicationFontFamilies(font5)[0]
+        HELVETICA_ROUNDED_BOLD = QFontDatabase.applicationFontFamilies(font6)[0]
 
         #colors, fonts - ICCH Theme
         if self.args.r:
@@ -651,9 +667,9 @@ class PrayerTimesWindow(QMainWindow):
 
         #ramadan mode
         if self.args.r:
-            font1 = QFont('Helvetica', round(24 * (height_value/1080)), QFont.Bold)
-            font2 = QFont('Helvetica', round(16 * (height_value/1080)), QFont.Bold)
-            font3 = QFont('Helvetica', round(14 * (height_value/1080)))
+            font1 = QFont(HELVETICA_BOLD, round(24 * (height_value/1080)), QFont.Bold)
+            font2 = QFont(HELVETICA_BOLD, round(16 * (height_value/1080)), QFont.Bold)
+            font3 = QFont(HELVETICA, round(14 * (height_value/1080)))
             
             day = trivia.get_trivia_day()
             
