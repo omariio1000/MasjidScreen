@@ -272,9 +272,9 @@ class PrayerTimesWindow(QMainWindow):
         bg_color = self.dark_green  # Use theme-appropriate background
         section_bg = self.tan  # Theme-appropriate section headers
         font_size = round(20 * (height_value/1080))  # Scaled down from 30
-        font = QFont('Helvetica', font_size, QFont.Bold)
-        header_font = QFont('Helvetica', round(font_size * 1.1), QFont.Bold)  # Slightly larger for headers
-        clock_font = QFont('Helvetica', round(font_size * 1.3), QFont.Bold)  # Larger for clock
+        font = QFont(HELVETICA_BOLD, font_size, QFont.Bold)
+        header_font = QFont(HELVETICA_BOLD, round(font_size * 1.1), QFont.Bold)  # Slightly larger for headers
+        clock_font = QFont(HELVETICA_BOLD, round(font_size * 1.15), QFont.Bold)  # Larger for clock
 
         #prayer times frame
 
@@ -305,7 +305,7 @@ class PrayerTimesWindow(QMainWindow):
         print("")
 
         font_file = "quran_font.ttf"
-        font_path = os.path.join(BASE_DIR, "..", "resources", font_file)
+        font_path = os.path.join(BASE_DIR, "..", "resources", "fonts", font_file)
 
         # Load the font
         font_id = QFontDatabase.addApplicationFont(font_path)
@@ -340,7 +340,7 @@ class PrayerTimesWindow(QMainWindow):
         ayah_layout.setSpacing(10)
         
         #ayah (arabic)
-        arabic_font_size = round(25.5 * (height_value / 1080))
+        arabic_font_size = round(20 * (height_value / 1080))
 
         arabic_font = QFont(font_family, arabic_font_size)
         #arabic_font.setBold(True)
@@ -353,7 +353,7 @@ class PrayerTimesWindow(QMainWindow):
 
         
         #translation
-        translation_font = QFont('Helvetica', round(13 * (height_value/1080)))
+        translation_font = QFont(HELVETICA, round(13 * (height_value/1080)))
         self.ayah_translation = QLabel(daily_ayah['translation'], ayah_frame)
         self.ayah_translation.setStyleSheet(f"background-color: transparent; color: white; border: none;")
         self.ayah_translation.setFont(translation_font)
@@ -361,7 +361,7 @@ class PrayerTimesWindow(QMainWindow):
         self.ayah_translation.setWordWrap(True)
         
         #reference
-        reference_font = QFont('Helvetica', round(12 * (height_value/1080)), QFont.StyleItalic)
+        reference_font = QFont(HELVETICA_OBLIQUE, round(12 * (height_value/1080)), QFont.StyleItalic)
         self.ayah_reference = QLabel(daily_ayah['reference'], ayah_frame)
         self.ayah_reference.setStyleSheet(f"background-color: transparent; color: white; border: none;")
         self.ayah_reference.setFont(reference_font)
@@ -376,7 +376,7 @@ class PrayerTimesWindow(QMainWindow):
         self.current_ayah_day = datetime.now().timetuple().tm_yday
 
         #create labels
-        self.labels = Labels(times_frame, bg_color, text_color, font, is_ramadan=self.args.r)
+        self.labels = Labels(times_frame, bg_color, text_color, font, header_font, is_ramadan=self.args.r)
         
         # Set clock font to stand out with gold/gray outline and background
         self.labels.clock_label.setFont(clock_font)
