@@ -387,17 +387,27 @@ class PrayerTimesWindow(QMainWindow):
         self.previous_ayahs = []  # Track last 3 ayahs to avoid repeats
 
         #create labels
-        self.labels = Labels(times_frame, bg_color, text_color, font, is_ramadan=self.args.r)
+        self.labels = Labels(times_frame, bg_color, text_color, font, header_font, is_ramadan=self.args.r)
         
         # Set clock font to stand out with gold/gray outline and background
         self.labels.clock_label.setFont(clock_font)
         clock_text_color = "white" if self.args.r else "black"
-        self.labels.clock_label.setStyleSheet(f"background-color: {self.dark_gray}; color: {clock_text_color}; border: 3px solid {self.gold}; padding: 10px; border-radius: 5px;")
+        # Padding to prevent text clipping at borders (more bottom padding for descenders)
+        padding_px = 3
+        border_px = 1
+        self.labels.clock_label.setStyleSheet(f"background-color: {self.dark_gray}; color: {clock_text_color}; border: {border_px}px solid {self.gold}; padding: {padding_px}px {padding_px}px {padding_px + 3}px {padding_px}px; border-radius: 5px; line-height: 1.3;")
+
+        # Center alignment to make best use of available space
+        self.labels.clock_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.labels.clock_label.setWordWrap(False)
+        
+        # Allow natural sizing without forced heights
+        self.labels.clock_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         grid = QGridLayout(times_frame)
         grid.setContentsMargins(15, 15, 15, 15)
-        grid.setSpacing(5)  # Increased spacing for visible separation
-        grid.setVerticalSpacing(3)  # Vertical spacing between rows
+        grid.setSpacing(3)  # Minimal spacing between rows
+        grid.setVerticalSpacing(5)
         
         # Create section headers with theme-appropriate colors
         today_header = QLabel("TODAY", times_frame)
