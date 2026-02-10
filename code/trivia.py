@@ -160,12 +160,15 @@ def get_form_questions_options(day):
     form = service.forms().get(formId=form_link).execute()
 
     questions = []
-    option1, option2, option3 = [], [], []
+    option1, option2, option3, option4 = [], [], [], []
 
-    items = form.get("items", [])[3:6]  # Index 3-5 for questions 4-6
+    all_items = form.get("items", [])
+    
+    # Get the last 3 items (trivia questions) - forms may have metadata items before questions
+    items = all_items[-3:] if len(all_items) >= 3 else all_items
 
     for idx, item in enumerate(items):
-        question_details = item.get("description", "No details available")
+        question_details = item.get("title", item.get("description", "No details available"))
         options = [
             opt.get("value") for opt in item.get("questionItem", {})
             .get("question", {})
@@ -175,13 +178,14 @@ def get_form_questions_options(day):
 
         questions.append(question_details)
 
-        option1.append(options[0])
-        option2.append(options[1])
-        option3.append(options[2])
+        option1.append(options[0] if len(options) > 0 else "")
+        option2.append(options[1] if len(options) > 1 else "")
+        option3.append(options[2] if len(options) > 2 else "")
+        option4.append(options[3] if len(options) > 3 else "")
     
-    print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}")
+    print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}, {option4}")
 
-    return questions, option1, option2, option3
+    return questions, option1, option2, option3, option4
 
 
 def get_winners(day):
@@ -300,7 +304,7 @@ def get_past_winners(day):
     return winners
 
 def log_winners(day, winners : list, test):
-    """Log winners for the day and send them an email with their code"""
+    """Log winners for the day (email/gift card features disabled)"""
 
     # Get the current date
     json_file = '../resources/trivia_winners.json'
@@ -316,13 +320,9 @@ def log_winners(day, winners : list, test):
     if day not in data:
         data[day] = []
     
-    # Append the new people to today's log
-    for winner in winners:
-        winner.append(get_next_code())
-        if not test:
-            send_email(winner[0], winner[1], winner[2], (datetime.now() - timedelta(days=1)).strftime("%B %d, %Y"))
+    # Note: Email and gift card features disabled
+    # Winners are just logged for display purposes
         
-    # print(winners)
     data[day].extend(winners)
     
     # Save the updated data back to the JSON file

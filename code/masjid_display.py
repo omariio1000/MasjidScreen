@@ -1149,12 +1149,22 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
     else:
         trivia.make_qr(day)
         question, option1, option2, option3 = trivia.get_form_questions_options(day)
-        ramadan_labels.question_one.setText('\n'.join(textwrap.wrap(question[0], width=95)))
-        ramadan_labels.question_one_options.setText(f"a) {option1[0]}  b) {option2[0]}  c) {option3[0]}")
-        ramadan_labels.question_two.setText('\n'.join(textwrap.wrap(question[1], width=95)))
-        ramadan_labels.question_two_options.setText(f"a) {option1[1]}  b) {option2[1]}  c) {option3[1]}")
-        ramadan_labels.question_three.setText('\n'.join(textwrap.wrap(question[2], width=95)))
-        ramadan_labels.question_three_options.setText(f"a) {option1[2]}  b) {option2[2]}  c) {option3[2]}")
+        
+        # Handle case when questions are not available for this day
+        if not question or len(question) < 3:
+            ramadan_labels.question_one.setText('')
+            ramadan_labels.question_one_options.setText('')
+            ramadan_labels.question_two.setText("Trivia questions not available yet")
+            ramadan_labels.question_two_options.setText("Please check back later!")
+            ramadan_labels.question_three.setText('')
+            ramadan_labels.question_three_options.setText('')
+        else:
+            ramadan_labels.question_one.setText('\n'.join(textwrap.wrap(question[0], width=95)))
+            ramadan_labels.question_one_options.setText(f"a) {option1[0]}  b) {option2[0]}  c) {option3[0]}")
+            ramadan_labels.question_two.setText('\n'.join(textwrap.wrap(question[1], width=95)))
+            ramadan_labels.question_two_options.setText(f"a) {option1[1]}  b) {option2[1]}  c) {option3[1]}")
+            ramadan_labels.question_three.setText('\n'.join(textwrap.wrap(question[2], width=95)))
+            ramadan_labels.question_three_options.setText(f"a) {option1[2]}  b) {option2[2]}  c) {option3[2]}")
 
     if day <= 31:
         if not trivia.check_winners_updated(str(day - 1)):
