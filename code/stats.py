@@ -5,7 +5,14 @@ Created on Sun Mar 16 00:28 2025
 """
 
 import json
+import os
 from trivia import get_trivia_day
+
+# Base directory and resource paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESOURCES_DIR = os.path.join(BASE_DIR, '..', 'resources')
+TRIVIA_WINNERS_FILE = os.path.join(RESOURCES_DIR, 'trivia_winners.json')
+TRIVIA_ALL_ANSWERS_FILE = os.path.join(RESOURCES_DIR, 'trivia_all_answers.json')
 
 def totalEntries() -> int:
     data = getData("all")
@@ -49,7 +56,7 @@ def averageDailyEntries() -> int:
     entries = totalEntries()
     day = get_trivia_day()
     
-    if day < 0 or day > 30:
+    if day <= 0 or day > 30:
         day = 30
     
     return round(entries/day)
@@ -57,23 +64,25 @@ def averageDailyEntries() -> int:
 def getData(file: str):
     try:
         if file == "winners":
-            with open('../resources/trivia_winners.json', "r") as data:
+            with open(TRIVIA_WINNERS_FILE, "r") as data:
                 return json.load(data)
 
         elif file == "all":
-            with open('../resources/trivia_all_answers.json', "r") as data:
+            with open(TRIVIA_ALL_ANSWERS_FILE, "r") as data:
                 return json.load(data)
         
         elif file == "both":
-            with open('../resources/trivia_winners.json', "r") as data:
+            with open(TRIVIA_WINNERS_FILE, "r") as data:
                 data1 = json.load(data)
-            with open('../resources/trivia_all_answers.json', "r") as data:
+            with open(TRIVIA_ALL_ANSWERS_FILE, "r") as data:
                 data2 = json.load(data)
-            return data1,data2
+            return data1, data2
 
-    except FileNotFoundError:
-        print("Files not found. Exiting...")
-        exit(1)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("Warning: Stats data files not found or invalid, returning empty data")
+        if file == "both":
+            return {}, {}
+        return {}
 
 def printAllStats():
     print(f"Total Entries: {totalEntries()} ({uniqueEntries()} Unique)")

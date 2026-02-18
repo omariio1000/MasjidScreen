@@ -77,8 +77,19 @@ def get_ramadan_times_range(start_date: datetime, num_days: int = 30) -> list:
 
 def get_ramadan_first_day() -> datetime:
     """Get the first day of Ramadan from the config file"""
-    with open(RAMADAN_FIRST_DAY_FILE, 'r') as f:
-        first_day_str = f.readline().strip()
+    try:
+        with open(RAMADAN_FIRST_DAY_FILE, 'r') as f:
+            first_day_str = f.readline().strip()
+    except FileNotFoundError:
+        print(f"Warning: {RAMADAN_FIRST_DAY_FILE} not found")
+        # Create file with a default date so it doesn't crash again
+        os.makedirs(os.path.dirname(RAMADAN_FIRST_DAY_FILE), exist_ok=True)
+        default_date = datetime.now().strftime("%Y-%m-%d")
+        with open(RAMADAN_FIRST_DAY_FILE, 'w') as f:
+            f.write(default_date)
+        print(f"Created {RAMADAN_FIRST_DAY_FILE} with default date {default_date}")
+        first_day_str = default_date
+    
     return datetime.strptime(first_day_str, "%Y-%m-%d")
 
 
@@ -162,9 +173,15 @@ def load_ramadan_times() -> dict:
     try:
         with open(RAMADAN_TIMES_FILE, 'r') as f:
             return json.load(f)
-    except FileNotFoundError:
-        print("⚠️ Ramadan times file not found. Run generate_ramadan_isha_times() first.")
-        return {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        print(f"Warning: Ramadan times file not found or invalid at {RAMADAN_TIMES_FILE}")
+        print("Run 'python ramadan_times.py' to generate Isha times.")
+        # Create empty structure so it doesn't crash
+        empty_times = {"days": {}}
+        os.makedirs(os.path.dirname(RAMADAN_TIMES_FILE), exist_ok=True)
+        with open(RAMADAN_TIMES_FILE, 'w') as f:
+            json.dump(empty_times, f, indent=4)
+        return empty_times
 
 
 def get_isha_time_for_day(day: int) -> str:

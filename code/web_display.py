@@ -6,7 +6,7 @@ Created on February 2026
 """
 
 import time as tm
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import argparse
 import trivia
@@ -118,8 +118,12 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
         ramadan_labels.winner_two.setText("")
         ramadan_labels.winner_three.setText("")
     else:
-        trivia.make_qr(day)
-        question, option1, option2, option3, option4 = trivia.get_form_questions_options(day)
+        try:
+            trivia.make_qr(day)
+            question, option1, option2, option3, option4 = trivia.get_form_questions_options(day)
+        except Exception as e:
+            print(f"Error fetching trivia questions: {e}")
+            question, option1, option2, option3, option4 = [], [], [], [], []
         
         # Helper to strip leading option letters like "A) " or "a. "
         import re
@@ -159,11 +163,15 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
             ramadan_labels.question_three_options.setAlignment(Qt.AlignmentFlag.AlignLeft)  # Left for options
 
     if day >= 2 and day <= 31:
-        if not trivia.check_winners_updated(str(day - 1)):
-            winners = trivia.get_winners(day - 1)
-            trivia.log_winners(str(day - 1), winners, test)
-        else:
-            winners = trivia.get_past_winners(str(day - 1))
+        try:
+            if not trivia.check_winners_updated(str(day - 1)):
+                winners = trivia.get_winners(day - 1, test=test)
+                trivia.log_winners(str(day - 1), winners, test)
+            else:
+                winners = trivia.get_past_winners(str(day - 1))
+        except Exception as e:
+            print(f"Error fetching winners: {e}")
+            winners = []
         winners = [sublist[:1] for sublist in winners]
         print(f"Winners: {winners}")
 
@@ -474,10 +482,14 @@ class ModernDisplayWindow(QMainWindow):
         winners_frame.show()
         questions_container.show()
         
-        # Initial trivia update
-        update_trivia(day - 1, self.ramadan_labels, self.height_value, test=self.args.t)
+        # Initial trivia update - before Isha show previous day, after Isha show current day
+        if ramadan_times.is_past_isha(day):
+            display_day = day
+        else:
+            display_day = day - 1
+        update_trivia(display_day, self.ramadan_labels, self.height_value, test=self.args.t)
         
-        # ===== QR CODE - Middle of right panel (Clickable) =====
+        # ===== QR CODE - Top of right panel below winners (Clickable) =====
         qr_size = int(self.height_value * 0.22)
         
         # Use QPushButton for clickable QR
@@ -505,28 +517,68 @@ class ModernDisplayWindow(QMainWindow):
         self.qr_button.setIcon(QIcon(pixmap))
         self.qr_button.setIconSize(pixmap.size())
         
-        # Position QR - Center of right panel vertically
+        # Position QR - Centered horizontally, right below winners
         qr_x = right_panel_x + (right_panel_width - qr_size - 16) // 2
-        # Middle of the space between winners and bottom of web view
-        available_space = web_height - winners_h - 20
-        qr_y = winners_y + winners_h + (available_space - qr_size - 70) // 2
+        qr_y = winners_y + winners_h + 10
         self.qr_button.setGeometry(qr_x, qr_y, qr_size + 16, qr_size + 16)
         
-        # "Scan for today's questions" label below QR - two lines
-        self.qr_label = QLabel("Scan for\nToday's Questions", parent)
+        # "Scan for today's questions" label below QR
+        self.qr_label = QLabel("Scan for Today's Questions", parent)
         self.qr_label.setStyleSheet(f"background: transparent; color: {self.TEXT_PRIMARY};")
-        self.qr_label.setFont(QFont("Helvetica", int(16 * (self.height_value / 1080)), QFont.Weight.Bold))
+        self.qr_label.setFont(QFont("Helvetica", int(14 * (self.height_value / 1080)), QFont.Weight.Bold))
         self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label_width = right_panel_width - 20
-        self.qr_label.setGeometry(right_panel_x + 10, qr_y + qr_size + 35, label_width, 60)
+        label_y = qr_y + qr_size + 20
+        self.qr_label.setGeometry(right_panel_x + 10, label_y, label_width, 30)
+        
+        # ===== COUNTDOWN BOX - Below QR label =====
+        countdown_y = label_y + 35
+        countdown_h = web_height - countdown_y + 10  # Fill to bottom of web view area
+        countdown_w = right_panel_width
+        
+        self.countdown_frame = QFrame(parent)
+        self.countdown_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: rgba(45, 45, 45, 0.88);
+                border-radius: 10px;
+                border: 2px solid {self.HIGHLIGHT};
+            }}
+        """)
+        self.countdown_frame.setGeometry(right_panel_x, countdown_y, countdown_w, countdown_h)
+        
+        countdown_shadow = QGraphicsDropShadowEffect()
+        countdown_shadow.setBlurRadius(15)
+        countdown_shadow.setColor(QColor(0, 0, 0, 120))
+        countdown_shadow.setOffset(3, 3)
+        self.countdown_frame.setGraphicsEffect(countdown_shadow)
+        
+        # "Time Remaining" title label inside countdown box
+        self.countdown_title = QLabel("Time Remaining", self.countdown_frame)
+        self.countdown_title.setStyleSheet(f"background: transparent; color: {self.HIGHLIGHT}; border: none;")
+        self.countdown_title.setFont(QFont("Helvetica", int(16 * (self.height_value / 1080)), QFont.Weight.Bold))
+        self.countdown_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.countdown_title.setGeometry(0, 8, countdown_w, int(28 * (self.height_value / 1080)))
+        
+        # Countdown time label - large white text below title
+        title_bottom = 8 + int(28 * (self.height_value / 1080))
+        self.countdown_label = QLabel("", self.countdown_frame)
+        self.countdown_label.setStyleSheet(f"background: transparent; color: {self.TEXT_PRIMARY}; border: none;")
+        self.countdown_label.setFont(QFont("Helvetica", int(48 * (self.height_value / 1080)), QFont.Weight.Bold))
+        self.countdown_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.countdown_label.setGeometry(0, title_bottom, countdown_w, countdown_h - title_bottom)
         
         self.qr_button.raise_()
         self.qr_label.raise_()
+        self.countdown_frame.raise_()
         self.qr_button.show()
         self.qr_label.show()
+        self.countdown_frame.show()
         
         # Store reference for updates
         self.ramadan_labels.trivia_qr = self.qr_button
+        
+        # Initial countdown update
+        self._update_countdown()
     
     def test_handler(self):
         """Test mode handler"""
@@ -534,10 +586,52 @@ class ModernDisplayWindow(QMainWindow):
         testDay += 1
         update_trivia(testDay, self.ramadan_labels, self.height_value, test=True)
     
+    def _update_countdown(self):
+        """Update the countdown timer to Isha"""
+        if not hasattr(self, 'countdown_label'):
+            return
+        
+        current_day = trivia.get_trivia_day()
+        isha_time_str = ramadan_times.get_isha_time_for_day(current_day)
+        
+        if not isha_time_str:
+            self.countdown_label.setText("")
+            return
+        
+        try:
+            now = datetime.now()
+            isha_h, isha_m = map(int, isha_time_str.split(':'))
+            isha_dt = now.replace(hour=isha_h, minute=isha_m, second=0, microsecond=0)
+            
+            remaining = isha_dt - now
+            
+            if remaining.total_seconds() <= 0:
+                self.countdown_label.setText("00:00:00")
+                return
+            
+            total_seconds = int(remaining.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+            
+            self.countdown_label.setText(f"{hours:02d}:{minutes:02d}:{seconds:02d}")
+        except Exception:
+            self.countdown_label.setText("")
+    
     def update_display(self):
         """Update loop for Ramadan mode - triggers at Isha adhan time"""
         current_time = tm.strftime('%H:%M')
         current_day = trivia.get_trivia_day()
+        
+        # Update countdown every tick
+        self._update_countdown()
+        
+        # Track day changes to reset update flag
+        if not hasattr(self, '_last_trivia_day'):
+            self._last_trivia_day = current_day
+        if current_day != self._last_trivia_day:
+            self.ramadan_updated = False
+            self._last_trivia_day = current_day
         
         # Get Isha time for current Ramadan day
         isha_time = ramadan_times.get_isha_time_for_day(current_day)
@@ -547,7 +641,7 @@ class ModernDisplayWindow(QMainWindow):
             if current_time >= isha_time and current_time < self._add_minutes(isha_time, 1):
                 if not self.ramadan_updated:
                     print(f"\n🌙 Isha adhan time ({isha_time}) - selecting winners and updating trivia...")
-                    update_trivia(current_day, self.ramadan_labels, self.height_value)
+                    update_trivia(current_day, self.ramadan_labels, self.height_value, test=self.args.t)
                     self.ramadan_updated = True
             elif current_time >= self._add_minutes(isha_time, 1):
                 # Reset flag after the 1-minute window
@@ -557,7 +651,7 @@ class ModernDisplayWindow(QMainWindow):
             # Fallback to midnight if no Isha time available
             if current_time >= "00:00" and current_time < "00:01":
                 if not self.ramadan_updated:
-                    update_trivia(current_day, self.ramadan_labels, self.height_value)
+                    update_trivia(current_day, self.ramadan_labels, self.height_value, test=self.args.t)
                     self.ramadan_updated = True
             elif current_time >= "00:01":
                 self.ramadan_updated = False
@@ -593,8 +687,21 @@ def main():
     parser.add_argument("-t", action="store_true", help="Enable test mode")
     args = parser.parse_args()
     
-    with open(CONFIG_PATH, "r") as file:
-        config = json.load(file)
+    try:
+        with open(CONFIG_PATH, "r") as file:
+            config = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print(f"Warning: Config file not found or invalid at {CONFIG_PATH}, using defaults")
+        config = {
+            "prayer_website": "https://muslimplus.org",
+            "socials": "https://linktr.ee/icch_info",
+            "donate": "https://www.icc-hillsboro.org/donate",
+            "website": "https://www.icc-hillsboro.org"
+        }
+        # Create the config file with defaults
+        os.makedirs(os.path.dirname(os.path.abspath(CONFIG_PATH)), exist_ok=True)
+        with open(CONFIG_PATH, "w") as file:
+            json.dump(config, file, indent=4)
     
     # Set default prayer website if not in config
     if "prayer_website" not in config:

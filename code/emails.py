@@ -14,6 +14,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 
+# Base directory and resource paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESOURCES_DIR = os.path.join(BASE_DIR, '..', 'resources')
+TOKEN_FILE = os.path.join(RESOURCES_DIR, 'token.json')
+CREDENTIALS_FILE = os.path.join(RESOURCES_DIR, 'email_credentials.json')
+
 
 def create_email_template(name, date, code):
     name = ' '.join([part.capitalize() for part in name.split()])
@@ -31,8 +37,8 @@ def authenticate_gmail():
     creds = None
     # The token.json stores the user's access and refresh tokens.
     # It is created automatically when the authorization flow completes for the first time.
-    if os.path.exists('../resources/token.json'):
-        creds = Credentials.from_authorized_user_file('../resources/token.json', SCOPES)
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
     
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -44,11 +50,11 @@ def authenticate_gmail():
                 creds = None  # Force re-authentication
         
         if not creds:
-            flow = InstalledAppFlow.from_client_secrets_file('../resources/email_credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=8080)
 
         # Save the new credentials
-        with open('../resources/token.json', 'w') as token:
+        with open(TOKEN_FILE, 'w') as token:
             token.write(creds.to_json())
     
     # Build the Gmail service
