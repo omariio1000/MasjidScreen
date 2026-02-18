@@ -54,23 +54,21 @@ class Trivia:
         # Create a mapping of question IDs to their titles
         # Also extract correct answers from the quiz grading metadata
         question_mapping = {}
-        self.question_mapping_titles = {}  # ordered dict of question_id -> title (for find_correct)
-        self.correct_answer_values = []  # correct answer per question, from the form itself
+        self.question_mapping_titles = {}  # ordered dict of question_id -> title (for graded questions only)
+        self.correct_answer_values = []  # correct answer per graded question, from the form itself
         for item in items:
             q_data = item.get("questionItem", {}).get("question", {})
             question_id = q_data.get("questionId")
             question_text = item.get("title", "")
             if question_id:
                 question_mapping[question_id] = question_text
-                self.question_mapping_titles[question_id] = question_text
-                # Extract correct answer from grading (quiz forms only)
+                # Only track questions that have quiz grading (skip info fields)
                 grading = q_data.get("grading", {})
                 correct_answers_obj = grading.get("correctAnswers", {})
                 correct_list = correct_answers_obj.get("answers", [])
                 if correct_list:
+                    self.question_mapping_titles[question_id] = question_text
                     self.correct_answer_values.append(correct_list[0].get("value", ""))
-                else:
-                    self.correct_answer_values.append(None)
 
         print(f"  Correct answers from form grading: {self.correct_answer_values}")
 
@@ -110,12 +108,11 @@ class Trivia:
             q_cols = question_cols[-3:]
             
             # Build a mapping from question title -> correct answer from the form grading
-            # The question_mapping and correct_answer_values are aligned by the items order
-            # q_cols are the column names (which are question titles), so we match by title
+            # question_mapping_titles and correct_answer_values only contain graded questions
             correct_by_title = {}
-            items = list(self.question_mapping_titles.items())  # (question_id, title) pairs in order
+            items = list(self.question_mapping_titles.items())  # (question_id, title) pairs
             for i, (qid, title) in enumerate(items):
-                if i < len(self.correct_answer_values) and self.correct_answer_values[i] is not None:
+                if i < len(self.correct_answer_values):
                     correct_by_title[title] = self.correct_answer_values[i]
             
             # Check each row: every question column must match its correct answer
