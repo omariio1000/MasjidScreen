@@ -27,6 +27,17 @@ from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile, QWebEng
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, '..', 'config.json')
 
+
+class SilentWebPage(QWebEnginePage):
+    """Custom web page that suppresses noisy browser console messages"""
+    # Messages from the embedded site we don't care about
+    _SUPPRESS = ('unrecognized feature', 'permissions policy', 'payment')
+
+    def javaScriptConsoleMessage(self, level, message, line, source):
+        if any(kw in message.lower() for kw in self._SUPPRESS):
+            return
+        super().javaScriptConsoleMessage(level, message, line, source)
+
 tq_image = []
 testDay = 0
 
@@ -302,8 +313,8 @@ class ModernDisplayWindow(QMainWindow):
             "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         
-        # Create page with the persistent profile
-        self.web_page = QWebEnginePage(self.web_profile, self)
+        # Create page with the persistent profile (uses silent subclass to filter console noise)
+        self.web_page = SilentWebPage(self.web_profile, self)
         
         # Create web view and set the persistent page
         self.web_view = QWebEngineView(parent)
@@ -323,7 +334,7 @@ class ModernDisplayWindow(QMainWindow):
         settings = self.web_view.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled, True)
-        settings.setAttribute(QWebEngineSettings.WebAttribute.ScrollAnimatorEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.ScrollAnimatorEnabled, False)  # Disabled - reduces unnecessary compositing repaints
         settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.FullScreenSupportEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled, True)
@@ -485,16 +496,39 @@ class ModernDisplayWindow(QMainWindow):
         # Initial trivia update - before Isha show previous day, after Isha show current day
         if ramadan_times.is_past_isha(day):
             display_day = day
+            # Mark as updated so the update_display loop doesn't re-fire immediately
+            self.ramadan_updated = True
         else:
             display_day = day - 1
         update_trivia(display_day, self.ramadan_labels, self.height_value, test=self.args.t)
         
-        # ===== QR CODE - Top of right panel below winners (Clickable) =====
+        # ===== QR CODE BOX - Below winners, themed frame =====
         qr_size = int(self.height_value * 0.22)
-        
-        # Use QPushButton for clickable QR
-        self.qr_button = QPushButton(parent)
-        self.qr_button.setFixedSize(qr_size + 16, qr_size + 16)
+        btn_size = qr_size + 16
+        label_h = int(30 * (self.height_value / 1080))
+        qr_frame_padding = 10
+        qr_frame_h = qr_frame_padding + btn_size + 6 + label_h + qr_frame_padding
+        qr_frame_y = winners_y + winners_h + 10
+
+        self.qr_frame = QFrame(parent)
+        self.qr_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: rgba(45, 45, 45, 0.88);
+                border-radius: 10px;
+                border: 2px solid {self.HIGHLIGHT};
+            }}
+        """)
+        self.qr_frame.setGeometry(right_panel_x, qr_frame_y, right_panel_width, qr_frame_h)
+
+        qr_frame_shadow = QGraphicsDropShadowEffect()
+        qr_frame_shadow.setBlurRadius(20)
+        qr_frame_shadow.setColor(QColor(0, 0, 0, 150))
+        qr_frame_shadow.setOffset(5, 5)
+        self.qr_frame.setGraphicsEffect(qr_frame_shadow)
+
+        # QPushButton inside the frame
+        self.qr_button = QPushButton(self.qr_frame)
+        self.qr_button.setFixedSize(btn_size, btn_size)
         self.qr_button.setStyleSheet("""
             QPushButton {
                 background: white;
@@ -502,37 +536,29 @@ class ModernDisplayWindow(QMainWindow):
                 border: none;
                 padding: 6px;
             }
-            QPushButton:hover {
-                background: #f0f0f0;
-            }
-            QPushButton:pressed {
-                background: #e0e0e0;
-            }
+            QPushButton:hover { background: #f0f0f0; }
+            QPushButton:pressed { background: #e0e0e0; }
         """)
         self.qr_button.clicked.connect(self.test_handler)
-        
+        btn_x = (right_panel_width - btn_size) // 2
+        self.qr_button.setGeometry(btn_x, qr_frame_padding, btn_size, btn_size)
+
         # Set QR icon
         pixmap = QPixmap('trivia.png')
         pixmap = pixmap.scaled(qr_size, qr_size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         self.qr_button.setIcon(QIcon(pixmap))
         self.qr_button.setIconSize(pixmap.size())
-        
-        # Position QR - Centered horizontally, right below winners
-        qr_x = right_panel_x + (right_panel_width - qr_size - 16) // 2
-        qr_y = winners_y + winners_h + 10
-        self.qr_button.setGeometry(qr_x, qr_y, qr_size + 16, qr_size + 16)
-        
-        # "Scan for today's questions" label below QR
-        self.qr_label = QLabel("Scan for Today's Questions", parent)
-        self.qr_label.setStyleSheet(f"background: transparent; color: {self.TEXT_PRIMARY};")
+
+        # "Scan for today's questions" label inside the frame
+        self.qr_label = QLabel("Scan for Today's Questions", self.qr_frame)
+        self.qr_label.setStyleSheet("background: transparent; color: white; border: none;")
         self.qr_label.setFont(QFont("Helvetica", int(14 * (self.height_value / 1080)), QFont.Weight.Bold))
         self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label_width = right_panel_width - 20
-        label_y = qr_y + qr_size + 20
-        self.qr_label.setGeometry(right_panel_x + 10, label_y, label_width, 30)
-        
-        # ===== COUNTDOWN BOX - Below QR label =====
-        countdown_y = label_y + 35
+        label_y_in_frame = qr_frame_padding + btn_size + 6
+        self.qr_label.setGeometry(10, label_y_in_frame, right_panel_width - 20, label_h)
+
+        # ===== COUNTDOWN BOX - Below QR frame =====
+        countdown_y = qr_frame_y + qr_frame_h + 10
         countdown_h = web_height - countdown_y + 10  # Fill to bottom of web view area
         countdown_w = right_panel_width
         
@@ -567,11 +593,9 @@ class ModernDisplayWindow(QMainWindow):
         self.countdown_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.countdown_label.setGeometry(0, title_bottom, countdown_w, countdown_h - title_bottom)
         
-        self.qr_button.raise_()
-        self.qr_label.raise_()
+        self.qr_frame.raise_()
         self.countdown_frame.raise_()
-        self.qr_button.show()
-        self.qr_label.show()
+        self.qr_frame.show()
         self.countdown_frame.show()
         
         # Store reference for updates
@@ -606,8 +630,17 @@ class ModernDisplayWindow(QMainWindow):
             remaining = isha_dt - now
             
             if remaining.total_seconds() <= 0:
-                self.countdown_label.setText("00:00:00")
-                return
+                # Past today's Isha - count down to next day's Isha instead
+                next_day = current_day + 1
+                next_isha_str = ramadan_times.get_isha_time_for_day(next_day)
+                if not next_isha_str:
+                    self.countdown_label.setText("00:00:00")
+                    return
+                next_h, next_m = map(int, next_isha_str.split(':'))
+                next_isha_dt = (now + timedelta(days=1)).replace(
+                    hour=next_h, minute=next_m, second=0, microsecond=0
+                )
+                remaining = next_isha_dt - now
             
             total_seconds = int(remaining.total_seconds())
             hours = total_seconds // 3600
@@ -644,9 +677,12 @@ class ModernDisplayWindow(QMainWindow):
                     update_trivia(current_day, self.ramadan_labels, self.height_value, test=self.args.t)
                     self.ramadan_updated = True
             elif current_time >= self._add_minutes(isha_time, 1):
-                # Reset flag after the 1-minute window
-                if self.ramadan_updated:
-                    self.ramadan_updated = False
+                # Past the 1-minute window - ensure winners are selected
+                # (handles missed window or app opened after Isha)
+                if not self.ramadan_updated:
+                    print(f"\n🌙 Past Isha window - ensuring winners selected for day {current_day}...")
+                    update_trivia(current_day, self.ramadan_labels, self.height_value, test=self.args.t)
+                    self.ramadan_updated = True
         else:
             # Fallback to midnight if no Isha time available
             if current_time >= "00:00" and current_time < "00:01":
