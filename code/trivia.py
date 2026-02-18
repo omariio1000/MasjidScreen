@@ -52,12 +52,27 @@ class Trivia:
         items = form_metadata.get("items", {})
 
         # Create a mapping of question IDs to their titles
+        # Also extract correct answers from the quiz grading metadata
         question_mapping = {}
+        self.question_mapping_titles = {}  # ordered dict of question_id -> title (for find_correct)
+        self.correct_answer_values = []  # correct answer per question, from the form itself
         for item in items:
-            question_id = item.get("questionItem", {}).get("question", {}).get("questionId")
+            q_data = item.get("questionItem", {}).get("question", {})
+            question_id = q_data.get("questionId")
             question_text = item.get("title", "")
             if question_id:
                 question_mapping[question_id] = question_text
+                self.question_mapping_titles[question_id] = question_text
+                # Extract correct answer from grading (quiz forms only)
+                grading = q_data.get("grading", {})
+                correct_answers_obj = grading.get("correctAnswers", {})
+                correct_list = correct_answers_obj.get("answers", [])
+                if correct_list:
+                    self.correct_answer_values.append(correct_list[0].get("value", ""))
+                else:
+                    self.correct_answer_values.append(None)
+
+        print(f"  Correct answers from form grading: {self.correct_answer_values}")
 
         # Fetch form responses
         responses = service.forms().responses().list(formId=form_id).execute()
@@ -79,15 +94,43 @@ class Trivia:
         self.data = pd.DataFrame(rows).drop_duplicates(subset=["First Name", "Last Name"], keep="last")
         self.correct_answers = []
 
-    def find_correct(self, answers):
-        """Find the people who answered correctly and filter them"""
-
-        a1, a2, a3 = answers
+    def find_correct(self):
+        """Find the people who answered correctly using the form's own grading answers"""
 
         if not self.data.empty:
-            filtered = self.data[   (self.data["Question 1"] == a1) &
-                                    (self.data["Question 2"] == a2) &
-                                    (self.data["Question 3"] == a3)]
+            # Get question columns (everything except First Name, Last Name, Email)
+            meta_cols = {"First Name", "Last Name", "Email"}
+            question_cols = [col for col in self.data.columns if col not in meta_cols]
+            
+            if len(question_cols) < 3:
+                print(f"Warning: Expected 3 question columns, found {len(question_cols)}: {question_cols}")
+                return
+            
+            # Use the last 3 question columns (forms may have extra metadata items)
+            q_cols = question_cols[-3:]
+            
+            # Build a mapping from question title -> correct answer from the form grading
+            # The question_mapping and correct_answer_values are aligned by the items order
+            # q_cols are the column names (which are question titles), so we match by title
+            correct_by_title = {}
+            items = list(self.question_mapping_titles.items())  # (question_id, title) pairs in order
+            for i, (qid, title) in enumerate(items):
+                if i < len(self.correct_answer_values) and self.correct_answer_values[i] is not None:
+                    correct_by_title[title] = self.correct_answer_values[i]
+            
+            # Check each row: every question column must match its correct answer
+            def row_matches(row):
+                for col in q_cols:
+                    expected = correct_by_title.get(col)
+                    if expected is None:
+                        continue
+                    if str(row[col]).strip() != str(expected).strip():
+                        return False
+                return True
+            
+            filtered = self.data[self.data.apply(row_matches, axis=1)]
+            
+            print(f"  Matched {len(filtered)} / {len(self.data)} correct responses")
         
             if not filtered.empty:
                 self.correct_answers = filtered.apply(lambda row: [str(row["First Name"] + " " + row["Last Name"]), row["Email"]], axis=1).tolist()
@@ -231,8 +274,7 @@ def get_winners(day, test=False):
         print(f"Warning: {TRIVIA_DETAILS_FILE} not found")
         return []
 
-    form_link, answers = get_form_link_answers(trivia_json, day)
-    # print(form_link, answers)
+    form_link, _ = get_form_link_answers(trivia_json, day)
 
     if not form_link:
         return []
@@ -243,10 +285,7 @@ def get_winners(day, test=False):
         trivia.data['Last Name'] = trivia.data['Last Name'].apply(lambda x: cleanup(x))
         trivia.data['Email'] = trivia.data['Email'].apply(lambda x: cleanup(x))
 
-    # Display the DataFrame
-    # print(f"\n{trivia.data}")
-
-    trivia.find_correct(answers)
+    trivia.find_correct()
     # print(f"\nAnswered correctly: {trivia.correct_answers}")
 
     winners = trivia.select_winners()

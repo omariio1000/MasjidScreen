@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget,
 from PyQt6.QtCore import QTimer, Qt, QUrl
 from PyQt6.QtGui import QPixmap, QFont, QColor, QFontDatabase, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile, QWebEnginePage
+from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile, QWebEnginePage, QWebEngineScript
 
 # Base directory and config
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +31,8 @@ CONFIG_PATH = os.path.join(BASE_DIR, '..', 'config.json')
 class SilentWebPage(QWebEnginePage):
     """Custom web page that suppresses noisy browser console messages"""
     # Messages from the embedded site we don't care about
-    _SUPPRESS = ('unrecognized feature', 'permissions policy', 'payment')
+    _SUPPRESS = ('unrecognized feature', 'permissions policy', 'payment',
+                 'content security policy', 'style-src')
 
     def javaScriptConsoleMessage(self, level, message, line, source):
         if any(kw in message.lower() for kw in self._SUPPRESS):
@@ -175,9 +176,19 @@ def update_trivia(day, ramadan_labels, height_value, test=False):
 
     if day >= 2 and day <= 31:
         try:
-            if not trivia.check_winners_updated(str(day - 1)):
-                winners = trivia.get_winners(day - 1, test=test)
-                trivia.log_winners(str(day - 1), winners, test)
+            if test:
+                # Test mode: always pick fresh winners, never check/write files
+                winners = trivia.get_winners(day - 1, test=True)
+                print(f"\n[TEST] Day {day - 1} winners selected:")
+                for i, w in enumerate(winners, 1):
+                    name = w[0] if len(w) >= 1 else "?"
+                    email = w[1] if len(w) >= 2 else "?"
+                    print(f"  {i}. {name} ({email})")
+                if not winners:
+                    print("  (no correct answers found)")
+            elif not trivia.check_winners_updated(str(day - 1)):
+                winners = trivia.get_winners(day - 1, test=False)
+                trivia.log_winners(str(day - 1), winners, False)
             else:
                 winners = trivia.get_past_winners(str(day - 1))
         except Exception as e:
@@ -343,6 +354,21 @@ class ModernDisplayWindow(QMainWindow):
         settings.setAttribute(QWebEngineSettings.WebAttribute.TouchIconsEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
         
+        # Inject CSS to disable backdrop-filter (causes flickering in embedded WebEngine)
+        disable_blur_js = """
+        (function() {
+            var style = document.createElement('style');
+            style.textContent = '* { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }';
+            (document.head || document.documentElement).appendChild(style);
+        })();
+        """
+        script = QWebEngineScript()
+        script.setSourceCode(disable_blur_js)
+        script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentReady)
+        script.setWorldId(QWebEngineScript.ScriptWorldId.ApplicationWorld)
+        script.setRunsOnSubFrames(True)
+        self.web_page.scripts().insert(script)
+        
         # Load the prayer times website
         prayer_url = self.config.get("prayer_website", "https://muslimplus.org")
         self.web_view.setUrl(QUrl(prayer_url))
@@ -414,7 +440,7 @@ class ModernDisplayWindow(QMainWindow):
         questions_container = QFrame(parent)
         questions_container.setStyleSheet("background: transparent;")
         questions_layout = QHBoxLayout(questions_container)
-        questions_layout.setContentsMargins(10, 10, 10, 10)
+        questions_layout.setContentsMargins(0, 10, 0, 10)  # 0 left/right margins so boxes align with right panel
         questions_layout.setSpacing(15)
         
         self.ramadan_labels = RamadanLabels(winners_frame, questions_container, "transparent", text_color, font1, font2, font3)
@@ -577,21 +603,25 @@ class ModernDisplayWindow(QMainWindow):
         countdown_shadow.setColor(QColor(0, 0, 0, 120))
         countdown_shadow.setOffset(3, 3)
         self.countdown_frame.setGraphicsEffect(countdown_shadow)
-        
-        # "Time Remaining" title label inside countdown box
+
+        countdown_layout = QVBoxLayout(self.countdown_frame)
+        countdown_layout.setContentsMargins(8, 8, 8, 8)
+        countdown_layout.setSpacing(4)
+        countdown_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # "Time Remaining" title label
         self.countdown_title = QLabel("Time Remaining", self.countdown_frame)
         self.countdown_title.setStyleSheet(f"background: transparent; color: {self.HIGHLIGHT}; border: none;")
-        self.countdown_title.setFont(QFont("Helvetica", int(16 * (self.height_value / 1080)), QFont.Weight.Bold))
+        self.countdown_title.setFont(QFont("Helvetica", int(22 * (self.height_value / 1080)), QFont.Weight.Bold))
         self.countdown_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.countdown_title.setGeometry(0, 8, countdown_w, int(28 * (self.height_value / 1080)))
-        
-        # Countdown time label - large white text below title
-        title_bottom = 8 + int(28 * (self.height_value / 1080))
+        countdown_layout.addWidget(self.countdown_title)
+
+        # Countdown time label - large white text
         self.countdown_label = QLabel("", self.countdown_frame)
         self.countdown_label.setStyleSheet(f"background: transparent; color: {self.TEXT_PRIMARY}; border: none;")
         self.countdown_label.setFont(QFont("Helvetica", int(48 * (self.height_value / 1080)), QFont.Weight.Bold))
         self.countdown_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.countdown_label.setGeometry(0, title_bottom, countdown_w, countdown_h - title_bottom)
+        countdown_layout.addWidget(self.countdown_label)
         
         self.qr_frame.raise_()
         self.countdown_frame.raise_()
