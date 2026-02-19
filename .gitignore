@@ -2,6 +2,7 @@ ptd backup/
 __pycache__
 trivia.png
 amazon_codes.txt
+amazon_used.txt
 service_account.json
 trivia_winners.json
 trivia_details.json
