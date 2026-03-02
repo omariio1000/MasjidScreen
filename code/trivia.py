@@ -256,6 +256,19 @@ def get_form_questions_options(day):
         option3.append(options[2] if len(options) > 2 else "")
         option4.append(options[3] if len(options) > 3 else "")
     
+    # Shuffle options for each question independently
+    shuffled_results = []
+    for i in range(len(questions)):
+        question_options = [option1[i], option2[i], option3[i], option4[i]]
+        random.shuffle(question_options)
+        shuffled_results.append(question_options)
+    
+    # Reconstruct the option lists with shuffled order
+    option1 = [opts[0] for opts in shuffled_results]
+    option2 = [opts[1] for opts in shuffled_results]
+    option3 = [opts[2] for opts in shuffled_results]
+    option4 = [opts[3] for opts in shuffled_results]
+    
     print(f"Questions: {questions}\nOptions: {option1}, {option2}, {option3}, {option4}")
 
     return questions, option1, option2, option3, option4
