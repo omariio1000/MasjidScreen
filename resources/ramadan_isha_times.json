@@ -187,6 +187,12 @@
             "isha_adhan": "20:43",
             "hijri": "29-09-1447",
             "weekday": "Wednesday"
+        },
+        "31": {
+            "date": "2026-03-19",
+            "isha_adhan": "20:45",
+            "hijri": "01-10-1447",
+            "weekday": "Thursday"
         }
     }
 }
